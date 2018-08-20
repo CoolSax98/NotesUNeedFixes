@@ -1,0 +1,1493 @@
+	______________
+	
+	Change History
+	______________
+
+MANUAL CHANGELOG DISCONTINUED.
+	
+Changes in v6.67.40000 from v6.66.40000
+---------------------------------------
+- added support for integration with Prat-3.0.  Players that also have Prat-3.0 installed should now see player note tags in chat
+- patched up a number of places where variables were either still using the identifiers from before my recent refactor pass, or
+  were malformed due to a bug in the regular expression I was using for updating all the variable identifiers.
+
+Changes in v6.66.40000 from v6.65.40000
+---------------------------------------
+- fixed position of NotesUNeed button when viewing guild roster view is set to "Achievements"
+- fixed race & class dropdowns not being set to correct values
+- changed SetItemRef post-hook to a pre-hook of ChatFrame_OnHyperlinkShow, to avoid getting an error message if the NotesUNeed chat tag is clicked on without holding a modifier key...
+- fixed icon not clickable if the player has been assigned a rating
+- fixed NotesUNeed tag not added to player names in chat window for players that have notes
+- added runtime switches for toggling debug mode
+- changed chat message event handler to be registered as a ChatFrameFilter rather than prehooking the ChatFrame_MessageEventHandler function
+- fixed lua error when loading from addition of new continents
+- added Player Ratings submenu to raid frames context menu
+- the local_player table is now stored as a subtable of the main NotesUNeed.locals table
+- no longer force GuildUI to be loaded at startup
+** this was necessary because the NotesUNeed note icons weren't appearing correctly in the guild roster's list of players.  this has been fixed.
+- fixed guild roster sometimes not updated when appropriate
+- tweaked position of note icon on achievements view of guild roster panel
+- added new keybind similar to the existing one for 'create a note using the target, but don't open the note'; this new keybind is to open (or create) a note for the target, and keep the note open for viewing / editing.
+** this keybind can be acessed in the WoW options menu under keybindings.
+- fixed player notes talent query feature
+** when creating new player notes, the player's talents talents are now automatically recorded and displayed in the tooltip for that player.
+** for existing notes, once you close enough to the player to be able to inspect them, open their note, target them and click the 'Target Info' button.
+
+Changes in v6.65.40000 from v6.64.40000
+---------------------------------------
+- fixed Alt+Clicking on chat hyperlinks no longer opening a note for that item
+- NotesUNeed now remembers the last note you opened even after you log out;  this is a global setting, so it will not be character specific.
+- re-enabled the player ratings menus
+** this will re-introduce taint to the unit frames, so you won't be able to use the context menu to assign focus.
+** fixed the tooltips for the player ratings dropdowns
+** added player ratings submenu to focus frame
+** fixed modifying the player rating title not always working.
+
+- friends/ignore list updates that were deferred due to the data not having been received yet no longer clobber the flag that tracks the deferral when unrelated code attempts to access one of these lists before they're ready
+
+
+>> internal maintenance <<
+- renamed some of the variables used throughout NuN to make it clearer what their purpose is
+** contact.name => local_player.currentNote.unit
+** contact.note => local_player.currentNote.general
+** fBusy, iBusy => friendsPendingUpdate, ignoresPendingUpdate
+
+- moved a number of vars that were accidentally globals into the local namespace to avoid polluting the global namespace (not to mention having our values changed on us by someone else)
+** searchType
+** local gRank;
+** gRankIndex;
+** gNote;
+** gOfficerNote;
+** tab => _tab
+** index => idx
+** name => _name
+** - => __
+** txtTmpL
+** offset => scrollOffset	
+
+
+Changes in v6.64.40000 from v6.64.33500
+---------------------------------------
+- updated to be compatible with WoW client patch 4.0001
+** comprehensive code review to remove references to previously deprecated (now completely gone) method for accessing global variables
+** fixed a bunch of places that weren't passing the reference to the widget onto the NuN code
+** fixed tooltips not showing for all cases that I'm aware of.
+** fixed saved notes not loaded correctly (man that file really likes to save using the wrong encoding - might be best to replace the special characters being used for delimiters with escape codes that mean the same thing)
+** converted all unnecessary insecure function hooks into secure hooks
+** temporarily disabled the player rating menus, until I figure out how to implement that feature without tainting the target frame context menu
+** fixed ignore list not displaying tooltips or proper faction icons
+** removed unconditional capturing of mouse-clicks when another addon wishes to use the same keybind as NotesUNeed [to automatically create/open a note for the item in question];
+** Fixed lua error when player levels-up
+** Fixed unable to see custom player events on calendar (special thanks to Dridzt for his help)
+** fixed guild frame not updated if both social frame and guild frame are open
+** fixed tooltips not correct on the tradeskill view of the guild guild roster
+** fixed clicking a NUN button in the tradeskill view of the guild roster not opening the correct note.
+
+KNOWN ISSUES:
+- note icons overlap achievement points on achievement view of guild menu
+- lists in the guild menu do not update their note icons correctly
+- if mouse is over a note icon while scrolling through a  guild menu list, the tooltip will not be updated until you move the mouse.
+
+
+Changes in v6.64.33500 from v6.63.33500
+--------------------------------------
+** fixed encoding on german loc file and NotesUNeed.lua
+** fixed a rare recursion issue when opening a note (would cause client to lockup)
+** changed the "Create blank note" button to actually create a blank note, instead of creating a note with your target's information....since there is already another button on the same bar that does that.
+** fixed errors and general mayhem in friends/ignore lists
+** misc fixes mostly related to quest log buttons
+
+
+Changes in v6.63.33500 from v6.62.30500
+---------------------------------------
+
+- fixed ChatFrameEditBox issue as reported by ameyaselene.  Thanks for the great bug report.
+
+
+Changes in v6.62.30500 from v6.61.30300
+---------------------------------------
+
+- fixed friends screen errors resulting from RealID users.  (RealID Users are not included in auto-friends since they are not tied to particular characters.)
+
+
+Changes in v6.61.30300 from v6.60.30300
+---------------------------------------
+
+- fixed non-inclusion of Raid member that are not in your immediate party.
+- coming soon: New Option to record date/time stamp on new line in notes every time a player joins party.
+
+
+Changes in v6.60.30300 from v6.59.30300
+---------------------------------------
+
+- fixed additional issue with quest tracking resulting in a nil reference (sorry for the bad release, I don't have a full suite of test cases yet)
+
+
+Changes in v6.59.30300 from v6.58.30200
+---------------------------------------
+
+- toc update for WoW Patch 3.3
+
+- removed LFM/LFG functionality as this was replaced by the group queue system.
+
+
+
+
+Changes in v6.58.30200 from v6.57.30100
+---------------------------------------
+
+- toc update for WoW Patch 3.2
+
+- removed quest log NuN buttons
+
+
+
+
+
+Changes in v6.57.30100 from v6.56.30000
+---------------------------------------
+
+- toc update for WoW Patch 3.1
+
+- NuN Hyperlink support improved for spells
+
+
+
+Changes in v6.56.30000 from v6.55.30000
+---------------------------------------
+
+- small AddOn compatibility change to chat message handling
+
+- update to Class and Profession drop down boxes
+
+
+
+Changes in v6.55.30000 from v6.54.30000
+---------------------------------------
+
+- fix to nil error when clicking on LFG note icons
+
+
+
+Changes in v6.54.30000 from v6.53.30000
+---------------------------------------
+
+- hopefully a fix to occasionally inaccurate Talent recording
+(May need to manually refresh Target Info on players with corrupted information)
+
+
+
+Changes in v6.53.30000 from v6.52.30000
+---------------------------------------
+
+- right click menu bug fix
+
+
+
+Changes in v6.52.30000 from v6.51.30000
+---------------------------------------
+
+- fix to container item clicking to create notes / paste in to open notes
+
+- some changes to avoid taint and prevent Action Blocked messages when using 'Set Focus' / 'Clear Focus'
+
+- Right-clicking on unit frames to select player ratings will STILL taint the 'Set Focus' / 'Clear Focus' menu actions
+Note that there should be no problems with focus actions via key bindings, slash commands, or macros.
+A new slash command has been introduced to disable NuN right click menus, and prevent this problem entirely.
+
+/nun -rightoff
+
+This slash command will re-load your User Interface, so you will see a Blizzard loading screen for a few seconds.
+But if you want to use focus actions from player drop down menus, then you should use the above slash command to disable the NuN menu option.
+If you don't need the Blizzard 'Set Focus' or 'Clear Focus' drop down menu options, then you can leave NuN's right click menu enabled.
+NotesUNeed will remember if you turned off right click menus between sessions, so you do not need to use this slash command every time you log in.
+
+If you want to re-enable the NotesUNeed right click menus, then use the following slash command :
+
+/nun -righton
+
+
+
+Changes in v6.51.30000 from v6.50.30000
+---------------------------------------
+
+- AlphaMap compatibility for sending of Raid instructions from boss notes
+
+- fix to Scroll frame error
+
+
+
+Changes in v6.50.30000 from v6.50.20400
+---------------------------------------
+
+- compatibility update for WoW v3 and WotLK
+
+
+
+Changes in v6.50.20400 from v6.48.20400
+---------------------------------------
+
+- Talent recording now works as intended ;p
+Need to be within range when creating a new note, or using the "Target Info" button
+Main NuN Tooltip for player will show talent summary
+Talent details will be shown in a special tooltip when hovering over the Class box in the Note itself
+
+
+
+Changes in v6.48.20400 from v6.47.20400
+---------------------------------------
+
+- fix to Friend frame note fetching for Offline friends
+
+- fix to Talent tooltip issues when hovering over Class drop down boxes
+
+
+
+Changes in v6.47.20400 from v6.46.20400
+---------------------------------------
+
+- compatibility update for 2.4.3
+
+
+
+Changes in v6.46.20400 from v6.45.20400
+---------------------------------------
+
+- fix to fix to try and minimise the display of Contact tooltip details when hovering over General items with the same root name
+
+
+
+Changes in v6.45.20400 from v6.43.20400
+---------------------------------------
+
+- NuN will now try to record Talent tree details when collecting information.
+Players must be within range when you create the Note or use the Target Info button.
+This information will be detailed in the Tooltip when :
+a.) in the general Tooltip information for that Contact
+The main Talent description will be based on the branch in which the most points have been spent
+e.g. for a Shaman the description might read :
+Elemental 40-7-23
+b.) hovering over the Class button in the Contact note editing frame will give much more Talent details for that Player
+NOTE : NuN does not try to gather this information automatically for Party/Guild members.
+
+- fix to try and minimise the display of Contact tooltip details when hovering over General items with the same root name
+
+
+
+Changes in v6.43.20400 from v6.42.20400
+---------------------------------------
+
+- fix to note creation from Player name chat links
+
+- can now use the NuN Modifier keys create notes directly from the AH Item buttons
+i.e. the small square Item ICONS - and NOT the long main AH button with the item price, etc.
+
+- correction to NuN Tooltip positioning when 'extra' Shopping Tooltips are displayed
+
+- item notes from now on will ignore item Unique Identifiers, enchants, etc.
+(See Section 05 "Item Notes" in the Readme for more details)
+
+
+
+
+Changes in v6.42.20400 from v6.41.20400
+---------------------------------------
+
+- UberQuest & QuestGuru compatibility update
+
+
+
+Changes in v6.41.20400 from v6.40.20300
+---------------------------------------
+
+- New Option to hide NuN Notes and Tooltips for Ignored players
+(Note: this only hides ignored player notes in the Note browser frame - you can still open that players note via slash commands, or Microbuttons)
+(Note2: only the NotesUNeed tooltip is hidden, not the Blizzard Game Tooltip)
+
+- small compatibility changes to SendMessage hooks (hopefully more compatible with TellTrack
+
+- allows manual entry of names beginning with special "accented" characters e.g. Á, É, etc...
+(NOTE : Names beginning with these types of characters are sorted by the game to appear AFTER "Z" alphabetically)
+
+(BETA Functionality)
+- If you send a note to someone who already has a note with the same name, then the recipient will be shown a Warning Dialog box allowing them to choose whether they want to Replace their existing note, or cancel receipt of the note and keep their original version instead.
+There is now also a third option allowing the sent note to be merged with the existing note by "ALT-Clicking" on the Replace button.
+When notes are merged, then the newly sent text will be appended to the end of the existing note's text. Currently, other values such as those populated in DropDown boxes will still be set according to the received note, and will replace old values in the original note.
+
+
+
+Changes in v6.40.20300 from v6.39.20300
+---------------------------------------
+
+- correction to maximum number of characters allowed in the note edit box
+
+
+
+Changes in v6.39.20300 from v6.37.20300
+---------------------------------------
+
+- disambiguated between Player and NPC tooltips when mousing over the WorldFrame
+
+- increased the maximum size of notes
+
+
+
+Changes in v6.38.20300 from v6.37.20300
+---------------------------------------
+
+- NotesUNeed will now remember Pinned Tooltips between sessions
+
+- small fix to incorrect Pinup tooltip checkbox status if one is already showing when checked
+
+- fix to problem with Slash commands for Sending of notes
+Should now be able to send NotesUNeed notes, or broadcast to channels via Macros/Scripts
+
+- small update to Drop Down box initialisers
+
+
+
+Changes in v6.37.20300 from v6.36.20300
+---------------------------------------
+
+- Bleh!  Had to change the shortcut key for Saving notes to <Alt>-S
+This should re-enable normal shortcut keys for cutting / pasting
+
+
+
+Changes in v6.36.20300 from v6.35.20300
+---------------------------------------
+
+- the "[]" hyperlink button functionality can now be restricted to output individual hyperlinks, by highlighting them in the note text.
+So if no text is highlighted, then the functionality is unchanged and all Hyperlinks are "echoed" to the Chat frame where they can be clicked.
+But if you highlight individual Hyperlinks in the text before using the button, then only those will be "echoed"
+
+- the "[]" hyperlink button will now also paste hyperlinks in to the chat frame edit box rather than "echoing" to the chat frame, IF the edit box is open
+
+- can now use the <Control>-S shorcut key to save open NotesUNeed notes
+This is the most common short key used to save documents in all types of word processors and notepads, and I won't be offering a way to modify it.
+I am so used to using <Control>-S to save documents/scripts while writing them, that this has been on my wish-list for a long time ;p
+
+- a chat frame message will now confirm when you manually save a note
+
+
+
+
+
+Changes in v6.35.20300 from v6.31.20300
+---------------------------------------
+
+- can now customise the Player Ratings.
+Open up any Player note;
+Click on the Player Rating DropDown button;
+<Control>-Click on any Player Rating button to change it via 2 dialog boxes : 
+ Box 1 allows you to change the Player Rating text
+ Box 2 allows you to change the Tooltip text
+<Alt>-Click on a Player Rating button to reset it (and the tooltip) to the NuN default value
+
+- compatibility changes to work with the "Black List" AddOn
+When customising Player Ratings using the technique described above, then checkboxes will allow you to specify whether that Player Rating should also Black List the player;
+A further two check boxes allow you to specify whether the black listed player should also be Ignored, or trigger a Warning.
+Now when you select that Player Rating for a Player, then they will be automatically be added to the Black List AddOn database.
+The Black List reason will be auto populated with the NuN Player Rating and Tooltip text.
+If you select a different NuN Player Rating with different Black List criteria, then the Black List details will be updated in the background.
+If you select a different NuN Player Rating with no Black List criteria, then the Black List details will be left untouched.
+If you remove someone from your Black List, then their NuN Player Rating will be reset to blank if it can detect that the Player was Black Listed from NuN;
+i.e. players Black Listed from NuN will have a reason for black listing pre-fixed with a purple NuN !
+> Black List AddOn : http://wowui.incgamers.com/?p=mod&m=4926
+
+- the Options Frame is now moveable
+
+- the Options Frame and MicroButtons are now Clamped-To-Screen and can't be 'lost'
+
+- fixed a small graphical problem on the Options frame
+
+
+
+Changes in v6.31.20300 from v6.30.20300
+---------------------------------------
+
+- small fix to error that occurs when Raid member change
+
+
+
+Changes in v6.30.20300 from v6.25.20300
+---------------------------------------
+
+- more information now recorded and displayed when auto-noting Party members
+When hovering over the "Parties : " label on the Contact note, NotesUNeed will display a tooltip with the following information :
+a.) Which of your Alts has partied with that player
+b.) How many times that Alt has partied with that player
+c.) The date on which that Alt last partied with that player
+
+- Verbose Guild Reporting now 'toned down' a little, and now completely silent when turned off
+
+- fixed a problem displaying the NuN Tooltip when using the "Tooltip" key word in the Contact note user definable buttons
+
+- updated BG detection to prevent party member noting in Battlegrounds where parties can often be random with players from different Realms
+(Parties pre-made before entering the BG obviously WILL be noted if the option is enabled)
+
+
+
+Changes in v6.25.20300 from v6.05.20300
+---------------------------------------
+
+NEW FUNCTIONALITY IN LFM FRAME
+- support for NuN Buttons on the Looking For More Frame
+
+- new Tooltip support when mousing over players on the LFM Frame :
+NotesUNeed will display an extra Tooltip to show Player Ratings for all party members you have noted
+
+
+
+NEW FUNCTIONALITY TO COLOUR TEXT
+- can now select your own text colours in notes via colour selection buttons on the note frames.
+There are 5 Preset colour buttons, and one Custom colour button for opening the Colour Picker Frame to choose any other colour.
+So simply, highlight the text you want to colour in and click on the colour you want.
+You MUST highlight the text you want to colour by USING THE MOUSE.
+(i.e. text highlighted by holding down the <Shift> key and using the keyboard arrows will not be coloured by NuN)
+
+- Preset colour buttons
+1.) Left click to apply the colour to highlighted text
+2.) Right click to open up the colour picker and choose your own preset colour choice
+3.) <Alt>-Right click to reset the preset colour to its default value
+
+- Custom colour button
+1.) Left click to open up the Colour Picker Frame and choose a colour.
+	NOTE that the colour is NOT applied to the text until you click the "Okay" button.
+2.) Right click on the Custom colour button to Toggle the display of the colour Tags in the text. This ability should be useful when trying to see
+	NOTE : YOU CAN NOT USE THE BUTTONS TO COLOUR TEXT WHILE SHOWING COLOUR TAGS !!!
+The Custom colour button will remember the last colour you chose (even between sessions).
+
+- improved native support for manually entered colour codes
+i.e. you can now type in your own colour code tags and they will be applied when you save the note
+(e.g. "colour the word |cff0000ffblue|r with the colour it describes")
+General type Note names can also be coloured by manually applying colour tags.
+
+PLEASE SEE THE "Whatever you do DONT READ THIS.txt" FILE FOR MORE DETAILS
+
+
+
+NEW FUNCTIONALITY FOR NOTING ALTS
+- can now include the names of People's Alts in their Tooltip.
+Their Note text needs to include the name of their Alts in the format :
+ <ALT:Altname1>
+ <ALT:Altname2>
+ etc.
+
+- with the Guild Frame Open, and a Players Note open, you can specify their Alts by :
+<Alt>-Clicking on the other Guild member NuN Note symbols for Alts of that Player
+This will paste the ALT's name in to the currently open Player note, where it will then be visible in the Tooltip for that Player
+
+
+
+MISCALLANEOUS
+- new Text box on the Transmit Note frame detailing the delay between messages, and allowing easy update of this value
+NOTE that you have to press <Enter> or click on Transmit for the value in this edit box to be saved.
+(Not all messages are sent with a delay e.g. Whispers, Party, etc.)
+
+- included a checkbox for toggling NuN Microbuttons on the NuN Options frame
+
+- Cosmos Feature Frame button for accessing NuN Options
+
+- NuN Tooltips will now try to inherit the Alpha settings of the Game and WorldMap Tooltips to try and be compatible with other AddOns that change these settings
+
+- fixed a problem when removing friends
+
+- fixed a problem displaying Abandoned Quests in Red text
+
+- code clean up and greatly reduced the number of Global and Local Variables
+
+
+
+
+
+
+
+Changes in v6.05.20300 from v6.03.20200
+---------------------------------------
+
+- NuN /who information requests improved, and now silent
+(	Also improved compatibility with AddOns using specialised Who Libraries;
+	Although no guarantees in this case, so remember "/nun -restrictwho"	)
+
+- Adjusted the Guild auto-noting
+
+- Anchors for the Quest log note symbols now positioned on the left
+
+- Improved compatibility with AddOns that change the Quest log
+(Only tested with Bayi's Extended QuestLog)
+
+- Corrected the positioning of the NuN Options Frame (where UI Scale is large)
+
+
+
+Changes in v6.03.20200 from v6.02.20200
+---------------------------------------
+
+- Guild notes should only be created when the Option is turned on !
+
+
+
+Changes in v6.02.20200 from v6.01.20200
+---------------------------------------
+
+- as some people are still seeing the WhoFrame, I have changed this functionality.
+You shouldn't see when NuN "/who"s somebody, but at worst now, you should only see Chat Frame /who information.
+
+- as a last resort, anyone still having trouble with the /who command can use the following slash command
+/nun -restrictwho
+This command will stop NotesUNeed from automatically requesting Who information. The Who button in Player notes should still work for manual requests.
+(There is also an "/nun -alternatviewho" command available that people can use to modify the NuN Who without disabling it)
+
+- the following slash commands now report status.
+/nun -delay [number of seconds]		-- [number of seconds] is optional; If ommitted then the current value will be reported.
+/nun -restrictwho
+/nun -alternativewho
+
+
+	
+Changes in v6.01.20200 from v6.00.20200
+---------------------------------------
+
+- can now hold down the <Alt> key in order to show the full NotesUNeed tooltip when Mousing Over other players in the 3D world.
+i.e. holding down the <Alt> key temporarily cancels the "Minimise MouseOver Target Tooltips" Option.
+NOTE: pressing <Alt> won't immediately change the NuN Tooltip from a minimised to a full tooltip on its own. You will have to refresh the Game Tooltip by moving the mouse away, and holding the <Alt> key down when you Mouse Over that target again.
+
+
+
+Changes in v6.00.20200 from v5.59.20200
+---------------------------------------
+
+- NEW Button on the Options Frame to capture User Defined Mouse & Keyboard modifiers to use when creating notes from Items / Links.
+Simply Left/Right Click without any modifier keys to choose which Mouse Button to use.
+Hold down required Modifer Keys & Click to Save the specific keyboard Modifiers to use.
+Modified Left  Click : Records left or right keyboard buttons as the same modifier key
+Modified Right Click : Records left and right keyboard buttons as different modifiers
+Default is still <Alt>-Left Click
+The Text on the Button itself reflects what the mouse button & modifier combo is currently.
+SEE THE README.TXT FOR FURTHER EXAMPLES OF HOW TO USE THIS BUTTON
+
+- Player Rating via the Right click context menu has a new addition.
+The first button is an option to open a NotesUNeed note for that Player without "Rating" them.
+The other rating options are still present and will assign a Player rating without opening a note.
+All the options will create a note for the Player in question if no NotesUNeed note already exists.
+If you hold down the <Alt> key while choosing a Rating, then the NuN Note will also be opened.
+
+- Added a Drop Down box listing all your Alts to the Quest History frame;
+So that you can now browse the Quest History for any of your Alts no matter which one you have logged in with.
+Obviously, you will have needed to have logged in to these Alts at some stage with a version of NotesUNeed enabled.
+
+- More information about Guild, Race, Class, and Sex should be gathered automatically without needing you to manually select details.
+Some information requires you to have Partied with, or Targetted people when creating the note;
+
+- New slash commands for Sending/Broadcasting notes :
+/nun -sendG  "NOTE_NAME", "SEND_METHOD"[, "SEND_PARAMETER"]		-- sends General type note text
+/nun -sendGF "NOTE_NAME", "SEND_METHOD"[, "SEND_PARAMETER"]		-- sends General type note as Formatted text
+/nun -sendC  "NOTE_NAME", "SEND_METHOD"[, "SEND_PARAMETER"]		-- sends Contact type note text
+/nun -sendCF "NOTE_NAME", "SEND_METHOD"[, "SEND_PARAMETER"]		-- sends Contact type note as Formatted text
+ where -
+ "NOTE_NAME"		= the name of the note or note title
+ "SEND_METHOD"		= how to send the note e.g. "GUILD", "RAID", "WHISPER", "CHANNEL", etc.
+ "SEND_PARAMETER"	= Optionally required (i.e. who to WHISPER to -OR- the Channel ID/Name)
+NOTE: using any of these slash commands will close any currently open note.
+
+- Added a delay between lines sent when Broadcasting/Transmitting notes to other Players on Channels.
+Default delay is 0.33 seconds (i.e. roughly 3 lines a second)
+Use slash command "/nun -delay <#_SECONDS>" to change the default delay time
+
+- The "Who" information button should now work with 1 click
+
+- Added Options to automatically maintain Notes for all Guild Members.
+
+- There is a verbose option for Guild noting, and NotesUNeed will report the total number of members (and the number currently online)
+NotesUNeed will also note the names of new members, or members who have left the Guild since the last changes NotesUNeed recorded.
+
+- various bug fixes including a problem with the Mass Delete functionality, and made sure it tidies up after itself
+
+- various changes to clean up the code
+
+Version 6 Credits
+_________________
+
+All the following players for their suggestions, and testing feedback : 
+Hristo, drubear, acapela, SiNNeR, Nihlo, PeterPater, stgn, AlexejK
+
+...and a poke in the eye for those who said they'd test, but didn't ;p
+
+
+
+
+Changes in v5.59.20200 from v5.59.20100
+---------------------------------------
+
+- 20200 compatibility changes and update
+
+
+
+
+Changes in v5.59.20100 from v5.58.20100
+---------------------------------------
+
+- replaced the Current PvP Rank box with an Arena Rank box
+
+
+
+Changes in v5.58.20100 from v5.57.20100
+---------------------------------------
+
+- added a key binding for toggling the last opened NotesUNeed pin-up tooltip
+
+- added the following methods for Note Transmission/Broadcast :
+OFFICER : can now send notes to the Guild Officers channel in addition to the GUILD channel
+RAID-WARNING : Raid warning messages
+BATTLEGROUND : support for Battleground Raid groups in addition to the normal RAID channel
+
+- fixed a small description problem for one of the key bindings
+
+
+
+Changes in v5.57.20100 from v5.56.20003
+---------------------------------------
+
+- just a toc update(with a couple of small changes to Chat frame hooking)
+THIS VERSION SHOULD BE TREATED AS A BETA AS NO TESTING HAS BEEN CARRIED OUT ON IT.
+
+If you don't believe this version of NotesUNeed is working then please report the following : 
+1.) The exact error message and line number - enable WoW error reporting
+2.) How to repeat the error? Or some description of when it happens? 
+e.g. when you log in, or when you click on a particular button, or when you complete a quest, etc.
+3.) Which NotesUNeed Options you have enabled
+4.) The list of other AddOns you have installed
+
+If possible, it would be helpful for people to try the following :
+a.) Try playing with NotesUNeed as the only enabled AddOn to see if the error still happens
+b.) If the error goes away, then it is a compatibility issue with another AddOn. It would be extremely helpful if you can enable AddOns individually until the error happens again, so that we know which other AddOn, NotesUNeed is not compatible with. You may be able to make educated guesses at this; For example, if the error is happening when you Complete Quests, then it is likely to be an incompatibility problem with another Quest related AddOn.
+c.) If the error does not go away, then I definitely still need all the information from points 1, 2, and 3 above.
+
+
+
+Changes in v5.56.20003 from v5.55.20003
+---------------------------------------
+
+- small change to the behaviour of the MapNotes NotesUNeed Tooltips
+The NotesUNeed Popup list of Notes will now disappear immediately when your Mouse leaves a MapNote.
+If you want the List to stay Open so that you can view the NotesUNeed Tooltip for individual notes, or Click on the Note to open it, then hold down the <Control> key and the NotesUNeed Popup list of notes will stay open.
+
+- small change to Quest Recording to make sure Notes are created more promptly when accepting quests
+
+- double check to prevent a rare error when logging in with other Quest AddOns installed
+
+
+
+Changes in v5.55.20003 from v5.50.20003
+---------------------------------------
+
+- added basic ability to change the font used in Edit Boxes where you type text
+Basically, I have supplied an alternative font that can be used in game by Ticking the new "NuN Font" Check Box Option.
+The supplied font is the free Vera Sans Mono (True Type) font - a monospaced font that simplifies text allignment e.g. in Script style notes.
+If you want to use your own Font when editing notes, then simply copy your font in to the following directory and re-name it to "NuN.ttf"
+Interface\AddOns\NotesUNeed\Artwork
+
+- corrected a problem with the Friend/Ignore list functionality when targetting the individual, and now make sure note symbols are updated immediately
+
+- double checks now in place to make sure you can NOT delete Friend/Ignore Notes if using NotesUNeed to automatically maintain Friend/Ignore Lists
+
+
+
+Changes in v5.50.20003 from v5.47.20003
+---------------------------------------
+
+- fixed the Quest Log problems that were broken by a recent Blizzard Patch
+
+- change to MapNotes-NotesUNeed Tooltip Functionality :
+Previously there would be delay when displaying the MapNotes-NotesUNeed Popup frame which would prevent it from closing when your mouse leaves the MapNote, therefore allowing you time to click on the NotesUNeed button to open the Note - this delay would also prevent the Popup frame from closing if you moused over another MapNote - this affect was also deliberate to allow the user to access the NotesUNeed button;  i.e. the button would disappear if the route of the mouse from the initial MapNote to the NotesUNeed button passed over another MapNote.
+Anyway to cut a long story short, I have now changed this functionality. There is still a delay leaving the NotesUNeed buttons available to click when your mouse leaves a MapNote - But the tooltip and NotesUNeed Popup frame will refresh immediately when you mouse over any other MapNote.
+If you are having trouble clicking on a NotesUNeed Popup button for one MapNote, because you can't avoid mousing over other MapNotes to get to it - then hold down the <Control> Key,  and Mousing over other MapNotes will be suppressed.
+
+- Doh! Forgot to add the Paladin/Shaman classes that are now available to Horde/Alliance respectively
+
+- fixed the NPC Information fetching routine to make sure Professions are fetched correctly
+(Note, I have not tested with other GameTooltip Modifications installed - the code still relies on the Profession being recorded on the second line of the Tooltip, so if another AddOn has hidden or moved this information to a different line of the tooltip, then I don't have any plans to address that as a NotesUNeed issue; There could just be too many options for me to cater for given the number of Tooltip AddOns available.)
+
+
+
+Changes in v5.47.20003 from v5.46.20000
+---------------------------------------
+
+- updated the Race and Profession drop down boxes to include Burning Crusade options
+(I've been very lazy and just added the new races/professions after the last entries in the drop down boxes, rathter than re-arranging in alphabetical order - it means I don't have to write a conversion routine to update old notes, or during note exchange between different language clients)
+NOTE : Sending of Contact style notes to users of older versions of NotesUNeed is unsafe where the Contact references one of the new Races/Professions
+
+
+
+Changes in v5.46.20003 from v5.45.20000
+---------------------------------------
+
+- toc update
+
+- only reset the map when a QuestWatch_Update functions confirm that an objective has been completed, to cater for other AddOns that call the function continuously
+
+- Blizzard's Patch 2.03 should fix all other WoW v2.xx Blocked Action issues
+
+
+
+Changes in v5.45.20000 from v5.42.20000
+---------------------------------------
+
+- NEW Microbutton functionality.
+1.) can now quickly access Quest History notes by Right-Clicking on Search Microbutton (i.e. the Magnifying glass)
+2.) can now quickly access the list of General Notes by Alt-LeftClicking on the Search Microbutton
+
+- Chat Frame Hooks changed which should fix problems connected to Pet Bars and handling, when pets are summoned during combat
+
+- With a Mob/NPC targetted, using either the Player or General Microbutton will open/create a note for that Mob/NPC
+
+- when noting completion of Quest objectives, Zero messages will be ignored as they aren't useful and just take up space
+
+- fixed the bug of the Save button not working for general notes if still editing the title (withouth ever having moved the text cursor to the main body of text) Hopefully that should fix the problem as it was reported. (Thanks to Giddily for the Pic. ;)
+
+
+
+Changes in v5.42.20000 from v5.40.20000
+---------------------------------------
+
+- updated more function hooks to ensure secure hooking is used where indicated by function attributes. Especially for PaperDoll frame, but also even if no visible errors were noted previously.
+(Should fix the Blocked Action error when using Items directly from the Character sheet)
+
+- fixed the ability to create notes from the character sheet
+NOTE : ONLY need to <Alt><Left Click> on Character sheet items to create/paste in to NotesUNeed notes.
+(i.e. no need to use the <Shift> key on Character sheet items, and users of the Alternate version of NotesUNeed should also simply <Alt><Left Click>)
+
+- fixed a small issue when clicking on Ignored players in the Social frame to make sure any open Contact note is updated - as per functionality on the other pages of the Social frame.
+
+- fixed a small bug when deleting Quest History entries by Right Clicking and confirming deletion
+
+NOTE: Again, PetDismiss and Duel errors can't be fixed (as far as I know) without removing the Right click Player Rating functionality; Sorry, but I'm not willing to remove the functionality atm, only to have to put it back in again when Blizzard fix the issues in their next patch. So check the "NotesUNeed and WoW2.xx.txt" file included in the archive - or check earlier Patch notes below for more details.
+
+
+
+Changes in v5.40.20000 from v5.30.20000
+---------------------------------------
+
+- NotesUNeed will now record the locations where Quest Objectives/Items were achieved/dropped if you are auto-noting Quests
+For example if a quest is called "Kobold Camp Cleanup" and you are auto-noting Quests, then NotesUNeed will record 2 notes for the Quest.
+One called "Kobold Camp Cleanup" which stores the quest details from each stage of the quest;  And one called "Kobold Camp Cleanup:Objectives" which will record your Map locations when objectives were completed / quest items received.
+Character specific details of when you Accepted, Completed and Handed In a quest on a given character is still only available when browsing QuestHistory while logged in as that character - by viewing the toolip when mousing over the list of quests after selecting to Search for NotesUNeed QuestHistory from the Options frame.
+
+- as a result of some old changes in previous versions (forced by changes in WoW), new line characters (carriage returns) now use up 2 characters in the text box.
+Because of this, the number of characters being reported in the NotesUNeed edit boxes has not been an accurate guide,  but this has now been fixed.
+
+
+NOTE: it seems that the WoW Patch 2.02 may never arrive, so included here are further compatibility changes for WoW Patch 2.xx
+
+- fixed the Blocked Action issues when using/disenchanting bag items
+
+- PetDismiss problems have been fixed in the latest Burning Crusade Beta, and there doesn't seem to be a way for me to fix them until the Blizzard patch is released (without removing the Right Click Menu Player Rating buttons).
+The problem can be avoided by NOT using the NotesUNeed Right Click Player Rating functionality. (Sadly, you can't even roll your mouse over the Player Rating button in the Right Click menu, so the safest way to close a Right Click menu is to use the Escape key - you can still use all the other options on the menu)
+If you do get the issue, you can use the following script to cleanse your execution path :
+/script ReloadUI();
+The above script is case sensitive, and allows you to re-load your User Interface without having to completely log out and back in again
+
+- Duelling Blocked Action issues have not been fixed in the latest Burning Crusade Beta. But the slash command still works.
+(If anyone can explain to me why the Duel function is Secure I'd be interested to hear? I've been struggling to come up with a way in which I could cheat during a battle/raid by challenging people to duels ^^)
+
+Basically, I'm hoping that once Blizzard release a Patch, then the only permanent problem will be with Duelling from the Right Click menu - and as people can still use the Slash Commands, I'm not gonna worry about it.
+
+Please READ the "NotesUNeed and WoW2.xx.txt"  file included in the archive/zip file for NotesUNeed v5.40.20000 for any further details, clarification. (Or if you receive Unfinished String errors)
+
+
+
+Changes in v5.30.20000 from v5.26.11200
+---------------------------------------
+
+- WoW Patch 2.xx Compatible Beta Version (Awaiting some Blizzard bug fixes in v2.02)
+IF YOU HAVE RECEIVE 'UNFINISHED STRING' ERRORS WHEN LOGGING IN TO WOW YOU MUST READ THE FILE "NotesUNeed and WoW2.01.txt".
+The new version of WoW can object to notes made in earlier versions of WoW. Sorry, but there is nothing I can change in the code to fix this. Its just another one of those undocumented changes to the way WoW treats text strings in the SavedVariables files,  and if you suffer from this error, you should read the above file, that is included in the zip file.
+
+- NotesUNeed will no longer try to target Players when you create new notes or use the "Target Info" button, so target someone manually before using.
+
+- NotesUNeed will now trigger a User Interface Reload when you use the BackUp,  or Restore functionality
+
+- There are now 3 tiers of MapNotes tooltip support :
+1.) The original full support. No longer works with old versions of MapNotes as they will contain ZoneShift errors after the recent patch.  Full support including the ability to merge notes, etc. is only available with "MapNotes (Fan's Update)"
+(Including the version now included with Cosmos)
+2.) Note making support. This level of support is for MetaMap. Merging of Notes to link several NotesUNeed notes to one MapNote is not possible, but you can still create basic MapNotes via the NotesUNeed buttons.
+3.) Basic tooltip compatibility. This is basically aimed at any other Map noting AddOn such as CTMapMod, and allows the display of a NotesUNeed tooltip alongside the MapNote tooltip where the NotesUNeed note name is identical to the title of the Map note.
+
+
+
+Changes in v5.26.11200 from v5.25.11200
+---------------------------------------
+
+- Important Bug Fix for Right Click Menu Functionality
+
+
+
+Changes in v5.25.11200 from v5.10.11200
+---------------------------------------
+
+NOTE: v5.25.11200.A  is an Alternate version where the short cut key for creating notes when clicking on Items/Hyperlinks has been changed from <Alt><Shift>-Click to use <Control><Shift>-Click instead. This is mainly for players using different language clients where the pressing of <Alt> and <Shift> would result in a language change, rather than NotesUNeed functionality.
+
+- Added 60% French Localisation
+
+- Added some more Player Rating Options, such as 'KoS' for other Faction players, and generic Star Ratings to simply score your opinion of other players out of 10
+
+- Added new Right-Click Menu options for Friends/Chat/Target/Party,  enabling the quick change of a Player Rating.
+(If no note exists for a Player when you choose a Rating, a new NotesUNeed note will be created for that Player - the note will NOT be opened; Only created in the background, and your Rating of that Player saved)
+
+- New "Show Chat Tags" option. When checked, Chat messages/emotes from Players you have noted with NotesUNeed will be pre-fixed with "<NuN>". If you have saved a Player Rating for that player, then it will also be included in the Chat Prefix. For example, if you have noted another Player as a 'Ninja', then the Chat prefix will read "<NuN:Ninja>"
+
+
+
+Changes in v5.10.11200 from v5.00.11200 - Minor Release
+-------------------------------------------------------
+
+- Right clicking on Quest History now shows a Prompt window asking if you wish to delete the History record.
+(This makes sure you can always delete history, even if you don't have the original quest note)
+
+- Change to make sure Map Note links are up to date when opening the World Map
+
+- Minor MetaMap compatibility changes
+
+
+
+Changes in v5.00.11200 from v4.53.11100 - MAJOR RELEASE
+-------------------------------------------------------
+
+BACKUP & RESTORE FUNCTIONS
+==========================
+- added new "Backup" and "Restore" options. This functionality is kept under a second AddOn/folder name of "NotesUNeed_Backup", which allows it to be Load On Demand.  See the 'Backup and Restore Functionality' section of the Readme.txt file for more details.
+
+
+IMPORT & EXPORT FUNCTIONS
+==========================
+- New Export button available on the Notes Search/Browser frame. So search for the notes you want to Export, so that they appear in this frame, and then click on Export. You will be prompted for a name to call the record set you are exporting. Confirm export of the records, and you will be informed of how many notes were exported in the Chat window.
+The exported records will be recorded in the file NotesUNeed_Export.lua, in the same SavedVariables folder as your normal NotesUNeed.lua database file.
+Once you have created a set of records, then the Export button can ONLY be used to add more notes to that record set.
+If you want to delete the records you have exported and create a completely new record set with a different name, then you must use the Slash command "/purgeexport". This clears the NotesUNeed_Export.lua file in the saved variables directory, and you can then use the Export button to create differently named sets of exported notes. (Obviously if you want to save a set of exported records, then you must take a physical copy of the NotesUNeed_Export.lua file, before using the "/purgeexport" command.)
+The Export function is kept under a second AddOn/folder name of "NotesUNeed_Export", and is Load On Demand.
+
+- In order for another user to Import the notes you created, they need to copy your NotesUNeed_Export.lua file in to the NotesUNeed AddOn folder on their computer. (i.e. NOT their SavedVariables folder).  In order to do this, they will have to replace the existing NotesUNeed_Export.lua file that already exists in their AddOn's folder.  i.e. \WoW\Interface\AddOns\NotesUNeed\NotesUNeed_Export.lua
+
+- New Import button available on the Options frame. This will only be available for use if the user has a NotesUNeed_Export.lua file in their AddOn directory which contains notes available for Import. NotesUNeed_Export.lua is blank when you first install NotesUNeed.
+When the user clicks on the Import button, they will be prompted with a general name identifying the set of notes available for Import, together with the number of records that will be imported, and will be offered the choice of continuing to Import, or cancelling the action. If they click on Import, then they will receive a message in the chat window informing them of the number of records that were imported.
+NOTE: Imported records are all saved at Account Level, and will overwrite any notes that already exist with that name.
+Please see the Import/Export section of the Readme.txt file for further details
+
+- NOTE : You can't export Contact notes or Quest History. Only General Notes.
+
+
+GLOBAL FRIEND/IGNORE LISTS AND AUTO-NOTING
+==========================================
+- Completely re-written the optional Global Friend/Ignore List Maintenance functionality
+So for example, when you ignore one person on one Alt, then NotesUNeed will automatically try to ignore that person when you sign in to another Alt. By default NotesUNeed will send a message to the Chat frame informing you of when it is adding/removing Friends/Ignores. New "Silent Mode" option is available, if you wish to suppress the extra messages created when NotesUNeed adjusts your lists.
+You may find that NotesUNeed continues to try and adjust a Friend/Ignore when you log in - this is usually caused by trying to ignore someone who is not online, which therefore fails, and NotesUNeed will try again next time you log in. There are several aspects of this issue to consider :
+1 - You can use "Silent Mode" so you don't have to see the messages
+2 - If you prefer not to use "Silent Mode", so you can keep an eye on what's happening, but you are tired of trying to ignore someone who never seems to be on line, then check the extra Messages NotesUNeed is displaying to see the name of the Player NotesUNeed is trying to ignore, and do one of the following :
+    a.) sign in to your Alt that IS ignoring the named player, and stop ignoring them
+    b.) use the new "/nun -i <Player Name>"  command to force NotesUNeed to stop trying to ignore the named player
+3 - sometimes your NotesUNeed friend and ignore lists can be corrupted by Deleting one of your Alts which had Friends/Ignores that your other Alts were not aware of yet  OR  when a character on one of your lists is Deleted from the Server, and NotesUNeed keeps trying to refer to them.
+In these cases, you will have to use the new "/nun -i <Player Name>" function.
+When you use the "/nun -i <Player Name>" option, then if you log in to an Alt that IS ignoring that Player, NotesUNeed will remove them from that Alt's Ignore list automatically.
+Note that just in case your Friends data should become corrupted, there is also a corresponding "/nun -f <Player Name>" function which will force a player to be removed from the NotesUNeed friends list.
+If you wish to reset your Friends/Ignore lists to the current Friends/Ignores of the Alt you are currently logged in to, then there is a third slash command option "/nun -resetlists"
+If using NotesUNeed to maintain Global Friend/Ignore Lists, then you will be unable to Delete Notes for people on these lists.
+(Please note that due to the reasons mentioned earlier, it may be possible that you won't be allowed to delete a note if NotesUNeed thinks they are a Friend or Ignore, even if that person is not currently on your Friend / Ignore list - use the "/nun -i..." or "/nun -f..." slash commands to correct if needed)
+
+- Changed the functionality of the "Auto-create note when Adding Friends/Ignores" option. It will no longer ensure that ALL your Friends and Ignores have notes, and will only do what it says, which is to make sure a note exists for an individual when you add them as a friend or ignore.
+This option is mandatory if you are using the new option to use NotesUNeed to maintain global Friend/Ignore lists. This option will be automatically checked if you use NotesUNeed to maintain global Friend/Ignore lists, and you will be unable to un-check it.
+
+
+CHANGE TO AUTO-LEVEL-UP NOTING
+==============================
+- if you have turned on the ability to auto-create notes for your own character, then when you level up, NotesUNeed will create a new General style note with a name based on your character's name and the level they have reached. For example, if you have a character called "Bigbadguy" and you have just reached level 52, then NotesUNeed will create a note called "Bigbadguy 51 - 52", and this note will contain the date and time when you levelled, plus your characters location on the map, and the Stat increases that they have been rewarded with for reaching that level.
+
+
+MISCALLANEOUS
+=============
+- compatibility update to support upcoming release of "MapNotes (Fan's Update)"
+MapNotes (Fan's Update) supports the making of notes on Atlas  and/or  AlphaMap Instance/Battleground/World Boss maps, plus movable notes, search feature, bug fixes and more.
+
+- Hyperlinks pasted in to notes will now be inserted at the Cursor position, rather than added to the end of the note
+
+- Improved support for Enchant Links in the text. Note that you can create Enchant notes, or past Enchant links in to your notes by Shift-Alt clicking on the Enchant Links within the Chat Frame. Enchant Links will now be copied to the chat frame when you use the "[]" (Hyperlinks) button in the top right of General Note frames; And Enchant Links should now Transmit properly to other users when you send them notes. Note that as part of the changes to support Enchant hyperlinks, all links are now transmitted to other users on seperate lines.
+(Sorry, no support for directly pasting from the Enchant frame, but you can Shift click Links in to the Chat frame, and then Alt-Shift click the link in to NotesUNeed notes)
+
+- Fixed a bug when searching Player notes by Class or Profession
+
+- automatic creation of Party Notes is now suppressed when in Battlegrounds, as many if not all BG players (in AV especially) will be from different Realms.
+
+- prevent the creation of Contact notes with the name "Unknown" (or localised equivalent)
+
+- Added a 'Mass Delete' button to the Note Browser frame, so you can search/filter for notes you want to delete, and remove them more easily
+
+- Change to the auto-Map Noting of Quest NPCs to ensure more reliable recording
+
+
+
+
+Changes in v4.53.11200 from v4.52.11100
+---------------------------------------
+
+- .toc update for latest WoW patch
+- double check that should fix Faction problems for Horde players 'stuck' in Alliance mode
+
+
+Changes in v4.52.11100 from v4.51.11100
+---------------------------------------
+
+- Fixed the compatibility issue with MetaMap
+- Made sure the NotesUNeed map tooltip closes when the map is closed
+
+
+Changes in v4.51.11100 from v4.50.11100
+---------------------------------------
+
+- Fixed the 6169 error which can happen when showing the tooltip
+
+
+MAJOR RELEASE - PLEASE read about the changes made in this version
+
+Changes in v4.50.11100 from v4.12.11000
+---------------------------------------
+
+Fixed Rare Crash On Exit Bug
+----------------------------
+- Fixed the rare Crash On Exit bug and proved beyond all reasonable doubt that it is a Blizzard bug, and NOT a NotesUNeed bug ;p
+Proved by the fact I can manually enter new notes in other note taking AddOns that will cause WoW to crash. As a result of the solution I have implemented, you should not use the following 3 character pairs in your notes, as NotesUNeed will interpret them as special characters :
+"¬n"
+"¬s"
+"¬q"
+For more technical details plus a special caveat, see the secion called "Crash On Exit Solution" section of the Readme.txt file.
+DUE TO THIS CHANGE, TRANSMISSION OF FORMATTED NOTES TO USERS OF EARLIER VERSIONS OF NOTESUNEED MAY YIELD UNPREDICTABLE RESULTS !
+
+
+
+Send Note Changes/Enhancements
+--------------------------------------
+- Added the ability to send notes to Chat Channels via a new choice and Drop Down box in the 'Send Note' frame. Please Note the following :
+1.) When transmitting Un-Formatted notes to a Channel, the NotesUNeed prefix will NOT be transmitted, and NEITHER will the notes name/title. So if you want the notes name to be tranmitted, then you should repeat it at the top of the note's text. This means you shouldn't spam public channels with unnecessary details when you were just trying to broadcast a WTS list to the Trade channel for example :)
+2.) You are not necessarily subscribed to the channels listed in the 'Send Note' frame and/or activity on a channel may not necessarily be reported to the default chat frame, so if nothing seems to happen when you 'Transmit' to a channel, please make sure you have 'Joined' that channel, and that its Output is reported in the Chat frame you are looking at.
+
+- Fixed a minor problem where NotesUNeed could not include embedded Informant Tooltip information in notes sent to other users/channels.
+
+- When transmitting notes, NotesUNeed now leaves WoW to define the default languages as problems were reported on other language clients
+
+- Fixed a small bug in Error Log notes when non-critical errors happen during the transmission of NotesUNeed notes
+
+
+
+Changes to Text Search Functionality
+------------------------------------
+- Changed the Text search functionality. (Also fixed an issue where the search could be ignored).  Basically, text searching is now case-insensitive.  However, if you need to carry out a Case-sensitive text search, then open the note browswer frame, enter the text you wish to search for and <RIGHT>-Click on the Search button.
+
+- Added a label beneath the text search box to show more clearly when you have carried out a two-tiered text search. See the "Text Searches" section of the Readme.txt file for more details.
+
+
+
+Changes to MapNoting Functionality
+----------------------------------
+PLEASE NOTE THIS VERSION OF NOTESUNEED HAS BASIC SUPPORT FOR ANY MAP NOTING ADDON, AND CAN DISPLAY NOTES WHENEVER THE NAME OF THE NOTE AND THE FIRST LINE OF THE TOOLTIP ARE IDENTICAL
+
+- Added support for AlphaMap to allow the display of merged map note lists.  This has required a small change to the way that the WorldMap is displayed, and it may now be possible for the user to see certain windows over the WorldMap. e.g. the Titan Panels
+
+- Enhanced the MapNotes support. NotesUNeed will now try to create relationships between NotesUNeed notes and MapNotes with the same name. It will do this when you log in, and after you create/edit MapNotes, or create/edit NotesUNeed notes. Up to 5 NotesUNeed notes can be related to one MapNote. For example, if you want to link the NotesUNeed notes "Note A", "Note B", and "Note C" to a MapNote on the map, then create a new note with the mouse as usual (OR change the name of an existing note), and specify the new name of the note as "Note A | Note B | Note C". NotesUNeed will detect that 3 NotesUNeed notes are linked to that Map note. i.e. specify the note names separated by " | " (space, pipe symbol, space).  After a link has been created, then the map note title can be edited to something else if you like and the link will remain (but will not be automatically recreated if anything should break the link, like manual deletion - see next note )   This feature means that you can now manually link NotesUNeed notes to any MapNote you like :)
+
+- Small change to the way the buttons work in the merged map note lists. A normal left click will now open the note; But Alt-Right clicking is still required to delete the relationship between the NotesUNeed note and the MapNote. (N.B. : if you don't want NotesUNeed to automatically re-create the relationship, then you should add an extra space to the MapNote title text, or edit it to be slightly different to the NotesUNeed note name (or change the NotesUNeed note title)
+
+- Fixed an issue with more recent versions of MetaMap where the Merged NotesUNeed Map notes frame would disappear immediately, rather than allowing the user time to inspect the different NotesUNeed notes associated with that Map note.
+
+- Updated the MetaMap noting support for German Clients. The correct zones should be detected again now.
+
+- Fixed an issue when deleting notes in MetaMap, which would cause the relationship between the remaining Map notes and NotesUNeed notes to be corrupted
+
+- Added the ability for NotesUNeed notes to maintain their relationship with MetaMapNotes after a MetaMap Zone Shift has been executed. (Minimal testing as MetaMap's ZoneShifting was falling over)
+
+- Fixed a problem when the user tries to merge more than 5 NotesUNeed notes in one Map Note
+
+
+
+Miscallaneous Changes/Fixes
+---------------------------
+- Added support for TipBuddy ( Please don't complain about slight overlapping of Rank symbols with the NotesUNeed tooltip - I have only so much time before I die ;p  )
+
+- Added the ability to Right-Click on notes in the Note browser frame to directly toggle the Pin Up Tooltip for that note. Left-Clicking still toggles the Note itself, and Shift-Clicking will paste the notes name in to the Chat frame edit box, or another open note.
+
+- Pinned up tooltips will now be automatically updated if you alter and save their underlying note
+
+- Updated the Sex determination code, so player and NPC sexes are correctly determined again
+
+- Removed a check on the number of 'carriage return' characters in notes as more seem to be supported by the WoW Edit boxes now (although certain circumstances do still seem to result in 'excess' text being replaced by the "..." symbol - this is WoW edit box functionality, so please don't complain to me ;)  )
+
+- Fixed a problem when noting NPCs in BattleGrounds which started after patch ?? (Especially with Auto-MapNoting turned on)
+
+- Various small changes for code clarity/efficiency
+
+
+
+
+Changes in v4.12.11100 from v4.12.11000
+---------------------------------------
+
+- Simply a toc update
+
+
+
+Changes in v4.12.11000 from v4.10.11000
+---------------------------------------
+
+- Fixed another compatibility issue with the latest version of MetaMap when making map notes.
+
+
+
+Changes in v4.11.11000 from v4.10.11000
+---------------------------------------
+
+- Fixed a compatibility issue with the latest version of MetaMap when making map notes.
+
+
+
+Changes in v4.10.11000 from v4.01.11000
+---------------------------------------
+
+- Added the ability to run NotesUNeed notes as Lua scripts/macros via a new slash command "/nun -x <Note Name>"
+- Or use the NuN_ExecuteNote("<Note Name>") function. This function can be used within Notes to link them together and build complex functionality from separate scripts.
+- Fixed a bug which was stopping Replacement of the old version of a note, when manually entering an identically named note.
+- Stopped the system message spam when transmitting Guild/Party/Raid notes when not in a Guild/Party/Raid
+- Fixed a problem with searching for a Note with an Item Link title, when a duplicate note is sent to you
+- Added Receipt Logging, so NotesUNeed will keep details of the last 9 Notes that have been sent to you
+- Some small changes to stop introduction of a new line to the start of received notes, and try to prevent any possible line duplication
+
+
+
+Changes in v4.01.11000 from v4.00.11000
+---------------------------------------
+
+- Extended the compatibility fix for the Extended Quest Log AddOn
+- Changed maximum note length to 6006 characters. This is a result of an attempt to avoid the rare bug in WoW which can cause it to crash on exit ;p
+
+
+
+Changes in v4.00.11000 from v3.21.11000
+---------------------------------------
+
+NEW FEATURES IN v4
+------------------
+
+The most significant change in this release is the ability to add notes that people send to you, to your own NotesUNeed database.
+
+- Formatted notes sent to you from other NotesUNeed users will now be re-built and added to your own NotesUNeed database
+- Both sender and receiver must be using v4.00 or later of NotesUNeed in order to create notes from received data, and the sender must check for the note to be Formatted
+- Note that Hyperlinks in notes can be sent OK, but that coloured text can not, so any coloured text in a note that you send will appear as simple white text in the note of the person you send it to.
+- Added the option to remove NotesUNeed formatting 'gunk' when sending notes to other players. The receiving player(s) will not be able to add the note to their own NotesUNeed database, but they will see the text of the note.
+- Added a new General note type "LUA Scripts".  So you can now keep an organised database of Lua Scripts, that can be listed separately.
+- Added a new Drop Down box in the Character note frame where you can specify someone's style of Party play. e.g. Good party member, Ninja looter, etc.  When populated, this information will be displayed in the NotesUNeed tooltip.
+- New key binding to open the Browse All Notes frame
+- If you have auto noted people you party with,  the number of times you have partied with someone will be displayed in the Note browsing frame
+- Added a standard Close button to the top right of the Options frame
+
+
+CHANGES TO EXISTING FUNCTIONALITY IN v4
+---------------------------------------
+
+- Prevented the display of the "Player not found." message, when NotesUNeed tries to ignore a player that is not currently on line.
+- WoW version 1.10 has changed something in the way that the ItemRef tooltip works, and due to this NotesUNeed can no longer identify the slot in which equipment belongs, when listing a contact's equipment via the Target Info button.
+- Also due to the ItemRef tooltip changes mentioned above, WoW 1.10 broke the population of an Items details when creating notes via <NuN Modifier>-Clicks on Hyperlinks in the chat frame.  NotesUNeed v4 has fixed this, although you may see the ItemRef tooltip flash up briefly on screen, when making notes via this method.
+- When you enter the "/nun" command followed by some text, if NotesUNeed can not find a note with the specified name, or a Target with that name on which to base a new note, then the Notes search frame will be opened and any notes containing the text will be listed. You can still type "/nun" on its own to open the Options frame. Basically, this allows you to search for some text in NotesUNeed notes quickly from the command line
+
+
+BUG FIXES IN v4
+---------------
+
+- Fixed a compatibility issue with the Extended Quest Log AddOn.
+- Fixed a note overflow error that can occur for repeatable Quests, causing corruption and loss of the NotesUNeed database
+- Fixed the error occuring when attempting to create MapNotes in Instances
+- Fixed a couple of small German localisation errors
+- Fixed the heading in the Send Note frame
+- Fixed a potential problem when creating notes from NPCs when the server is slow to respond - simply prevents the display of the error, as I can't fix a slow server ;p
+- Fixed the rare 'Crash on Exit' bug introduced in WoW v1.10  This fix has resulted in a maximum note text length of 6000 characters, rather than the previous 5012, but the size of your NotesUNeed database will not increase (unless you make use of this extra space and add to the text of your notes).
+- Fixed the problem of NotesUNeed World Map Tooltips not displaying in Instances for users of MetaMap
+
+
+
+
+
+
+Changes in v3.21.11000 from v3.21.1900
+--------------------------------------
+
+- Simply updated the toc file for latest WoW version 1.10
+
+
+
+Changes in v3.21.1900 from v3.20.1900
+-------------------------------------
+
+- Fixed the problem of NotesUNeed notes linking to the wrong Map Notes, after deletion of a Map Note
+- Fixed a Map Noting reporting error affecting users of MetaMap in locations where /quicknote will not function
+- Adjusted Variable Initialisation for people upgrading from v2.50
+
+
+
+
+Changes in v3.20.1900 from v3.16.1900
+-------------------------------------
+
+- Full MapNotes functionality now available to users of MetaMap. ( WorldMapTooltip can be scaled from NotesUNeed by clicking on the double-A button in the top right of NotesUNeed frames )
+- Improved the ability to "re-link" NotesUNeed notes to existing WorldMap notes containing the name of the NotesUNeed note
+- Adjusted Map Noting functionality to display the NotesUNeed note list frame even for single notes.
+
+N.B. - remember that Alt-Clicking on a particular note's button in the NotesUNeed note list frame on the WorldMap will close the WorldMap and open the NotesUNeed note for editing; And Alt-Right Clicking will delete the link between the Map Note and the NotesUNeed note.
+
+N.B.2. - NotesUNeed notes will still display if the WorldMapTooltip text is equal to the name of a NotesUNeed note. So Map Notes created independantly of the NotesUNeed note of the same name, can still cause the NotesUNeed tooltip to display on the World Map.
+
+- Updated the scaling of Frames, Tooltips, and WorldMap Tooltips - you may need to re-adjust your scaling once after installing this update.
+- Options Reset will now restore frames to their original positions
+- Ensured the "Confirm Save at Account Level" frame is displayed even when trying to save without displaying the note, IF a Realm conflict exists.
+- Fixed the display of Realms list in the "Confirm Save at Account Level" frame.
+
+
+NOTE ON UPGRADING FROM MapNotes TO MetaMap
+------------------------------------------
+This warning message refers only to the links between NotesUNeed notes and MapNotes.  i.e. where you have used NotesUNeed to merge several notes on a single MapNote, resulting in the NotesUNeed note list frame being displayed on the WorldMap.
+
+You will NOT lose any MapNotes, or MetaMap Notes, or NotesUNeed notes by upgrading to this version of NotesUNeed.  But the database links between NotesUNeed notes and MapNotes are at risk unless you take the following advice.
+(As per normal functionality, even if links between NotesUNeed notes and MapNotes have been lost, if a MapNote has the same name as a NotesUNeed note, then the NotesUNeed tooltip will still display on the WorldMap when the WorldMap Tooltip displays.)
+
+The Advice :
+If you are moving from MapNotes to MetaMap and you wish to keep links between NotesUNeed notes and MapNotes, then you MUST keep MapNotes installed the first time that you run WoW with MetaMap installed.  i.e. you must follow the author of MetaMap's advice on how to migrate your MapNotes in to MetaMap. However, to ensure that you keep links between NotesUNeed notes and MapNotes, you MUST run both MetaMap and MapNotes at the same time the FIRST time that you run MetaMap; After which, you may uninstall MapNotes and forget about it.  If you uninstall MapNotes, and run MetaMap without it while NotesUNeed is installed, all links between NotesUNeed notes and MapNotes will be lost.  You may find that you can still go back and run MetaMap and MapNotes together to import your MapNotes in to MetaMap, BUT you will NOT be able to recover the links to NotesUNeed notes.
+However, if you follow this advice, then you should notice no difference in the information being displayed when you start to use MetaMap, and all MapNotes and NotesUNeed tooltips should display as they did before.
+
+
+
+
+
+
+
+Changes in v3.16.1900 from v3.15.1900
+-------------------------------------
+
+- Fixed the Auction House display of the NotesUNeed tooltip
+(The display of the NotesUNeed tooltip in the Auction House can appear a little 'dislocated' sometimes. i.e. after viewing an item such as a ring, which has also displayed 2 additional tooltips showing currently equipped items.  Unfortunately, there doesn't seem to be much I can do about this at present, as I don't seem to be able to reliably determine when the extra tooltips are visible or not.  Basically, seems to be another quirk in the Blizzard UI that I can't explain. Anyway, I judge it to be a minor glitch, rather than a bug, so have not spent any more time on it. If anyone has a technical solution, let me know by e-mail please. )
+
+
+
+
+Changes in v3.15.1900 from v3.12.1900
+-------------------------------------
+
+- Removed MapNotes version validation; No longer supported by original author so not much point. MapNotes is being updated in Cosmos.
+This should remove the constant warning about the MapNotes version if using the Cosmos 1.9 compliant version.
+
+
+
+
+Changes in v3.12.1900 from v3.11
+--------------------------------
+
+- Fixed the error when mousing over units on the Minimap (should fix other mouseover errors)
+
+
+
+
+Changes in v3.11.1900 from v3.10
+--------------------------------
+
+- Fixed the error messages occurring when viewing Guild Members
+- Increased the maximum scale of the Frames to 175%
+
+v3.10.1900 released in response to WoW v1.9
+
+
+
+
+Changes in v3.10.1800 from v3.00.1800
+-------------------------------------
+
+- Changed the way that the NotesUNeed tooltip is displayed in relation to the GameTooltip
+- Alt Click on the Contact Microbutton to re-open the last Contact Note you had open
+- Alt Click on the General Microbutton to re-open the last General Note you had open
+- Key-binding to re-open the last note you had open, whether it be a Contact Note or a General Note
+- In the NotesUNeed Search/Browse frame, Quests that are in your current character's Quest Log are now coloured Green
+- In the NotesUNeed Search/Browse frame, Quests that your current character has abandoned are now coloured Red
+- Some minor performance improving changes
+- Fixed some minor FrameXML errors being reported, but which had no functional impact
+
+(Tip: Don't forget that Shift-Clicking the Contact Microbutton will create a note for your current target without opening the note; A key-binding also exists for this functionality.)
+
+
+
+
+Changes in v3.00.1800 from v2.51.1800
+-------------------------------------
+
+New Functionality in v3.00.1800
+-------------------------------
+
+The most significant change this version is integration with MapNotes - please see the MapNotes section of the Readme.txt for a detailed explanation. Currently, only tested with v1800.7 of MapNotes stand alone AddOn.
+Highlights for ALL new features are as follows :
+
+- Added the ability to generate MapNotes from Generic NotesUNeed Notes
+- Added ability to automatically create a MapNote when noting NPCs.
+- Added ability to auto MapNote Quest Giver NPCs when Accepting Quests
+- Merge up to 5 NotesUNeed notes in one MapNote; new tooltip style frame displays list of all MERGED NotesUNeed Notes; Mouse-over to view individual NotesUNeed tooltips
+- Alt-Left Click on a MERGED NotesUNeed map Note to close the WorldMap and Open the Note for editing.
+- Alt-Right Click on a MERGED NotesUNeed map Note to delete the reference to that Note from the Map Note ( This does NOT delete the actual NotesUNeed Note OR the MapNote - it only removes the link between the MapNote and the NotesUNeed note so that the NotesUNeed note is no longer listed against this MapNote. )
+- Added ability to scale up/down the WorldMap tooltips
+- Can now see NotesUNeed tooltips for your character and party members on the WorldMap or Minimap
+- Auto Note creation options are now set to "Off" by default to prevent creation of unwanted notes at first install
+- Shortcut Hyperlink access by sending a list of the Hyperlinks within a Note to the Chat frame where they can be clicked upon. New button with "[]" symbols in top right cluster of buttons in Note Frame.
+- Added a Shift-Alt Click ability to paste Hyperlinks in to Open NotesUNeed notes. If NO NotesUNeed note is open, then Shift-Alt-Clicking will open/create a note just as in earlier versions, but if a NotesUNeed note frame is already open, then the Item link will be pasted in to the text of the open note. If you have both a Generic Note and a Contact style note open at the same time, then by default, the Hyperlink will be pasted in to the Generic note's text.
+- NPC Level "??" noted as such, instead of as -1
+- Stopped the attempts to Ignore people who are on an Infinite Ignore AddOn list
+
+
+Bug Fixes in v3.00.1800
+-----------------------
+
+- Adjusted the positioning of many of the tooltips
+- Fixed a problem when creating a note for a Quest History entry whose associated Quest Note had been deleted
+- Fixed a couple of minor error messages that had no functional impact
+
+
+
+
+
+
+A Note on Moving between NotesUNeed Versions
+--------------------------------------------
+
+When upgrading to a new Version, or downgrading to a previous Version of NotesUNeed, please completely move/delete the NotesUNeed directory, before installing the alternate version. Do NOT simply rely on Overwriting previous files - for example, v1.11.1800 has an extra German localistion file that has not been designed for v2.xx.1800, and you leave it in place at your own risk. Similarly, if you are moving back to any v1.xx.1800 release from a v2.xx.1800 release, then there is a Bindings.xml file pointing to functions that do not exist in the earlier version.
+Unzip overwriting one version in to another versions directory may not remove these extra files, which might cause unexpected errors - so please completely remove NotesUNeed from the Game's Addon folder before installing another version.
+
+(btw, if you have created Account level notes in a v2.xx release and want to be able to see them in a v1.xx release you will have to resave them at Realm level. I am not going to guarantee that it is perfectly safe to move back to v1.xx after creating Notes with v2.xx, but I have found no problems so far, and any extra fields should simply be ignored - resaving Notes may result in the loss of some v2.xx fields and data, which you would no longer be able to see if you moved up to v2.xx again.)
+
+
+
+
+
+
+Changes in v2.52.1800 from v2.51.1800
+-------------------------------------
+
+- Fixed a problem based on Class Trainer Frame not existing
+
+
+
+
+
+
+Changes in v2.51.1800 from v2.50.1800
+-------------------------------------
+
+- Fixed the Game Freezing Issue on Login
+- Fixed a problem with Quest Stage text being added to an existing Quest Note
+- Prevented manual creation of a Quest History entry until a Quest Note is manually saved
+- Added the name of the Targetted NPC and current location when accepting/handing in Quests
+
+
+
+
+
+Changes in v2.50.1800 from v2.04.1800
+-------------------------------------
+
+- Improved the Searching feature to allow for text searching within filtered note sub-sets. (Including 2 tiered text search - please see Text Searches section of Readme.txt)
+- Added Automatic Party Member Note Creation and count of how many times you party with a contact; Plus takes acount of logging on/off, and presence in Raid Groups to avoid repeated counting when joining someone already in your Raid group; Plus, added a button to manually reduce/reset the Party count.
+- Changed Text Edit Box behaviour, to allow for movement while edit boxes are up. Controlled by a new CheckBox Option. When Checked, pressing Escape while Editing a note's Text, will lose focus, and allow you to move and interact with WoW, while the notes Edit Frame is Open. Pressing Escape again will close the note. The downside is that all NotesUNeed frames will then work off the same press of the Escape key, and pressing Escape to close a Frame will close both General and Contact note Frames and the Search Frame.)
+- When the Merchant Frame is up and you have that merchant targetted, the NPC information gathered will include a list of that Merchants goods for sale and prices.
+- Can now Alt-Click on Items in the Auction House to Create/Edit a NotesUNeed note on them (Shift-Alt-Click which is the standard NotesUNeed way of noting items will not work in the Auction Frame, so Alt & Click only, no Shift ) Please ensure you are over the Picture of the item and the Game Tooltip is showing before AltClicking, otherwise, the note created may be for the incorrect item. Please don't report this as a bug ;)
+- Added an option to only show a minimised version of the NotesUNeed tooltip when you mouseover a target
+- Added a Delete confirmation box. Must press <Enter> or click on confirmation Delete to delete a note. Can click on confirmation Cancel or press <Escape> key to cancel the delete. ( This is not controlled by an option - but I have tried to ensure that you should be able to press Escape/Enter to Cancel/Confirm the Delete; Note that if you shift focus to another Edit Box on screen while the Delete confirmation Frame is visible, then Escape and Enter will be captured by that Edit Box, and will no longer control confirmation/cancellation of note deletion. )
+- Addressed an issue which may have been causing the game to freeze/hang on a small number of installations
+
+GERMAN LOCALISATION
+-------------------
+- Included German Localisation, with Slash command functions to patch Notes saved in the English Version. See the Patching NotesUNeed Language section of the Readme.txt.
+
+
+
+
+
+
+
+
+Changes in v2.04.1800 from v2.03.1800
+-------------------------------------
+
+- Fixed the issue of the Right-Click drop down menu not appearing in the Friend's Frame, when a NotesUNeed Contact note is open.
+
+- ( Internal : standardised ALL function hooking )
+
+
+
+
+
+Changes in v2.03.1800 from v2.02.1800
+-------------------------------------
+
+- Fixed a problem that can cause a corrupted NotesUNeed database when transmitting very large Notes via the Send Note functionality
+(Please be aware that as well as the character limit in Text boxes, there also appears to be a WoW limit of 110 new line characters. If a note contains more carriage returns than this limit, then text AFTER this limit will be replaced by "..." on screen. I believe the text you enter is still recorded in WoW, but it is no longer visible. This seems to be a WoW Edit Box limitation, and I can't do anything about it so please don't ask ;)
+
+- Added Version number to Options Frame
+
+
+
+
+Changes in v2.02.1800 from v2.01.1800
+-------------------------------------
+
+- Pin Up NotesUNeed Tooltip will still display even when all other NotesUNeed tooltips have been turned off. So Mouse-Over dynamic tooltips will NOT display unless you check the option, but you can still see the pin up tooltip which only shows when the static Game Tooltip shows, or you manually Pin a note's tooltip to the screen.
+
+
+
+
+Changes in v2.01.1800 from v2.00.1800
+-------------------------------------
+
+- The Tooltip checkbox/slash command now toggle ALL NotesUNeed tooltips, not just the help tips.
+- New slash command and key binding for toggling the display of the Micro buttons  ( /nun -micro )
+
+
+
+
+
+Changes in v2.00 from v1.08
+---------------------------
+
+
+Please Note every effort has been made to ensure that you will lose no notes or data by upgrading to Version 2 which is fully compatible with the previous version's notes, even with all the extra functionality and the extension to cover new note sub-types. However, I would still strongly advise that you back up your NotesUNeed.lua data file from the Saved Variables directory under your Account name in the WoW game folder, as I can not foresee all possible conflict issues, and if you have problems, your existing NotesUNeed data may be at risk.
+
+
+New Functionality in v2.00
+--------------------------
+
+- Can now create Notes for  TARGETTED NPCs by clicking the Contact Microbutton (or typing    /nun -t   when you have an NPC targetted)
+
+- Can now create Notes for Items by Shift-Alt-Clicking on Items in bags, or the character sheet, or Hyperlinks in the Chat Frame. See the Item Notes section of the Readme file.
+
+- Can now create Notes on Quests in the Quest Log - See the Quests section of the Readme for further information
+
+- New Buttons and Note Tooltips in the Friends, Ignores, Who, both Guild Panels, and the Quest Log Frames.
+
+- NotesUNeed mouseover tooltips for Player Characters, NPCs, and Items.
+
+- Can pin a NotesUNeed Tooltip to the screen so that information from that note is easily available while you play. This static tooltip also appears if you Shift-Click an item in the Chat frame that has a NotesUNeed note.
+
+- Can control the size of the NotesUNeed Tooltip from the Options Frame and control the contents of the NotesUNeed tooltip. See the NotesUNeed Tooltips Section of the Readme file.
+
+- Can now create Player Character Notes by Shift-Alt-Clicking on Player names in the Chat Frame.
+
+- Can now create Player Character Notes from the command line for any character name without validation. See the Command Line and Creating Player Notes sections of the Readme file.
+
+- Set NotesUNeed to automatically record Quest Notes and Quest History for your characters - See the Quest section of the Readme for further information
+
+- Can now change the name of General Notes. ( You will not be allowed to change the name if a note already exists with that name )
+
+- Can now save General Notes at account level to be viewed by your Alts from any server/realm. Set the default save level in the Options
+
+- Can now send your NotesUNeed notes via chat channels to Raid, Party, Guild, Say, Whisper, Self.  A log of the last ten transmissions with a datestamp is kept via a new NotesUNeed Log type note, viewable in the search frame like any other Note. See the Send Notes Section of the Readme for further details.
+
+- Filter your notes by any of the new Note types, Item Notes (ITM),  NPC Notes (NPC), Quest Notes (QST), Logs (LOG), or generic notes without any type. ( Obviously notes from previous versions will fall in to this last category, but it is possible to change a Notes type, and reclassify your existing notes )
+
+- Browse your Quest History, including details of when and where you accepted, completed, and handed them in.
+
+- When creating a note from a targetted Player Character (of your Faction), the Players equipment will be displayed in the new note.
+
+- The NotesUNeed Frames and tooltips can now be scaled and moved.
+
+- Key bindings have been added for toggling the Options screen, and for Capturing a NotesUNeed note for the current target without opening a Note Frame. This can also be achieved by Shift-Clicking the Contact Microbutton while targetting something.
+
+- The Search Frame now displays extra information about notes, including the type; A tick beside a note indicates it has been saved at Account Level. This frame now shows the number of notes being displayed in the header. ( These rules differ slightly when viewing Quest History - see the Quests secion of the Readme )
+
+- The Note editing windows display the number of characters used from the maximum available in the lower right hand corner of the scrolling edit box.
+
+- Shift Click on a note in the Search Frame to output its title to the Chat message box
+
+- Raid Frame Support ( No individual Raid Member buttons, but click on a Raid member in the Raid Frame and then click on the NotesUNeed  Button at the left end of the Friends Frame header to create/edit that player's note. Also, NotesUNeed tooltips will show when Mousing over Raid Members in the Raid Frame, or Over Party member Unit Frames )
+
+- Limited support for Hyperlinks and Coloured Text within notes. See the Hyperlinks in NotesUNeed Notes section of the Readme file.
+
+
+
+Modifications to Functionality in v2.00
+---------------------------------------
+
+- Only import Contacts to the Friends List that are in the Friends List of at least one Alt.
+- The NotesUNeed 'Edit' Button on the FriendsFrame has been moved to a graphical button at the left side of the Frame Header.
+- Increased the maximum possible size of notes to 5056. ( This does NOT increase the size of ALL notes, or mean you are using more memory, unless you FILL the note )
+
+
+
+
+
+
+
+
+
+
+Changes in v1.08 from v1.07
+---------------------------
+
+- Fixed a problem with the Text search functionality beyond the 1012th character
+- Fixed a small graphical glitch in the Edit Details Box in the Contact Note
+
+
+
+
+
+Changes in v1.07 from v1.06
+---------------------------
+
+- Fixed the Self-Targetting Issue
+- Fixed the Levelling message to report the new Level, not the Old ( Caused by changes in WoW Patch 1.8 ? )
+- Fixed the Options Reset functionality to correctly set the Default options and refresh the Options Frame view
+
+
+
+
+Changes in v1.06 from v1.05
+---------------------------
+
+- Fixed the error message that appears on levelling.
+
+
+
+
+Changes in v1.05 from v1.04
+---------------------------
+
+- Very minor '.toc' file update for compatibility with WoW patch 1.8
+
+
+
+
+Changes in v1.04 from v1.03
+---------------------------
+
+- Very minor change to make the default position for the Microbuttons near the Top Center of the screen. The default position now has no relationship with any other frame.
+
+
+
+
+Changes in v1.03 from v1.02
+---------------------------
+
+- Note that installation of this version to replace an older version will NOT result in any loss of existing notes or data
+- Fixed the problem of Text being truncated to 1012 characters by the WoW Saved Variables limit. Up to 4048 characters can now be entered and saved
+- Stopped self targetting when exiting own note via Microbutton press
+- Minor changes to make the hiding and showing of frames more consistent
+
+
+
+Changes in v1.02 from v1.01
+---------------------------
+
+- Fixed the error being reported when logging in to a character in different Realms
+
+
+
+Changes in v1.01 from v1.0
+--------------------------
+
+- Very minor change to display a border around the Microbuttons when the mouse pointer is over the frame. Hopefully should clear up any issues new users have with moving the panel, as it is the border which needs to be clicked to move the buttons, and this border was not previously visible.

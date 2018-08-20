@@ -1,0 +1,105 @@
+------------------------------------------------------------------------
+r134 | orgevo | 2011-05-14 13:02:45 +0000 (Sat, 14 May 2011) | 1 line
+Changed paths:
+   A /tags/NotesUNeed_6.70 (from /trunk:132)
+
+** 6.70, RC1 **
+------------------------------------------------------------------------
+r132 | orgevo | 2011-05-14 06:50:26 +0000 (Sat, 14 May 2011) | 1 line
+Changed paths:
+   M /trunk/NotesUNeed/NotesUNeed.toc
+
+- incremented version number
+------------------------------------------------------------------------
+r131 | orgevo | 2011-05-14 06:48:41 +0000 (Sat, 14 May 2011) | 9 lines
+Changed paths:
+   M /trunk/NotesUNeed/NotesUNeed.lua
+
+- finished implementing first pass of the new ModifiedClick handling code, to allow NotesUNeed to interact with more areas of the default UI when it comes to linking stuff
+- all of the following features are activated by shift+Left-mouse-click on the associated control, and for some types of links (items, quests, etc.) automatically creating and opening a note for the associated data can be a accomplished with a keybind that is configured in the notes U need options panel.
+** the tradeskill trainer window now supports enhanced linking for the items crafted for each of the skills in the trainer
+** the quest log now supports enhanced linking for active quests 
+** the quest log now supports enhanced linking for quest rewards
+** the talents interface now support enhanced interaction and linking of talents or glyphs
+** the auction UI now supports enhanced linking of items from the main search tab
+
+- moved most all of the function hooks to a single function that is called after everything else is hooked up.
+------------------------------------------------------------------------
+r130 | orgevo | 2011-05-14 00:18:23 +0000 (Sat, 14 May 2011) | 2 lines
+Changed paths:
+   M /trunk/NotesUNeed/Localisation.de.lua
+   M /trunk/NotesUNeed/Localisation.fr.lua
+   M /trunk/NotesUNeed/Localisation.lua
+   M /trunk/NotesUNeed/NotesUNeed.lua
+   M /trunk/NotesUNeed/NotesUNeed.wowsln
+   M /trunk/NotesUNeed/NotesUNeed.xml
+
+- added checkbox to the custom header dialog (displayed when you click a header on the left side of the panel, when editing a contact note) that controls whether that field's value is included in the note tooltip
+- header fields that are being used in tooltips no longer display "tooltip" in the header's name (like "tooltipEmailAddress")
+------------------------------------------------------------------------
+r127 | orgevo | 2011-05-13 15:41:48 +0000 (Fri, 13 May 2011) | 1 line
+Changed paths:
+   M /trunk/NotesUNeed/NotesUNeed.xml
+
+- removed comment from script block in .xml file, as it causes WoW's xml parser to choke for some reason
+------------------------------------------------------------------------
+r125 | orgevo | 2011-05-13 15:13:31 +0000 (Fri, 13 May 2011) | 19 lines
+Changed paths:
+   M /trunk
+   M /trunk/NotesUNeed/Bindings.xml
+   M /trunk/NotesUNeed/Localisation.de.lua
+   M /trunk/NotesUNeed/Localisation.fr.lua
+   M /trunk/NotesUNeed/Localisation.lua
+   M /trunk/NotesUNeed/Modules/NUN_PratIntegration.lua
+   M /trunk/NotesUNeed/NotesUNeed.lua
+   M /trunk/NotesUNeed/NotesUNeed.toc
+   M /trunk/NotesUNeed/NotesUNeed.wowsln
+   M /trunk/NotesUNeed/NotesUNeed.xml
+   M /trunk/NotesUNeed_Backup/NotesUNeed_Backup.lua
+   M /trunk/NotesUNeed_Backup/NotesUNeed_Backup.toc
+   M /trunk/NotesUNeed_Backup/NotesUNeed_Backup.wowproj
+   M /trunk/NotesUNeed_Export/NotesUNeed_Export.lua
+   M /trunk/NotesUNeed_Export/NotesUNeed_Export.toc
+
+- updated to be compatible with patch 4.1
+- fixed note text editbox not created, resulting in unable to edit notes or view previously created notes
+- fixed position of label that displays the note's character count
+- note title editbox now respects the value of the 'use alternate editbox behavior' checkbox
+** pressing escape will no longer always cause the note to be closed without saving
+
+- fixed keybinds which use the "Alt" key not working if a note is open
+- fixed search editbox stealing focus if you cancelled editing the title of a note
+- fixed "Open Last Note" feature not working if you cancelled editing the title of a note
+
+- fixed export functionality
+** when export button is pressed, export title editbox is now focused by default
+** pressing escape in export dialog cancels the export
+** added message notifying user that exported notes aren't saved until the UI is reloaded
+
+- restore feature now warns you that a UI reload will occur as a result
+
+- restored some of code that got accidentally deleted in last change to NotesUNeed.lua
+
+------------------------------------------------------------------------
+r124 | orgevo | 2011-05-13 06:27:06 +0000 (Fri, 13 May 2011) | 1 line
+Changed paths:
+   M /trunk/NotesUNeed/NotesUNeed.xml
+
+- moved script include for PostFrameInit back to end of .xml
+------------------------------------------------------------------------
+r123 | orgevo | 2011-05-13 05:01:32 +0000 (Fri, 13 May 2011) | 1 line
+Changed paths:
+   M /trunk/NotesUNeed/NotesUNeed.wowproj
+   M /trunk/NotesUNeed/NotesUNeed.wowsln
+   M /trunk/NotesUNeed/NotesUNeed.xml
+   M /trunk/NotesUNeed_Backup/NotesUNeed_Backup.wowproj
+   M /trunk/NotesUNeed_Export/NotesUNeed_Export.wowproj
+
+- upgraded project files to AddOn Studio 2010
+------------------------------------------------------------------------
+r122 | orgevo | 2011-03-07 13:34:42 +0000 (Mon, 07 Mar 2011) | 1 line
+Changed paths:
+   M /trunk/NotesUNeed/NotesUNeed.lua
+
+- fixes for hyperlinked text
+------------------------------------------------------------------------

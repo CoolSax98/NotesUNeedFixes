@@ -1,0 +1,41 @@
+
+Importing Social Notes in to NotesUNeed is not a straightforward process.
+
+PLEASE read ALL OF the following, including the Special Notes, in order to make the process as smooth as possible :
+
+
+Basic Importing Method
+----------------------
+
+1. ) With both SocialNotes and NotesUNeed installed and enabled, log in to WoW.
+
+2. ) Use the following slash command to start the importing process :
+/nun -importsn
+
+3a.) Where a NotesUNeed note already exists for a Social Note of the same name, then the text of the Social Note will simply be appended to the existing NotesUNeed note in the background.
+
+3b.) Where a NotesUNeed note needs to be created to accept a Social Note, then you will be presented with a Dialogue box in order to choose whether the note is for a Horde, or an Alliance Player. NotesUNeed MUST know the Faction the player belongs to in order to create the note.
+Hold down the <Control> key to accept the note as an Alliance Player note
+ -OR-
+Hold down the <Alt> key to accept the note as a Horde Player note.
+ -OR-
+Cancel to skip that particular note if the Player is from a different Realm, or you can't decide
+ -OR-
+Hold down the <Shift> key and Cancel to skip all other Imports where a NuN note doesn't exist.
+i.e. NuN will still try to copy note details from Social Notes where a NotesUNeed note already exists, but will NOT try to create new NotesUNeed notes, and will therefore not ask you for any further input
+
+4. ) You should receive a report in the ChatFrame when Importing has finished
+
+
+ 
+Special Notes
+-------------
+
+IMPORTANT : NotesUNeed stores its Player Notes at Realm level, and as far as I can tell, there is no way to determine the Realm on which a Social Note was created. Therefore it will be up to you to manually skip the importing of player notes from one Realm when logged in to another.
+
+From the above, it should be obvious that wherever NotesUNeed needs to create a new note to accept SocialNote details, then you will be prompted to decide if the note is for a Horde or Alliance player.
+
+But where a NotesUNeed note already exists, then the Importing function will simply try to append the SocialNotes details to the existing NuN note without prompting.
+
+So the easiest path to importing a large Social Notes database is to prepare NotesUNeed notes in advance to accept your Social Notes. This could be done by turning on NotesUNeed auto-noting of Guild Members, and using the NotesUNeed button "Add Notes From Friends/Ignore Lists". Log in with as many Toons as possible and repeat this process to create as many NotesUNeed notes as possible, and this should hopefully minimise the number of times you will be prompted to choose the Faction when importing Social Notes.
+

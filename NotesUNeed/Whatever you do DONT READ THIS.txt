@@ -1,0 +1,911 @@
+﻿
+___________________________________________________
+
+NotesUNeed v6.68.40000 - Adrill of Eonar (US) and Orgevo of Dalaran (US)
+Originally created by Telic of Dragonblight (EU)
+___________________________________________________
+
+
+Feature-rich, searchable Notes database with many automated features, and additional NuN tooltips for viewing note details.
+
+Make Contact Notes on other Players, or General Notes on anything else.
+
+This AddOn is for making your own custom notes on players, and quests, and items, etc. and does not come with any pre-made notes.
+It does provide an Export and Import Feature for sharing of sets of notes, or publishing of note databases.
+
+There is no longer an "Alternative" version of NuN, and the default Modifier keys for creating notes from Container Items and Hyperlinks is now simply "<Alt>-Left Mouse Click". For anyone unhappy with this key-Combo, then they can now specify their own via the NotesUNeed Options frame.
+
+Below is a summary of NotesUNeed functionality, but you should read the Readme.txt file for much more detailed discussion on these subjects.
+
+
+Main Features of NuN
+--------------------
+
+1.) Create Player Notes (aka Contact Notes) :
+	- Create Contact notes :
+		a) using NuN buttons in the Friends Frame
+		b) using NuN buttons in the Looking For Group Frame
+		c) using the NuN Micro Buttons described in point 3
+		d) use the NuN Modifier when clicking on Player Hyperlinks
+			(Default "<Alt>-Left Mouse Click" but can be changed in Options)
+		e) using slash commands
+		f) via NuN options in the player context menu
+		g) Or via any of the automated methods mentioned below
+	- auto maintain Friend / Ignore Lists across different Alts
+	- auto-note people you Party with
+	- auto-note Guild members
+	- auto maintain notes on your own Characters plus Levelling notes
+	- NuN can auto-populate many details about race, class, guild, etc.
+	- Also add your own free Text notes
+	- Rate Players via Right click menu and see that Rating in Tooltips
+		or tagged to Player Names in Chat
+
+2.) Create General text notes on anything you like :
+	- Create General notes :
+		a) via the Micro Buttons in point 3 below;
+		b) via slash commands;
+		c) use the NuN Modifier when clicking on Container Items or Hyperlinks
+			(Default "<Alt>-Left Mouse Click" but can be changed in Options)
+		d) importing from a Plugin database
+		e) receiving notes in-game from other NuN users
+		f) Or via any of the automated methods below
+	- Options to auto maintain Quest Notes which will save a few kinds of notes
+		a) Quest notes that record quest details plus Quest Giver name and location
+		b) Quest progress notes which record location when completing quest objectives
+		c) Quest History detailing when a given Toon Accepted, and Completed quests 
+	- General notes can be saved at Account or Realm level
+	- Scripting - LUA scripts can be executed from General notes by :
+		a) Using the Run Script button in the frame
+		b) Slash command "/nun -x <NOTE_NAME>"
+		c) Execute one NuN Note from another NuN Note with the following command :
+			NuN_ExecuteNote("<Note Name>")
+	- General notes can be assigned the following Types for easy searching :
+		a) ITM - Item notes
+		b) QST - Quest notes, and quest objective notes
+		c) NPC - Notes made on NPCs and Mobs
+		d) LOG - NotesUNeed records Transmission logs when you send/receive notes
+		e) LUA - Keep your own in-game scripts library and execute notes like Macros
+		f)     - or just leave blank ;p
+
+3.) NuN has a MicroButtons panel with 4 buttons for quick access to features. 
+This frame can be moved by dragging the small border surrounding the buttons, and can be hidden if not needed (see slash commands). From left to right the buttons are :
+	- Options		: 	toggle the NuN Options frame
+	- Note Browser	: 	toggle the NuN Note Browser frame
+						<Alt> Left Click to browse General notes only
+						Right Click to browse Quest History
+	- Contact Note	: 	create a note for the current target
+						will create a General type NPC note if current target is an NPC
+						<Alt> Click to re-open the last opened Contact Note
+	- General Note	: 	create a General note
+						will create an NPC note if current target is an NPC
+						<Alt> Click to re-open the last opened General Note
+
+4.) Note Browser Window.
+This is where you can view the list of notes you have :
+	- default sorting is your Faction, then Opposing, then General Notes
+	- search for notes containing text you specify in the edit box
+		a) Left  click : Case insensitive search
+		b) Right click : Case sensitive search
+	- filter visible notes from the Options Frame
+		e.g. to only show Quest Notes, or NPC Notes
+	- a tick indicates a General note is saved at Account level
+	- hover over a note to see its contents in a Tooltip
+	- Right-Click to open the sticky NuN PinUp Tooltip
+	- <Shift>Left-Click to paste the note name in to open chat box
+	- After filtering and searching to narrow down the visible set of Notes, you can :
+		a) Mass delete those listed in the browser frame
+		b) Export listed notes for other players to install and Import
+
+5.) Options frame - open via the Microbuttons or slash command "/nun"
+Configure NotesUNeed here, or filter the notes to appear in the Note
+Browser frame. For example, to just look at NPC notes, or browse 
+Quest History for one of your Toons
+	
+6.) Backup and Restore functionality to save your database
+This functionality is kept in separate LoadOnDemand AddOns to save memory.
+Both the Backup and Restore processes will execute a ReloadUI()
+
+7.) Import and Export of notes Databases
+Share sets of notes with friends, or publish notes databases as a Plugin
+for others to Import
+
+8.) Broadcasting & Sending of NotesUNeed Notes
+Broadcast Raid Instructions for Boss enchounters or PvP strategy, or
+just your enchant selling menu; Or send formatted notes for other
+NotesUNeed users to add to their database.
+
+
+ ** -- SEE THE ENCLOSED README.TXT FILE FOR FURTHER DETAILS -- **
+ ** --           ON THE ABOVE FUNCTIONALITY LIST            -- **
+
+	______________
+	
+	Slash Commands
+	______________
+
+/nun   : Toggles the NotesUNeed Options window
+
+/nun -h   : Displays this list of Slash commands
+
+/nun <note title>   : Will attempt the following :
+  1. Fetch a saved Contact note with that name
+  2. Fetch a saved General note with that title
+  3. Create a new Contact note if a player of that name is in your party/raid group or is within target range
+  4. Toggles the NotesUNeed Options window
+
+/nun -t	  : Fetches the saved Contact note for the current target, or creates a new one, or shows your own characters note if no valid target. Since v2.00.1800, this command will create notes for NPCs and populate some basic information about them.
+
+/nun -g	  : Creates a new General Note, untitled.
+
+/nun -g <note title>	: Fetches the existing General note with that title, or Creates a new General note with that title.
+
+/nun -ch <name>		: Create a Horde Player Character note for the given name without validating it
+/nun -ca <name>		: Create an Alliance Player Character note for the given name without validating it
+
+/nun -tt	: Toggle NotesUNeed Tooltips on/off
+
+/nun -micro	: Toggle the NotesUNeed Microbuttons panel hide/show
+
+/nun -x	<note title>	: Tries to execute the specified note as a Lua Script. If no note exists, then will open the Note Search window
+
+/nun -i <name>	: to stop NotesUNeed trying to ignore a player
+
+/nun -f <name>	: to stop NotesUNeed trying to befriend a player
+
+/nun -resetlists	: to reset NotesUNeed's Friend/Ignore lists to those of the currently logged Alt
+
+/nun -purgeexport	: to clear Exported records and allow the creation of a newly named set of records
+
+/nun -delay [number of seconds] : transmissions to channels have a default delay between each line being sent of 0.33 Use this slash command to change this value. Will report the current value if you do not pass any seconds value.
+
+/nun -restrictwho : stops NuN from automatically trying to gather /who information
+
+
+Slash Commands for Sending Messages
+-----------------------------------
+
+/nun -sendG  "NOTE_NAME", "SEND_METHOD"[, "SEND_PARAMETER"]
+- sends General type note text
+
+/nun -sendGF "NOTE_NAME", "SEND_METHOD"[, "SEND_PARAMETER"]
+- sends General type note as Formatted text
+
+/nun -sendC  "NOTE_NAME", "SEND_METHOD"[, "SEND_PARAMETER"]
+- sends Contact type note text
+
+/nun -sendCF "NOTE_NAME", "SEND_METHOD"[, "SEND_PARAMETER"]
+- sends Contact type note as Formatted text
+
+	where -
+	"NOTE_NAME"			= the name of the note or note title
+	"SEND_METHOD"		= how to send the note e.g. "GUILD", "RAID", "WHISPER", "CHANNEL", etc.
+	"SEND_PARAMETER"	= Optionally required (i.e. who to WHISPER to -OR- the Channel ID/Name)
+	
+	NOTE: using any of these slash commands will close any currently open note.
+
+
+
+
+	__________________________________
+	
+	NotesUNeed Functionality Explained
+	__________________________________
+
+Contents :
+
+		01  Creating Player Notes
+		02  Player Notes & User Definable Buttons
+		03  NuN Modifier Key Combo
+		04  Colours in NuN Notes
+		05  Item Notes
+		06  Hyperlinks in NotesUNeed Notes
+		07  Sending Notes with NotesUNeed
+		08  Automatic Friend/Ignore List Maintenance
+		09  Note Deletion
+		10  Backup and Restore Functionality
+				- And a note on Memory Usage
+		11  Export and Import Functionality
+		12  Text Searches
+		13  Quest Notes and Quest History
+		14  NotesUNeed Tooltips
+		15  MapNotes
+		16  MapNotes-NotesUNeed Tooltip Functionality
+		17  NuN & Who Information
+		18  Noting the names of another Player's Alts
+		19  Party Auto-Noting
+		20  Player Rating
+		21  'Set Focus' / 'Clear Focus' Taint
+		22  Talent Information Recording
+		23  Functions Designed for other AddOns to Interact with NotesUNeed
+		24  Reserved Character Sequences
+		25  Legacy Crash On Exit Solution
+		26  Notes & Troubleshooting
+
+
+
+
+01 Creating Player Notes
+------------------------
+
+A player note can be created for any name without NotesUNeed validating the player name using dthe following commands :
+/nun -ch <name>   for a Horde character note
+/nun -ca <name>   for an Alliance character note
+
+(the original    /nun -g <notename>    still exists for creating General Notes - it is recommended that for creating NPC notes you first target the NPC and use the    /nun -t    command or the Contact Microbutton to create NPC notes, as this will populate the note with some basic information about the NPC including your location )
+
+
+
+
+02 Player Notes & User Definable Buttons
+----------------------------------------
+
+In the upper left corner of the Player Note Editing frame there are 5 user definable "Header" buttons, and 5 "Detail" buttons.
+
+The default headings for these buttons are : 
+	Guild :
+		<NuN will try to auto-fill Guild name data in the associated "Detail" button>
+	Guild Rank :
+		<NuN will try to auto-fill Guild rank data in the associated "Detail" button>
+	Real Name :
+
+	e-mail :
+
+	WWW :
+
+When left with their default values, then NotesUNeed will try to auto-fill Guild details in the first two Detail buttons.
+
+However, the player can change these headings to whatever they wish by clicking on them and editing the text for that specific player.
+OR by checking the save as default checkbox, then they can change the default Heading for all Contact notes.
+So if you don't care about Real Name, e-mail, etc. then you can set up your own default Headings such as Arena Team, Voice Channel, IRC, or whatever you like.
+
+If you use the word "Tooltip" in a Heading, then the associated Details will be included near the top of the NotesUNeed Tooltip; This is not a case-sensitive test, so for example you could change Header button 3 to read "Arena Team tooltip", and the name of the players Arena Team recorded in Detail Button 3 will be included in the NotesUNeed tooltip.
+
+NOTE : An individually changed Heading takes precedence over a user-defined default, which takes precedence over a NuN default.
+
+
+
+
+03 NuN Modifier Key Combo
+-------------------------
+
+By default players can <Alt>-Left click on container Items and Hyperlinks to create notes, OR to paste links in to open NuN notes.
+
+If this combination is not working or clashing with modified Blizzard keys, or other AddOns, then there is a "Modifier" button on the Options frame that can be used to specify your own customised Modifier Key Combo.
+
+Simply Mouse Click without any modifier keys to choose which Mouse Button to use. You should see the text on the Button itself update to reflect the mouse button used.
+
+Hold down required keyboard Modifer Keys and mouse Click to Save the specific keyboard Modifiers to use. Again, the text on the button should update to reflect the keyboard buttons that were being held down.
+
+Modified Left mouse Click  : Records left or right keyboard buttons as the same modifier key
+Modified Right mouse Click : Records left and right keyboard buttons as different modifiers
+
+By default, the <Alt> key from either side of the keyboard can be used.
+
+EXAMPLE 1
+
+To set up <Left-Control><Left-Alt>-Middle mouse button as the combo to use when creating notes from bag items / Hyperlinks, then do the following :
+
+1.) Click the modifier button with your Middle mouse button while NOT holding down any keyboard buttons
+
+2.) Hold down the <Control> and <Alt> keys on the LEFT hand side of the keyboard, and then RIGHT-mouse click the modifier button
+
+Note that when using the combo to create notes now, then holding down the <Control> or <Alt> keys on the right hand side of the keyboard will not work - you must use the keys on the left side of the keyboard.
+
+
+EXAMPLE 2
+
+To set up the <Control> key with a Left mouse click as the NuN modifier combo, then do the following : 
+
+1.) Click the modifier button with your Left mouse button while NOT holding down any keyboard buttons.
+
+2.) Hold down <Control> on either side of the keyboard and LEFT-mouse click on the modifier button
+
+Note that you can use either <Control> key when creating notes now.
+
+
+Combo keys are strictly enforced by NotesUNeed. This means that holding down extra modifier keys means NotesUNeed will ignore the modifier combo.
+For example, lets say that you have set up <Control>-Right click as the combination, and another AddOn wants to use <Control><Alt>-Right click. NotesUNeed functionality will only execute when ONLY the <Control> key is depressed, and will ignore <Control><Alt> clicks.
+
+
+
+
+04 Colours in NuN Notes
+-----------------------
+
+Can now select your own text colours in notes via colour selection buttons on the note frames.
+There are 5 Preset colour buttons, and one Custom colour button for opening the Colour Picker Frame to choose any other colour.
+So simply, highlight the text you want to colour in and click on the colour you want.
+You MUST highlight the text you want to colour by USING THE MOUSE.
+(i.e. text highlighted by holding down the <Shift> key and using the keyboard arrows will not be coloured by NuN)
+
+- Preset colour buttons
+1.) Left click to apply the colour to highlighted text
+2.) Right click to open up the colour picker and choose your own preset colour choice
+3.) <Alt>-Right click to reset the preset colour to its default value
+
+- Custom colour button
+1.) Left click to open up the Colour Picker Frame and choose a colour for the highlighted text.
+	NOTE that the colour is NOT applied to the text until you click the "Okay" button.
+2.) Right click on the Custom colour button to Toggle the display of the colour Tags in the text. This ability should be useful when trying to see why coloured text begins and ends where it does, when you get unexpected results.
+	This feature can also be used to generate hex colour codes - see the details on 'tags' below ;)
+	NOTE : YOU CAN NOT USE THE BUTTONS TO COLOUR TEXT WHILE SHOWING COLOUR TAGS !!!
+The Custom colour button will remember the last colour you chose (even between sessions).
+
+- improved native support for manually entered colour codes
+i.e. you can now type in your own colour code tags and they will be applied when you save the note
+(e.g. "colour the word |cff0000ffblue|r with the colour it describes")
+NOTE that the names of General notes can also be coloured MANUALLY, but highlighting note titles and using the colour buttons will not work.
+
+NuN will make every attempt to apply the colour you have chosen to all the text you have highlighted.
+However, you may not always get the results you expect, and this subject is far too complex for me to offer support on how to achieve the colouring you want.
+
+Trying to overlap coloured text is where the main problems will arise - and I'm not going to help you sort out your colouring issues.
+Basically, if you don't get the colour results you want, then you should keep the following rules in mind (STUDY THE FOLLOWING CAREFULLY) : 
+
+BLIZZARD TEXT COLOURING RULES
+
+Blizzard text colouring is achieved using tags;
+The "opening" tag is of the form "|cAARRGGBB" where :
+	"|c" is the main opening tag signalling that the following hex values relate to colour
+	"AA" sets the hexadecimal value of alpha setting (i.e. opacity)		[range 00 - FF] (i.e. 0 - 255)
+	"RR" sets the hexadecimal value of the Red colour					[range 00 - FF] (i.e. 0 - 255)
+	"GG" sets the hexadecimal value of the Green colour					[range 00 - FF] (i.e. 0 - 255)
+	"BB" sets the hexadecimal value of the Blue colour					[range 00 - FF] (i.e. 0 - 255)
+The "ending" tag for colouring is "|r";
+So any text between the "opening" tag, and the "ending" tag will be coloured based on the hex values contained in the "opening" tag.
+
+Simple Example :
+"|cffff0000All of the text in this string will be coloured red.|r"
+
+****
+NOTE : ONE SINGLE "ENDING" TAG WILL BE USED BY THE BLIZZARD GAME CODE TO END ALL OPEN COLOUR TAGS.
+****
+So for example, take the following text which is initially not coloured at all :
+
+ <----- all white text ------->
+"BLUE_TEXT GREEN_TEXT BLUE_TEXT"
+
+1.)
+To manually colour the BLUE_TEXT blue, and the GREEN_TEXT green, you "MIGHT" try the following, but you would be wrong :
+
+"|cff0000ffBLUE_TEXT |cff00ff00GREEN_TEXT |rBLUE_TEXT|r"			<- copy this in to a NuN Note frame and save to see the effect
+
+However, this would NOT achieve the desired result, and the final " BLUE_TEXT" would NOT be coloured in blue, because the first "|r" would be treated by the Blizzard code as the "end" for BOTH the blue AND green colouring tags.
+i.e.
+ <- blue -><- green -><-white->
+"BLUE_TEXT GREEN_TEXT BLUE_TEXT"
+
+2.)
+In order to get the desired effect you would need the following tags :
+
+"|cff0000ffBLUE_TEXT |r|cff00ff00GREEN_TEXT |r|cff0000ffBLUE_TEXT|r"		<- copy this in to a NuN Note frame and save to see the effect
+i.e.
+ <- blue -><- green -><-blue ->
+"BLUE_TEXT GREEN_TEXT BLUE_TEXT"
+
+The most straightforward way to achive this with NuN is to take 3 steps and colour each phrase individually.
+
+In order to achive this using only 2 colouring steps, then the NuN colour preset buttons you MUST apply the colours in the correct order, applying colours to the INNER words first.
+If you highlighted the whole phrase above and applied the blue colour first, followed by colouring the "GREEN_TEXT" second, then you would result in case 1.) above and the final words would be white.
+However, if you colour the "GREEN_TEXT" first, and then select the whole of the text and apply blue, you will get the results you want, because NotesUNeed works out what you want to do.
+
+NotesUNeed can NOT remove colouring from highlighted text, and then apply the colour you want because NuN isn't aware of what colour tags may already be in effect BEFORE the first character in the highlighted selection. It would be possible for NuN to work this out, but things are getting too complicated so just work out how you want colours to be applied and do it yourself ;p
+
+Basically, your text could get VERY complicated with colour tags VERY quickly, so don't blame me if you ruin your own note formats ;)
+
+Having said all that, the integrity of the Notes database should be in no danger. Just your own ability to manage your own colour tags ;)
+
+REMEMBER : you can always Right-Click on the Custom colour button to display the colour tags within the note text, and then manually edit/delete them, and then Right-Click on the Custom colour button again to apply the new colours, or use the Save button to apply the colours and save at the same time.
+
+
+
+
+05 Item Notes
+-------------
+
+<NuN Modifier>-Click on a Container Item, or Hyperlink to create a note on it;
+
+OR IF YOU HAVE A NuN NOTE OPEN then <NuN Modifier>-Clicking will paste the Hyperlink in to the open NotesUNeed note.
+
+As well as creating notes from items in your own character sheet by <NuN Modifier>-Clicking on them, it is possible to create notes on items equipped by other people when the inspect frame is visible. For various reasons, the way to do this is not very intuitive, and you must <NuN Modifier>-Click the corresponding slot in your character sheet while the Inspect Frame is open.  i.e. to note the fantastic Staff that mage has equipped, you must have your character sheet up, as well as the Inspect frame for the mage. Now when you <NuN Modifier>-Click on your equipped weapon slot, a note will be created for the inspected targets weapons slot. When the Inpsect frame is not visible, then you will create a note for your own equipped weapon.
+
+You can also create/access NuN notes from the AH by <NuN Modifier>-Clicking on the Icon Picture for that AH Item.
+
+When you create notes on items by <NuN Modifier>-Clicking on items in bags, character sheets, or Hyperlinks in the chat frame, then the note title is the Hyperlink for that Item. i.e. the coloured item name surrounded by square brackets.  However, to access the note from the command line you do not have to enter "/nun <Hyperlink>".
+For example, if you have a note for the purple epic [High Warlord's Battle Axe], then you can access it from the command line by simply typing "/nun High Warlord's Battle Axe". (Still case sensitive.)
+
+Since v6.43.20400, NuN will ignore Item Unique IDs, Enchants, & Jewels, and will treat all objects with the same item ID as the same items.
+No data fix is included in the v6.43 upgrade to make existing notes generic, as it could lead to duplicates and NuN wouldn't know which was the best to delete - so its possible people may have to delete and/or re-create some item notes...
+
+
+
+
+06 Hyperlinks in NotesUNeed Notes
+---------------------------------
+
+Coloured text must be stripped of its colour before transmission via the Chat Channels, but coloured Hyperlinks CAN still be sent - NotesUNeed automatically "bleaches" text before transmission, but will leave Hyperlinks intact.
+
+Unfortunately it is not possible to click on Hyperlinks in NotesUNeed notes - this is a restriction of the Blizzard UI.
+
+However, you can still access them via the NuN hyperlink button, in the top right hand corner of the Note Editing frame.
+i.e. the button with the pair of square brackets "[]".
+
+This functionality basically uses the Send Notes via Chat Channels functionality to pull Hyperlinks out of the text and send them to the SELF so that they appear in the Default Chat Frame, where you will now be able to click on the Hyperlink as normal, or <NuN Modifier>-Click it to create a NotesUNeed note for that individual item containing all its details.
+
+If you highlight individual Hyperlinks in the text before using the button, then only those selected Hyperlinks will be "echoed" to the chat frame.
+If you highlight text that doesn't contain any Hyperlinks, then nothing will be echoed to the chat frame.
+
+If the Chat Edit Box is open, then the Hyperlink button will paste Hyperlinks in to it, rather than echoing them to the chat frame.
+
+
+
+
+07 Sending Notes with NotesUNeed
+--------------------------------
+
+There are 2 methods of note sending in NotesUNeed :
+	1.) Un-Formatted
+	2.) Formatted
+
+Un-Formatted note sending simply broadcasts the text of the chosen note via the chosen method for other people to read - so you can broadcast your enchant selling list, or Raid instructions for a boss encounter, or PvP Raid strategy, etc.
+
+You can fine-tune the look and style of note broadcasts by test sending them to your SELF.
+
+Formatted note sending is provided so that other NotesUNeed users will receive the note and add it to their own database. Users of NotesUNeed will not see the individual lines of Formatted notes in the chat, they should simply see status messages, and the note should open automatically for the recipient.
+HOWEVER : the individual lines of Formatted notes may still be visible to players who do NOT have NotesUNeed installed if you are trying to send the note over public channels, so be careful where you spam. I would recommend that in-game note sharing via formatted notes should be achieved via individual Whisper, or sending in carefully controlled environments such as Guild or Custom channels.
+
+If you send a note to someone who already has a note with the same name, then the recipient will be shown a Warning Dialog box allowing them to choose whether they want to Replace their existing note, or cancel receipt of the note and keep their original version instead.
+There is also a third option allowing the sent note to be merged with the existing note by "ALT-Clicking" on the Replace button.
+When notes are merged, then the newly sent text will be appended to the end of the existing note's text. Currently, other values such as those populated in DropDown boxes will still be set according to the received note, and will replace old values used in the original note.
+
+When sending notes over Channels, then NotesUNeed introduces a 0.33 second delay between each line sent. This can be changed by using the
+
+/nun -delay <#_OF_SECONDS>			-- e.g. /nun -delay 0.5
+
+If you change the value to less than approximately 0.3, then you are likely to receive Blizzard errors saying that you are sending too much traffic.
+
+The value of the delay is also displayed in an edit box on the Transmission frame, just above the Transmit button, where it can be changed easily before sending a note.
+NOTE that you have to press <Enter> or click on Transmit for the value in this edit box to be saved.
+
+For the Player notes, the information displayed in the drop down boxes and user definable buttons comes from the SAVED details of the note. If you show a note, change their Profession without Saving, then send the note, the profession actually sent will not be the one you just specified, but the one still saved.
+However, during development I found that it was much more useful to be able to change the free text of both the Contact and General style notes, and send it without having to save the note first. I believe this could be more useful in the live version also, as you may wish to edit or censor certain details of a notes free text before you send it, without actually saving your changes.
+
+See also the Hyperlinks in NotesUNeed Notes section of the Readme file.
+
+
+
+
+08 Automatic Friend/Ignore List Maintenance
+-------------------------------------------
+
+For example, when you ignore one person on one Alt, then NotesUNeed can automatically try to ignore that person when you sign in to another Alt. By default NotesUNeed will send a message to the Chat frame informing you of when it is adding/removing Friends/Ignores. A "Silent Mode" option is available, if you wish to suppress the extra messages created when NotesUNeed adjusts your lists.
+
+You may find that NotesUNeed continues to try and adjust a Friend/Ignore when you log in - this is usually caused by trying to ignore someone who is not online, which therefore fails, and NotesUNeed will try again next time you log in. There are several aspects of this issue to consider :
+A - You can use "Silent Mode" so you don't have to see the messages
+B - If you prefer not to use "Silent Mode", so you can keep an eye on what's happening, but you are tired of trying to ignore someone who never seems to be on line, then check the extra Messages NotesUNeed is displaying to see the name of the Player NotesUNeed is trying to ignore, and do one of the following :
+	1.) sign in to your Alt that IS ignoring the named player, and stop ignoring them
+	2.) use the new "/nun -i <Player Name>"  command to force NotesUNeed to stop trying to ignore the named player
+C - sometimes your NotesUNeed friend and ignore lists can be corrupted by Deleting one of your Alts which had Friends/Ignores that your other Alts were not aware of  OR  when a character on one of your lists is Deleted from the Server, and NotesUNeed keeps trying to refer to them.
+In these cases, you will have to use the new "/nun -i <Player Name>" function.
+When you use the "/nun -i <Player Name>" option, then if you log in to an Alt that IS ignoring that Player, NotesUNeed will remove them from that Alt's Ignore list automatically.
+Note that just in case your Friends data should become corrupted, there is also a corresponding "/nun -f <Player Name>" function which will force a player to be removed from the NotesUNeed friends list.
+If you wish to reset your Friends/Ignore lists to the current Friends/Ignores of the Alt you are currently logged in to, then there is a third slash command option "/nun -resetlists"
+
+
+
+
+09 Note Deletion
+----------------
+
+Sometimes you may find that you can not delete a Player note : Usually this is caused when you are using NotesUNeed to automatically maintain your Friends/Ignore lists. Basically, NotesUNeed needs to keep these notes, and will try to protect them from deletion.
+
+Sometimes you may delete a note, only to find that it appears in your note list again. Remember that if you have selected to automatically maintain notes for Friends/Ignores, or Guild/Party members, then a note may be recreated by NotesUNeed in the background.
+
+
+
+
+10 Backup and Restore Functionality; And a note on Memory Usage
+---------------------------------------------------------------
+
+NotesUNeed itself takes up approx. 0.8Mb of memory, which is small/average compared with other AddOns.
+Obviously, the more notes you have, the more memory this AddOn will use - as a rough guide I have found that on average each note takes up only approximately 1kb of memory, meaning that 1000 notes will use roughly 1Mb, and so on. (If you use all 6000 available characters in all of your notes, then your average amount of memory per note will be much larger)
+
+In order to keep a second copy of your Database as a Backup, then obviously this will use twice the memory, and for this reason, the Backup databases is kept under a second AddOn called "NotesUNeed_Backup", and this AddOn is flagged as Load On Demand, and will only use memory if you actually use the Backup or Restore buttons on the NotesUNeed options frame.
+If you are worried about memory and have a large NotesUNeed database, then I would consider relogging after using the Backup or Restore buttons.
+
+
+
+
+11 Export and Import Functionality
+----------------------------------
+
+I have chosen to keep this functionality relatively simple. Basically, if one person creates a file of notes via the new Export function, then another player will be able to Import them in to their own database.
+NOTE: Imported records are all saved at Account Level, and will overwrite any notes that already exist with that name.
+NOTE: You can not Export Contact style notes, or Quest History.  ONLY General style notes can be exported.
+Exporting the same record more than once will not result in duplicates within the export file; You can therefore filter multiple sets of records to be exported, and not worry about exporting the same record more than once.
+
+New Export button available on the Notes Search/Browser frame. So search for the notes you want to Export, so that they appear in this frame, and then click on Export. You will be prompted for a name with which the set of exported notes can be associated. Confirm export of the records, and you will be informed of how many records were exported in the Chat window.
+The exported records will be recorded in the file NotesUNeed_Export.lua, in the same SavedVarialbes folder as your normal NotesUNeed.lua database file.
+Once you have created a set of records, then the Export button can ONLY be used to add more notes to that record set.
+If you want to delete the records you have exported and create a completely new record set with a different name, then you must use the Slash command "/nun -purgeexport". This clears the NotesUNeed_Export.lua file in the saved variables directory, and you can then use the Export button to create differently named sets of exported notes. (Obviously if you want to save a set of exported records, then you must take a physical copy of the NotesUNeed_Export.lua file, before using the "/purgeexport" command.)
+
+In order for another user to Import the notes you created, they need to copy your NotesUNeed_Export.lua file in to the NotesUNeed AddOn folder on their computer. (i.e. NOT their SavedVariables folder).  In order to do this, they will have to replace the existing NotesUNeed_Export.lua file that already exists in their AddOn's folder.  i.e. \WoW\Interface\AddOns\NotesUNeed\NotesUNeed_Export.lua
+
+New Import button available on the Options frame. This will only be available for use if the user has a NotesUNeed_Export.lua file in their AddOn directory which contains notes available for Import. NotesUNeed_Export.lua is blank when you first install NotesUNeed.
+When the user clicks on the Import button, they will be prompted with a general name identifying the set of notes available for Import, together with the number of records that will be imported, and will be offered the choice of continuing to Import, or cancelling the action. If they click on Import, then they will receive a message in the chat window informing them of the number of records that were imported.
+
+The Export function is kept under a second AddOn/folder name of "NotesUNeed_Export", and is Load On Demand.
+
+IMPORTANT : Basically, one person can create one NotesUNeed_Export.lua file, and this can then be placed in another user's AddOn folder (NOT the Saved Variables folder), and they will then be allowed to Import those notes. If another person gives you some more notes to import, then you will replace the NotesUNeed_Export.lua file and will import only those notes. In other words you can only import one set of notes at a time. If you have 3 NotesUNeed_Export.lua files from 3 different downloads and want to add them to your own NotesUNeed database, you will have to do the following :
+1.) Replace your current "\WoW\Interface\AddOns\NotesUNeed\NotesUNeed_Export.lua" file with the first file you wish to import
+2.) Log in to WoW, and use the NotesUNeed Import function
+3.) Log out of WoW
+4.) Repeat from step 1.) but with the next set of records you wish to Import
+
+If you want to ensure that you don't re-import the same set of notes, or if the NotesUNeed_Export.lua file in your AddOns folder is very large and you want to save memory, then after you have imported the notes, the safest thing to do is to Re-Install the NotesUNeed AddOn - this will replace the NotesUNeed_Export.lua file with a blank version, thus disabling the Import option on the Options frame.
+
+NOTE : you should not normally need to worry about the size of the NotesUNeed_Export.lua file in your SavedVariables folder as this part of the AddOn is Load On Demand, and will only use memory after you have used the 'Export' button in the Note Search frame. If you have exported a very large number of notes, then it may be worth re-logging to save memory.
+
+
+
+
+12 Text Searches
+----------------
+Text searches are case-insensitive since version 4.50.
+
+If you need to carry out a case-sensitive text search, then you can only do so by specifying some text to search for in the note Search Frame, and RIGHT-Clicking on the Search Note button.
+
+The Text search box is now visible in the Search Frame when filtering by most types of Notes, not just when specifically searching for Text. This means that after filtering for Quest Notes for example, you can then search for the phrase "Scorpid Sting" and NotesUNeed will search for that Text only in the Quest Notes you previously specified.
+
+I have chosen not to blank the text search box on entry/exit, as it allows you to repeat the search without having to retype the text, and will not restrict your search results when filtering notes until after you click on the Search Button. The one exception to this rule is when you have specifically requested a text search from the Options Drop down, and not blanking the text box allows for the possibility of a 2 tiered text search as follows:
+i.e. It is possible to search for 2 text words or phrases in the NotesUNeed notes, for example you might wish to view only notes containing the phrase "Big Sword", and then search among those notes for the word "Light". (Sorry that this isn't an obvious solution ;) First you must open up the Search Frame by clicking on the Browse All Microbutton, and entering some text in the Search Text Box (You don't have to Click on Search, or press <Enter>, just put the first text word/phrase you are searching for in the box). Next, open up the NotesUNeed Options Frame (the Search Frame will close automatically) and select Text from the Search For Drop Down selection box, and click on Search. NotesUNeed will filter All your notes based on the text you entered in the first Search Text box and list them for you.  Now you can enter a completely new word/phrase in the Search Text box, and NotesUNeed will only search amongst those Notes already returned after the first search.
+
+
+
+
+13 Quest Notes and Quest History
+--------------------------------
+
+NotesUNeed Quest Notes and Quest History
+
+It is important to be clear that NotesUNeed keeps notes on Quests separate from a Player's Quest History.
+A Quest Note is a normal NotesUNeed note detailing the Quest's name, description, objectives and rewards.
+Notes recording when and where you were when completing Quest Objectives are also normal NotesUNeed notes of type QST
+
+However, the Quest History recorded by NotesUNeed is not a normal series NotesUNeed notes, but simply a list of Quests with the associated location and time when they were accepted, completed, and handed in.
+
+- new buttons allow notes to be made on the Quests in the Quest Log, similar in functionality to how the Friends Frame buttons work.
+
+- a new option is available to allow NotesUNeed to automatically record a Quest Note whenever your Quest Log is updated, and also keep track of your characters' Quest History
+
+- new search Options are available in the Options Frame to filter notes by type, including Quest Notes, OR Quest History
+
+- Quest Notes are notes like any other but with a type of "QST" allowing them to be filtered and examined separately
+
+- It is also possible to Filter/Search by Quest History, but these are not NotesUNeed notes. When filtering by Quest History, you are simply viewing a list of the Quests you have had in your Quest Log. The Tooltip will no longer display the Quest Note tooltip, but will display the details of when and where you were when you Accepted, Completed, and Handed In the Quest. A tick beside the Quest name will indicate that that Quest has been Completed and Handed In and is no longer in your Quest Log. If you have the details of the Quest stored in a Quest Note, then a little note symbol will appear beside the entry, and clicking on the Quest will show the Quest Note. However, if you do not have a Quest Note for that particular quest (because you have deleted it), then no symbol appears beside the Quest name, and clicking on it will show a blank Quest Note.
+
+- It is important to note that if you are Searching Quest History, and you raise the corresponding Quest Note, then clicking on Delete in the Note editing frame will no longer Delete the Quest Note, but will instead Delete the entry in your Quest History. To delete the Quest Note you would have to close the Quest History Search Frame, Search seperately for that Quest Note, and then delete the Note itself.
+
+- Quest History entries are ONLY displayed when you choose to Filter specifcially for Quest History from the Options Frame. If you search for All, or Notes, or Quest Notes, you will NOT see any Quest History Entries - only actual Notes.
+
+- The Quest Accepted Location and Datestamp will not necessarily  be accurate. For example, when you first install the mod, or when you first check the option to automatically record Quest Notes and History, then NotesUNeed will update your quest history on the next Quest Log Update, and all your current quests will be noted as accepted at that time and in that place. Similarly, abandoning a quest and accepting it again later will not update the accepted location or date unless you take the trouble to delete the Quest History entry for that quest after abandoning it.
+
+- Due to some inconsistancies in the WoW treatment of Quest completion, it is not always possible for NotesUNeed to detect when a Quest is complete, or even handed in.
+
+- The Quest History search will display the level of your character when that history entry was created. The level detailed within the Quest Note is the appropriate recommended difficulty level associated with that quest, not an individual player level.
+
+- Quest History is sorted to show the most recently accepted Quests first
+
+- Where a Quest has multiple stages under the same Quest name, and you have Auto-noting of Quests turned on, then NotesUNeed will try to append the details of the next stage of the Quest to the existing Quest note. Again, the WoW API does not always send notifcaion of stage completion, and details can not always be updated. Note that where you play through quest stages out of sequence by playing the same quest with different Alts at the same time, then the text in the note may also be listed out of sequence.
+
+- Turning auto-noting of Quest Logs and History, off and on, while continuing to make progress in those quests may result in strange looking data, especially where quests being logged have multiple stages.
+
+
+
+
+14 NotesUNeed Tooltips
+----------------------
+
+The contents of the NotesUNeed tooltips can be controlled in 4 different ways :
+
+1.) Control the amount of text per line, and in total from the Options frame
+
+2.) Change a user-definable Heading in the Player Character Note to contain the word 'Tooltip' (not case-sensitive), and the corresponding Detail will be displayed in that Notes Tooltip.
+(See "02 Player Notes & User Definable Buttons")
+
+3.) By default, all note text is available to be displayed in the tooltip; But this can be restricted by using the tags  "TT::"  and  "::"  to start and end the text you wish displayed.
+e.g. from the following :-
+
+	"Text I don't need to see in a tooltip TT::Useful Information:: followed by more unimportant text"
+
+then only :-
+
+	"Useful Information"
+
+will show in the tooltip.
+
+
+4.) Use the "Minimise MouseOver Target Tooltips". It can be annoying to see large NotesUNeed notes popping up on screen when mousing over players in the 3D environment, and this is where this Option can be useful. It restricts the information displayed in the NotesUNeed tooltip to a bare minimum when mousing over them in the Game world, while still allowing full tooltips when mousing over their Portraits, etc.
+If you WANT to see the FULL version of the tooltip while this still leaving this Option turned ON, then hold down the <Alt> key before mousing over them.
+
+5.) To make the names of another person's Alts appear in their tooltip, they should be included in that person's note in the following format :
+<ALT:AltName>
+For example if a player called "Wibble" had an Alt called "Wobble", then in the NotesUNeed note for "Wibble", you could include the following text "<ALT:Wobble>"
+(And vice versa, including the text "<ALT:Wibble>" in Wobble's note)
+See also section "17 Noting the names of another Player's Alts"
+
+
+
+
+
+15 MapNotes
+-----------
+
+I have integrated with the MapNotes (Fan's Update)
+Versions of MapNotes that NotesUNeed has been tested with so far :
+	MapNotes (Fan's Update) v2.00.11200 and later...
+
+I check for the presence of the MapNotes_OnLoad function as evidence that MapNotes is installed.
+
+The basic changes are that you can now create MapNotes from NotesUNeed, and when you hover over a MapNote icon whose Main line is equivalent to a NotesUNeed note title, then you will also see the NotesUNeed tooltip for that MapNote. This means that it will be possible to see the NotesUNeed tooltip for MapNotes that have already been created, as long as their name is the same as a NotesUNeed note.
+
+I have used similar logic to that used by the MapNotesTarget AddOn, which can be used to create MapNotes for targetted NPCs. So, friendly NPCs create Green MapNotes, neutrals create Yellow, and enemy NPCs create Red MapNotes.  I have gone further, however, and you can create a MapNote from any Generic NotesUNeed note - default colour is green.
+
+Also, if you are Auto-Noting quests, and have the flag to Auto-MapNote NPCs, then NotesUNeed will create a purple cross MapNote when ever you accept a new quest. ( I chose to implement similar logic to MapNotesTarget myself, rather than make NotesUNeed dependant upon it, mainly because, MapNotesTarget also adds profession/level to the MapNote name, which then breaks the link to the NotesUNeed notes, and stops the NotesUNeed tooltip displaying. Plus, I have also extended the functionality, so..... )
+
+From a MapNotes point of view, the note Merging is basically the same as that found in the MapNotesTarget AddOn. MapNotes will reply with a warning if you are too close to an existing MapNote to create a new one for the NPC.  In that case, MapNotesTarget allows you to merge the NPC MapNote with the existing one, so if you had a note called  "NOTE1", and you were trying to create a new note for an NPC called "NOTE2", but were very close to "NOTE1", then you could choose to merge them and the MapNote would then be called  "NOTE1 | NOTE2".     Basically, I have done a similar thing with regard to the MapNote information with a couple of differences :
+
+1.) I just merge notes automatically when you are too close to an existing one; Up to a maximum of 5 NotesUNeed notes can be merged/added to an existing MapNote. After 5 NotesUNeed merges, then you will just have to move a little bit away from the current MapNote to create a new one.
+
+2.) I have added another tooltip window which will list the NotesUNeed notes that have been merged in one MapNote. To see the NotesUNeed tooltip for the individual notes, you need to move your cursor over this list of buttons.
+
+
+MapNotes : PLEASE NOTE : MapNotes are basically stored at Account Level, while it is possible to create NotesUNeed notes at Realm, or Account level.  It is also possible to create MapNotes from NotesUNeed notes saved at either level; However, if you have a NotesUNeed note saved at Realm level, create a MapNote from it, then change Realms, you will not be able to see the associated NotesUNeed note tooltip.  In order to see NotesUNeed tooltips on any realm, you must save the NotesUNeed note at Account level.  So if you believe that a NotesUNeed tooltip is not being displayed when it should be, please check at what level it is saved, and which Realm you are currently on :)
+
+
+
+
+16 MapNotes-NotesUNeed Tooltip Functionality
+---------------------------------------------
+
+There is a delay leaving the NotesUNeed buttons available to click when your mouse leaves a MapNote - But the tooltip and NotesUNeed Popup frame will refresh immediately when you mouse over any other MapNote.
+If you are having trouble clicking on a NotesUNeed Popup button for one MapNote, because you can't avoid mousing over other MapNotes to get to it - then hold down the <Control> Key,  and Mousing over other MapNotes will be suppressed.
+
+
+
+
+17 NuN & Who Information
+------------------------
+
+NuN will try to automatically update Contact notes with player information where possible. You should not see the Blizzard Who Frame opening, but may see standard Who message responses in the Chat frame in certain circumstances.
+
+If the Chat Messages are too frequent, then it is possible to use the following slash command :
+
+"/nun -alternativewho"
+
+When set, NotesUNeed will try to implement the Who commands via a different method.
+
+For anyone with big problems with the way NuN requests Who information, then the last resort is to use the following slash command to turn off automatic Who Requests :
+
+"/nun -restrictwho"
+
+Even with restricted Who functionality, it should still be possible to manually use the Who Button on the Player Note edit frame.
+
+
+
+
+18 Noting the names of another Player's Alts
+---------------------------------------------
+
+To make the names of another person's Alts appear in their tooltip, they should be included in that person's note in the following format :
+<ALT:AltName>
+
+So for example, if a Player called Alice has two alts called Bob and Fred, then to see the names of Bob and Fred in Alice's tooltip you should -
+a.) open up Alice's NuN note
+b.) insert the text "<ALT:Bob>" anywhere in the note text
+c.) insert the text "<ALT:Fred>" anywhere in the note text
+
+Likewise, if you then want to see the alt names of Bob and Alice in Fred's note, you have to go through a similar procedure
+
+There is a shortcut for inserting ALT text from the Guild frame, where you can open Alice's note for example, and then <ALT>-click on the NuN Note symbols for Bob and Fred to auto-insert them in to Alice's note. So all the Alt setup for Guild members can be done via mouse clicks.
+
+
+
+
+19  Party Auto-Noting
+---------------------
+
+With auto-noting turned on, NotesUNeed will create notes for all players you Party with.
+This does not include Raid members not in your local group, and does not note changes in Battlegrounds where many players are from different Realms.
+Obviously if you form a Party BEFORE entering a BG, then auto-noting will take place.
+The specific number of times you have partied with someone on your currently logged Alt is displayed in the Player note frame for that Player, and also in the Note Browser frame.
+If you want to see when you last partied with that person, or when & how often you have partied with them while playing a different Alt, then this information is displayed in the Tooltip when you hover over the "Parties : " label on the Contact note.
+
+When hovering over the "Parties : " label on the Contact note, NotesUNeed will display a tooltip with the following information :
+a.) Which of your Alts has partied with that player
+b.) How many times that Alt has partied with that player
+c.) The date on which that Alt last partied with that player
+
+
+
+
+20  Player Rating
+-----------------
+
+You can "Rate" Players via the appropriate Drop Down box on the Contact Note frame.
+You can also rate Players via the Right-Click Player Menu e.g. Right-clicking on Target Portraits, etc.
+
+Can now customise the Player Ratings.
+Open up any Player note;
+Click on the Player Rating DropDown button;
+<Control>-Click on any Player Rating button to change it via 2 dialog boxes : 
+ Box 1 allows you to change the Player Rating text
+ Box 2 allows you to change the Tooltip text
+<Alt>-Click on a Player Rating button to reset it (and the tooltip) to the NuN default value
+
+
+--OPTIONAL SUPPORT FOR THOSE WITH THE "Black List" ADDON--
+
+When customising Player Ratings using the technique described above, then checkboxes will allow you to specify whether that Player Rating should also Black List the player;
+A further two check boxes allow you to specify whether the black listed player should also be Ignored, or trigger a Warning.
+Now when you select that Player Rating for a Player, then they will be automatically be added to the Black List AddOn database.
+The Black List reason will be auto populated with the NuN Player Rating and Tooltip text.
+If you select a different NuN Player Rating with different Black List criteria, then the Black List details will be updated in the background.
+If you select a different NuN Player Rating with no Black List criteria, then the Black List details will be left untouched.
+If you remove someone from your Black List, then their NuN Player Rating will be reset to blank if it can detect that the Player was Black Listed from NuN;
+i.e. players Black Listed from NuN will have a reason for black listing pre-fixed with "[NuN]"
+
+Black List AddOn : http://wowui.incgamers.com/?p=mod&m=4926
+
+
+
+
+
+21 'Set Focus' / 'Clear Focus' Taint
+------------------------------------
+
+Right-clicking on unit frames to select player ratings will STILL taint the 'Set Focus' / 'Clear Focus' menu actions
+Note that there should be no problems with focus actions via key bindings, slash commands, or macros.
+A new slash command has been introduced to disable NuN right click menus, and prevent this problem entirely.
+
+/nun -rightoff
+
+This slash command will re-load your User Interface, so you will see a Blizzard loading screen for a few seconds.
+But if you want to use focus actions from player drop down menus, then you should use the above slash command to disable the NuN menu option.
+If you don't need the Blizzard 'Set Focus' or 'Clear Focus' drop down menu options, then you can leave NuN's right click menu enabled.
+NotesUNeed will remember if you turned off right click menus between sessions, so you do not need to use this slash command every time you log in.
+
+If you want to re-enable the NotesUNeed right click menus, then use the following slash command :
+
+/nun -righton
+
+
+
+
+
+22 Talent Information Recording
+-------------------------------
+
+NuN will try to record Talent tree details when collecting Player information.
+Players must be within range when you create the Note or use the Target Info button.
+This information will be displayed in Tooltips in the following ways :
+a.) in the general NuN Tooltip for a Player, the Spec and summary of points spent will be displayed.
+The main Talent description will be based on the branch in which the most points have been spent
+e.g. for a Shaman the description might read :
+Elemental 40-7-23
+b.) hovering over the Class button in the Contact note editing frame will give much more detailed information about that Player's Talents
+
+NOTE : NuN does not try to gather talent information automatically when creating notes en masse, i.e. for Friends, Guild mates, etc.
+There is no way to manually edit this information.
+
+
+
+
+23 Functions Designed for other AddOns to Interact with NotesUNeed
+------------------------------------------------------------------
+
+Much of the functioanlity of NotesUNeed for note creation can be accessed through calling the slash command handler directly with the appropriate variables.
+
+The following 2 functions have been provided specifically for other AddOns to access NotesUNeed note text for display and update.
+
+
+1.)
+function NuNAddOn_ReturnText(noteType, noteName)
+
+Arguments to pass :
+  - noteType = "General" / "Contact"
+  - noteName = name of the note EXACTLY
+
+If an error occurs, and the returned text is nil, then the second Return Parameter can be examined to determine the problem
+  1 =	"Invalid noteType"
+  2 =	"General Note not Found"
+  3 =	"Contact Note nof Found"
+
+
+2.)
+function NuNAddOn_InsertText(noteType, noteName, noteText, pos)
+
+Arguments to pass :
+  - noteType = "General" / "Contact"
+  - noteName = name of the note EXACTLY
+  - noteText = the text to be inserted
+  - pos = specifies how and where the text is to be inserted
+	-1		:	Replace the entire text
+	#		:	a number specififying the character position after which to insert the text
+				0 = beginning, 1 = after first character, etc.
+				(will append the note if target text is not long enough, but will ALSO return error code 5)
+	<nil>	:	omit to append the text at the end of the note (i.e. default behaviour)
+
+NOTE : its the responsibility of the caller to ensure that there are appropriate carriage returns, spearators, etc.
+i.e. the function simply inserts/appends where it is told, so if you want a couple of blank lines between the old and new, then they must be included in the passed text
+
+Function does not return anything when succesful
+If an error occurs, then the Return Parameter can be examined to determine the problem
+ 1 =	"No text passed"
+ 2 =	"Invalid noteType"
+ 3 =	"General Note not Found"
+ 4 =	"Contact Note not Found"
+ 5 =	"Text appended to note because specified insert position not found" (*non-critical error)
+
+
+
+
+24 Reserved Character Sequence
+------------------------------
+
+The following character pairs have special meaning in NotesUNeed, and if you use them in your notes, then they will be substituted as follows :
+�n	->	\n	(i.e. a new line character)
+�q	->	"	(i.e. a double quote)
+�s	->	\	(i.e. a slash character)
+
+The reason for this substitution is explained below in the "Legacy Crash On Exit Solution"
+
+Due to the wish to support user-coloured text within notes, the following character sequences
+||c
+||r
+will always be contracted to : 
+|c
+|r
+
+
+
+
+25 Legacy Crash On Exit Solution
+--------------------------------
+
+This was an old error that occurred when WoW Patch 1.10 was released, but which still has consequences today, and gives rise to the need for NuN to Reserve the Character pairs mentioned above.
+
+First of all, my proof that this was a WoW bug, and not a specific NotesUNeed bug, is that copying a 'problem' note in to another Note-Taking AddOn such as NoteIt, and saving it there, would also cause WoW to crash on exit. And once I recognised the cause of the crash, then it was possible to enter completely new notes in other note taking AddOns and trigger the problem even when NotesUNeed was not installed.
+
+As I can't see Blizzard's code for WoW, its difficult for me to be exact about the cause, but after a lot of testing and hair pulling my conclusion is that WoW splits text strings being saved to the Saved Variables folder in to chunks for processing, and since WoW patch 1.10, it adds its own escape characters, and special-character substitutions.  Based on my debugging of notes that would cause the problem, and minimal changes like inserting a single space which would then solve the problem,  I can only believe that the WoW executable is inserting an escape character prior to the final double quotation mark of a string, effectively leaving the string un-ended,  OR possibly adding an escape character to a full buffer leading it to overflow/loss of a final character.
+
+Anyway, my solution has been to substitute characters that would normally be 'escaped'/substituted by WoW, before it sees them.
+Currently I am only substituting new-line characters, double-quotation marks, and the '\' character; Using the following 3 character pairs :
+�n
+�q
+�s
+As a consequence of this, users should not use these character pairs in their notes as NotesUNeed will replace them when displaying Notes.
+This is all done behind the scenes and users should write notes as they normally would.
+
+There is a very small chance that another type of special character being 'escaped' by the WoW executable may cause another crash. If so, just send me your NotesUNeed database, and I will ensure that I cater for that special character also.
+
+
+
+
+26 Notes & Troubleshooting
+--------------------------
+
+1. Many of the NotesUNeed frames and the Pinned tooltip are now moveable and scaleable in Version 2. This means that they can disappear off screen when you increase their Scale, or the UI Scale from the WoW Video Options panel (or from the Titan panel).  If you are clicking on a button but the frame, or tooltip does not appear to be responding, try to reduce the NotesUNeed Frame/Tooltip scales, and/or the UI Scale temporarily (preferably as low as you can go), and see if the frame/tooltip now responds/appears.Once you have located the frame, move it towards the top left of the screen, and restore your UI scale to where you need it. If all else fails try resetting the NotesUNeed Options to their defaults, and then exiting WoW, entering the world without the NotesUNeed Addon loaded (preferably temporarily remove the NotesUNeed folder from the Addons folder completely while you log on),  then restore the NotesUNeed mod folder, and log on again. Hopefully, this should restore your NotesUNeed frames to their original position. The last resort after this is to edit/delete the "layout-cache.txt" file in the WoW\WTF\Account\<Account Name>\<Character Name> folder, and restart the game.
+
+2. When importing players in to your Ignore list from the NotesUNeed database, note that a character needs to be on line to be succesfully ignored. This is a restriction of the WoW API.  Every time you log on, NotesUNeed will make another attempt to ignore any Contacts which it failed to ignore previously, but it will only attempt this once, as periodic background attempts to ignore these players would only generate puzzling "Player not found" messages in the chat window. If you don't want NotesUNeed to continue to attempt to ignore someone when you log in, then use the slash command "/nun -i <player name>" (if you are not sure of the player name, then turn on NuN verbose friend / ignore maintenance and relog in again, and NuN should display the name of the player it is trying to ignore)
+
+
+
+
+Contact for Feedback & Bug Reports
+----------------------------------
+
+telic@hotmail.co.uk
+
+
+

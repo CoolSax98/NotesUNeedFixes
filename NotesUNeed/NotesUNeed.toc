@@ -1,0 +1,23 @@
+## Interface: 50001
+## Title: Notes'U'Need |c0000FF00(v6.82.50001)|r
+## Version: 6.82.50001
+## X-Curse-Packaged-Version: NotesUNeed_6.82
+## X-Curse-Project-Name: NotesUNeed
+## X-Curse-Project-ID: notes-uneed
+## X-Curse-Repository-ID: wow/notes-uneed/mainline
+
+## Notes: Notes Manager that allows you to track Friends, Ignores, Guild members, Quests, Items and generic notes
+##  storing information like Professions, Guild, PvP ranks, real world contact information, and anything
+##  else you like really.  Also provides a search function allowing the user to find notes on players
+##  of a given class, profession, guild, or just for free text information in any notes.
+
+## Notes-deDE: Dies ist eine Notizverwaltung mit der du deine Freund-, Ignorier-, Gildenliste sowie Quests, Gegenstaende
+##  und einfache Notizen verwalten kannst. Diese werden dann als Tooltip mit den Berufs, Gilden, PvP, und Kontakt
+##  Informationen angezeigt wenn du mit der Maus daueber gehst.
+
+## SavedVariables: NuNData, NuNSettings
+## OptionalDeps: Titan, MapNotes, TipBuddy, EQL3, beql, UberQuest, Blacklist
+## Dependencies: Blizzard_Calendar, Blizzard_GuildUI
+NotesUNeed.xml
+Modules.xml
+Bindings.xml

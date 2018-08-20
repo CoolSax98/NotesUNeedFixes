@@ -1,0 +1,11 @@
+## Interface: 50001
+## Title: NotesUNeed_Export
+## Notes: Provides the ability to make files that other users can Import in to their own NotesUNeed database
+## Dependencies: NotesUNeed
+## LoadOnDemand: 1
+## SavedVariables: NuNDataExport
+## X-Curse-Packaged-Version: NotesUNeed_6.82
+## X-Curse-Project-Name: NotesUNeed
+## X-Curse-Project-ID: notes-uneed
+## X-Curse-Repository-ID: wow/notes-uneed/mainline
+NotesUNeed_Export.lua

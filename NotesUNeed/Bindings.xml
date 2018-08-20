@@ -1,0 +1,35 @@
+<Bindings>
+	<!-- User interface key bindings -->
+	<Binding name="NUN_OPTIONS" description="Toggle NotesUNeed Options" runOnUp="false" header="NUN">
+		if (NuNOptionsFrame:IsVisible()) then
+			HideUIPanel(NuNOptionsFrame);
+		else
+			NuN_Options();
+		end
+	</Binding>
+	<Binding name="NUN_TARGET" description="Create Note from Target Without Showing" runOnUp="false">
+		NuN_FromTarget(true);
+	</Binding>
+	<Binding name="NUN_OPENTARGET" description="Create or Open Note for current target." runOnUp="false">
+		NuN_FromTarget(false);
+	</Binding>
+	<Binding name="NUN_MICRO" description="Toggle NotesUNeed MicroButtons" runOnUp="false">
+		NuN_ToggleMicroButtons();
+	</Binding>
+	<Binding name="NUN_BLANK" description="Create new blank note, ignoring whatever you currently have targeted." runOnUp="false">
+		NuN_ShowNewGNote();
+	</Binding>
+	<Binding name="NUN_LAST" description="Re-Open Last Note" runOnUp="true">
+		if ( keystate == "up" ) then
+			NuN_ReOpen();
+		end
+	</Binding>
+	<Binding name="NUN_SRCH" description="Browse All Notes" runOnUp="false">
+		NuN_DisplayAll();
+	</Binding>
+	<Binding name="NUN_PINUP" description="Toggle PinUp" runOnUp="false">
+		NuN_PinnedTooltipToggle();
+	</Binding>
+
+</Bindings>
+
