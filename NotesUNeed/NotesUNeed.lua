@@ -1,3 +1,4 @@
+-- Testing
 --[[
 
 Some General Developer Notes
@@ -347,31 +348,31 @@ NUN_RESET_OPTIONS = NUN_RESET..NUN_OPTIONS;
 	====================================================================
 	UPVALUES
 	====================================================================
-	====================================================================]]
---[[
---local NuN_NoteDB = NuNData;
---local NuN_SettingDB = NuNSettings;
+	==================================================================== --]]
+
+-- local NuN_NoteDB = NuNData;
+-- local NuN_SettingDB = NuNSettings;
 
 --	tried to use a local variable on these saved variables, but I must have overlooked a back-assignment somewhere because simple find-n-replace
-	results in no data being loaded by the frame, even though it exists in the NuNData variable.
-	This function can be used to help track down those issues...
-function DebugNUNData()
-	NuN_Message("Dumping summary of local NuN_NoteDB table contents");
-	NuN_Message("    Total entries:" .. getn(NuN_NoteDB));
-	local idx = 1;
-	for key, val in pairs(NuN_NoteDB) do
-		NuN_Message(tostring(idx) .. ") " .. tostring(key));
-		idx = idx + 1;
+	-- results in no data being loaded by the frame, even though it exists in the NuNData variable.
+	-- This function can be used to help track down those issues...
+-- function DebugNUNData()
+-- 	NuN_Message("Dumping summary of local NuN_NoteDB table contents");
+-- 	NuN_Message("    Total entries:" .. getn(NuN_NoteDB));
+-- 	local idx = 1;
+-- 	for key, val in pairs(NuN_NoteDB) do
+-- 		NuN_Message(tostring(idx) .. ") " .. tostring(key));
+-- 		idx = idx + 1;
 		
-		local note_idx = 1;
-		for note_name, note_text in pairs(val) do
-			NuN_Message("   " .. tostring(note_idx) .. ") " .. tostring(note_name));
-			note_idx = note_idx + 1;
-		end
+-- 		local note_idx = 1;
+-- 		for note_name, note_text in pairs(val) do
+-- 			NuN_Message("   " .. tostring(note_idx) .. ") " .. tostring(note_name));
+-- 			note_idx = note_idx + 1;
+-- 		end
 		
-	end
-end
---]]
+-- 	end
+-- end
+-- DebugNUNData();
 
 --[[====================================================================
 	Library Functions
@@ -625,8 +626,8 @@ setfenv(1, setmetatable( {}, {
 
 -- NotesUNeed Note Character Limit Exceeded
 StaticPopupDialogs["NUN_NOTELIMIT_EXCEEDED"] = {
-	text = TEXT(NUN_TEXTLIM1..NUN_TEXTLIM2),
-	button1 = TEXT(OKAY),
+	text = NUN_TEXTLIM1..NUN_TEXTLIM2,
+	button1 = OKAY,
 	OnShow = function(self)
 		_G[self:GetName().."Text"]:SetText( NUN_TEXTLIM1 .. NuNC.NUN_MAX_TXT_LIM .. NUN_TEXTLIM2 );
 	end,
@@ -638,7 +639,7 @@ StaticPopupDialogs["NUN_NOTELIMIT_EXCEEDED"] = {
 local oldRating, ratingChosen, chosenRating, curRatingTxt = false;
 -- NotesUNeed Choose Note Importing type for Social Notes
 StaticPopupDialogs["NUN_CHANGE_RATING_ONE"] = {
-	text = TEXT(NUN_CHOOSE_RATING),
+	text = NUN_CHOOSE_RATING,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = 1,
@@ -742,7 +743,7 @@ StaticPopupDialogs["NUN_CHANGE_RATING_ONE"] = {
 
 -- NotesUNeed Choose Player rating tooltips
 StaticPopupDialogs["NUN_CHANGE_RATING_TWO"] = {
-	text = TEXT(NUN_CHOOSE_RATING_TEXT),
+	text = NUN_CHOOSE_RATING_TEXT,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = 1,
@@ -777,9 +778,9 @@ StaticPopupDialogs["NUN_CHANGE_RATING_TWO"] = {
 
 -- Import NotesUNeed Notes
 StaticPopupDialogs["NUN_IMPORT_NOTES"] = {
-	text = TEXT(NUN_OPT_IMPORT),
-	button1 = TEXT(NUN_OPT_IMPORT),
-	button2 = TEXT(CANCEL),
+	text = NUN_OPT_IMPORT,
+	button1 = NUN_OPT_IMPORT,
+	button2 = CANCEL,
 	showAlert = 1,
 	timeout = 0,
 	OnShow = function(self)
@@ -806,9 +807,9 @@ StaticPopupDialogs["NUN_IMPORT_NOTES"] = {
 
 -- Mass Delete
 StaticPopupDialogs["NUN_MASS_DELETE_CONFIRM"] = {
-	text = TEXT(NUN_MASS_DELETE),
-	button1 = TEXT(NUN_MASS_DELETE),
-	button2 = TEXT(CANCEL),
+	text = NUN_MASS_DELETE,
+	button1 = NUN_MASS_DELETE,
+	button2 = CANCEL,
 	showAlert = 1,
 	timeout = 0,
 	OnAccept = function()
@@ -886,9 +887,9 @@ StaticPopupDialogs["NUN_MASS_DELETE_CONFIRM"] = {
 
 -- NotesUNeed Confirm Delete of Quest History
 StaticPopupDialogs["NUN_DELETE_QUESTHISTORY"] = {
-	text = TEXT(DELETE),
-	button1 = TEXT(NUN_DELETE),
-	button2 = TEXT(CANCEL),
+	text = DELETE,
+	button1 = NUN_DELETE,
+	button2 = CANCEL,
 	OnAccept = function()
 		if ( ( not NuNGNoteFrame.fromQuest ) and ( NuNGNoteFrame:IsVisible() ) ) then
 			NuNGNoteFrame.fromQuest = local_player.currentNote.general;
@@ -1307,7 +1308,7 @@ function NuNF.QueryTalents()
 
 	-- this flag controls whether the following code uses data from received from inspecting a player or whether it just uses our own data (for debugging)
 	local useInspectInfo = (NuNTalents.player ~= locals.player_Name);
-	NuNTalents.tabs = GetNumTalentTabs(useInspectInfo) or 0;
+	NuNTalents.tabs = GetNumSpecializations(useInspectInfo) or 0;
 	
 	-- return values from GetTalentTabInfo()
 	local tabID, tabName, tabDesc, tabIcon, tabPointsSpent, tabPreviewPointsSpent, tabPointsAllocated, _, tabUnlocked;
@@ -1315,7 +1316,7 @@ function NuNF.QueryTalents()
 	
 	-- return values from GetTalentInfo()
 	local talentName, talentIcon, talentTier, talentColumn, talentRank, talentMaxRank, talentIsExceptional, previewRank, totalAllocatedRank;
-	local numActiveTalentSpecs = GetNumTalentGroups(useInspectInfo);
+	local numActiveTalentSpecs = GetNumSpecializations(useInspectInfo);
 	for talentGroupIndex = 1, numActiveTalentSpecs do
 		prefix = "";
 		local closestMatchingTree = { tabRef = nil, totalPoints = 0 }
@@ -1326,7 +1327,7 @@ function NuNF.QueryTalents()
 --				tostring(tabID), tostring(tabName), tostring(tabPointsSpent), tostring(tabPreviewPointsSpent), tostring(tabUnlocked), talentGroupIndex, closestMatchingTree.totalPoints);
 				-- check to see if this talent tree is the player's active spec
 
-			local activeTalentGroupIndex = GetActiveTalentGroup(useInspectInfo, nil);
+			local activeTalentGroupIndex = GetActiveSpecGroup(useInspectInfo);
 			local currentSpec;
 			if talentGroupIndex == 1 then
 				currentSpec = NuNTalents.mainspec;
@@ -1655,53 +1656,56 @@ function NuNF.NuN_GetLoc()
 	local myCID, myC, mySubZ, myZID, myZ, px, py, coords;
 	local loc = false;
 
-	myCID = GetCurrentMapContinent();
-	if ( ( myCID ~= nil) and ( myCID > 0 ) ) then
-		myC = locals.continents[myCID].name;
-	end
-	if ( myC ~= nil ) then
-		locData = locData..myC..", ";
-		loc = true;
-	end
+	-- nooping this call for now @todo coolsax: replace with map api updates
+	return "";
 
-	myZ = GetZoneText();
-	if ( ( myZ == nil ) or ( myZ == "" ) ) then
-		myZID = GetCurrentMapZone();
-		if ( ( myZID ~= nil ) and ( myCID ~= nil ) and ( myCID > 0 ) ) then
-			myZ = locals.continents[myCID].zones[myZID];
-		end
-	end
-	if ( ( myZ ~= nil ) and ( myZ ~= "" ) ) then
-		locData = locData..myZ..", ";
-	end
+	-- myCID = GetCurrentMapContinent();
+	-- if ( ( myCID ~= nil) and ( myCID > 0 ) ) then
+	-- 	myC = locals.continents[myCID].name;
+	-- end
+	-- if ( myC ~= nil ) then
+	-- 	locData = locData..myC..", ";
+	-- 	loc = true;
+	-- end
+
+	-- myZ = GetZoneText();
+	-- if ( ( myZ == nil ) or ( myZ == "" ) ) then
+	-- 	myZID = GetCurrentMapZone();
+	-- 	if ( ( myZID ~= nil ) and ( myCID ~= nil ) and ( myCID > 0 ) ) then
+	-- 		myZ = locals.continents[myCID].zones[myZID];
+	-- 	end
+	-- end
+	-- if ( ( myZ ~= nil ) and ( myZ ~= "" ) ) then
+	-- 	locData = locData..myZ..", ";
+	-- end
 
 
-	mySubZ = GetSubZoneText();
-	if ( ( mySubZ == nil ) or ( mySubZ == "" ) ) then
-		mySubZ = GetMinimapZoneText();
-	end
-	if ( mySubZ ~= nil ) then
-		locData = locData..mySubZ..", ";
-		loc = true;
-	end
+	-- mySubZ = GetSubZoneText();
+	-- if ( ( mySubZ == nil ) or ( mySubZ == "" ) ) then
+	-- 	mySubZ = GetMinimapZoneText();
+	-- end
+	-- if ( mySubZ ~= nil ) then
+	-- 	locData = locData..mySubZ..", ";
+	-- 	loc = true;
+	-- end
 
-	px, py = GetPlayerMapPosition("player");
-    	if ( ( px ~= nil ) and ( py ~= nil ) ) then
-        	coords = format("(%d, %d)", px * 100.0, py * 100.0);
-		locData = locData..coords;
-		loc = true; 
-    	end
-    	if ( loc == true ) then
-		return locData;
-	else
-		return "";
-	end
+	-- px, py = GetPlayerMapPosition("player");
+    -- 	if ( ( px ~= nil ) and ( py ~= nil ) ) then
+    --     	coords = format("(%d, %d)", px * 100.0, py * 100.0);
+	-- 	locData = locData..coords;
+	-- 	loc = true; 
+    -- 	end
+    -- 	if ( loc == true ) then
+	-- 	return locData;
+	-- else
+	-- 	return "";
+	-- end
 end
 
 function NuNF.NuN_GetDisplayText(dText)
-	dText = strgsub(dText, "¬n", "\n");
-	dText = strgsub(dText, "¬q", "\"");
-	dText = strgsub(dText, "¬s", "\\");
+	dText = strgsub(dText, "ï¿½n", "\n");
+	dText = strgsub(dText, "ï¿½q", "\"");
+	dText = strgsub(dText, "ï¿½s", "\\");
 	dText = strgsub(dText, "\124\124", "|");
 	dText = strgsub(dText, "|C", "|c");
 	dText = strgsub(dText, "|R", "|r");
@@ -1712,9 +1716,9 @@ function NuNF.NuN_GetDisplayText(dText)
 end
 
 function NuNF.NuN_SetSaveText(dText)
-	dText = strgsub(dText, "\n", "¬n");
-	dText = strgsub(dText, "\"", "¬q");
-	dText = strgsub(dText, "\\", "¬s");
+	dText = strgsub(dText, "\n", "ï¿½n");
+	dText = strgsub(dText, "\"", "ï¿½q");
+	dText = strgsub(dText, "\\", "ï¿½s");
 	dText = strgsub(dText, "\124\124", "|");
 	dText = strgsub(dText, "|C", "|c");
 	dText = strgsub(dText, "|R", "|r");
@@ -2503,11 +2507,11 @@ end
 
 function NuNF.NuN_InitialiseSavedVariables()
 	local idx, value;
-	local_player.realmName = GetCVar("realmName");
+	local_player.realmName = GetRealmName();
 
 	NuNData = _G.NuNData;
 	NuNSettings = _G.NuNSettings;
-	
+
 	if ( not NuNData[local_player.realmName] ) then
 		NuNData[local_player.realmName] = {};
 		NuNSettings[local_player.realmName] = {};
@@ -2959,9 +2963,9 @@ local sn = {};
 	
 -- NotesUNeed Choose Note Importing type for Social Notes
 StaticPopupDialogs["NUN_CHOOSE_SN_IMPORT"] = {
-	text = TEXT(NUN_SN_IMPORT),
-	button1 = TEXT(NUN_SN_IMPORT_CHOICE),
-	button2 = TEXT(CANCEL),
+	text = NUN_SN_IMPORT,
+	button1 = NUN_SN_IMPORT_CHOICE,
+	button2 = CANCEL,
 	OnShow = function(self)
 		sn.Waiting = true;
 		sn.Choice = nil;
@@ -3003,9 +3007,9 @@ StaticPopupDialogs["NUN_CHOOSE_SN_IMPORT"] = {
 
 -- Duplicate Record
 StaticPopupDialogs["NUN_DUPLICATE_RECORD"] = {
-	text = TEXT(NUN_DUPLICATE),
-	button1 = TEXT(NUN_REPLACE),
-	button2 = TEXT(CANCEL),
+	text = NUN_DUPLICATE,
+	button1 = NUN_REPLACE,
+	button2 = CANCEL,
 	showAlert = 1,
 	timeout = 0,
 	OnAccept = function()
@@ -3110,7 +3114,7 @@ function NuN_OnLoad(self)
 	hooksecurefunc("FriendsList_Update", NuNNew_FriendsList_Update);
 	hooksecurefunc("IgnoreList_Update", NuNNew_IgnoreList_Update);
 	hooksecurefunc("WhoList_Update", NuNNew_WhoList_Update);
-	hooksecurefunc("QuestLog_Update", NuNNew_QuestLog_Update);
+	-- hooksecurefunc("QuestLog_Update", NuNNew_QuestLog_Update); -- This is throwing errors 8.0.1
 	hooksecurefunc("AbandonQuest", NuNNew_AbandonQuest);
 	hooksecurefunc("QuestDetailAcceptButton_OnClick", NuNNew_QuestDetailAcceptButton_OnClick);
 	hooksecurefunc("QuestRewardCompleteButton_OnClick", NuNNew_QuestRewardCompleteButton_OnClick);
@@ -3164,19 +3168,20 @@ function NuN_OnLoad(self)
 	locals.continents[5] = {};
 	locals.continents[6] = {};
 	local continent_zones = {};
-	for continentID, continent in ipairs{GetMapContinents()} do
-		wipe(continent_zones);
+	-- @todo coolsax: replace this with updated Map Api
+	-- for continentID, continent in ipairs{GetMapContinents()} do
+	-- 	wipe(continent_zones);
 		
-		if not locals.continents[continentID] then
-			locals.continents[continentID] = {};
-		end
+	-- 	if not locals.continents[continentID] then
+	-- 		locals.continents[continentID] = {};
+	-- 	end
 			
-		locals.continents[continentID].name = continent;
-		for zoneID, zone in ipairs{GetMapZones(continentID)} do
-			continent_zones[zoneID] = zone;
-		end
-		locals.continents[continentID].zones = continent_zones;
-	end
+	-- 	locals.continents[continentID].name = continent;
+	-- 	for zoneID, zone in ipairs{GetMapZones(continentID)} do
+	-- 		continent_zones[zoneID] = zone;
+	-- 	end
+	-- 	locals.continents[continentID].zones = continent_zones;
+	-- end
 end
  
 function NuN_CmdLine(option, parm1, pList)
@@ -5944,7 +5949,7 @@ end
 function NuN_RetrieveIgnoreListParams()
 	-- this whole copy/paste thing we have to do from blizzard's code is really annoying....doesn't their UI guy know any OOP?
 	local numIgnores, numBlocks, numMutes, numToonBlocks = 0, 0, 0, 0;
-	if ( IsVoiceChatEnabled() ) then
+	if ( C_VoiceChat.IsEnabled() ) then
 		numMutes = GetNumMutes();
 	end
 	
@@ -6230,6 +6235,8 @@ end
 
 function NuNF.RegisterModifier_PlayerTalentFrame(buttonName)
 	local button, func;
+	local MAX_NUM_TALENTS = 2;
+	print(MAX_NUM_TALENTS);
 	for i = 1, MAX_NUM_TALENTS do
 		button = _G["PlayerTalentFrameTalent" .. i];
 		NuNF.HookButtonClick(button, buttonName);
@@ -6291,7 +6298,7 @@ function NuNF.RegisterModifier_Main(buttonName)
 	end
 	for i = 1, 7 do _G["TradePlayerItem" .. i .. "ItemButton"]:RegisterForClicks(buttonName .. "Up"); end
 	for i = 1, 7 do _G["TradeRecipientItem" .. i .. "ItemButton"]:RegisterForClicks(buttonName .. "Up"); end
-	for i = 1, 7 do _G["BankFrameBag" .. i]:RegisterForClicks(buttonName .. "Up"); end
+	-- for i = 1, 7 do _G["BankFrameBag" .. i]:RegisterForClicks(buttonName .. "Up"); end
 	for i = 1, 13 do _G["ContainerFrame" .. i .. "PortraitButton"]:RegisterForClicks(buttonName .. "Up"); end
 	
 --	MinimapZoneTextButton:RegisterForClicks(buttonName .. "Up");
@@ -7053,7 +7060,7 @@ function NuNNew_ChatFrame_MessageEventHandler(chatframe, event, ...)
 	-- don't echo messages that have been intercepted and processed by NuN
 	if ( processedByNuN ) then
 		if ( ( not NuN_State.NuN_AtStartup ) and ( locals.NuN_Receiving.active ) ) then
-			PlaySound("TellMessage");		-- beep to let the user know that we're still receiving a note from someone else
+			PlaySound(SOUNDKIT.TELL_MESSAGE);		-- beep to let the user know that we're still receiving a note from someone else
 		end
 		return true;
 	else
@@ -10896,8 +10903,8 @@ end
 
 function NuN_RemoveColours(colouredText)
 	local plainText, preText, postText, midText = "", "", "", "";
-	local workingText = strgsub(colouredText, "<", "¬1~");
-	local workingText = strgsub(workingText, ">", "¬2~");
+	local workingText = strgsub(colouredText, "<", "ï¿½1~");
+	local workingText = strgsub(workingText, ">", "ï¿½2~");
 
 	local next = 0;
 	while ( true ) do
@@ -10956,8 +10963,8 @@ function NuN_RemoveColours(colouredText)
 	end
 	workingText = strgsub(workingText, "%b<>", "");
 
-	plainText = strgsub(workingText, "¬1~", "<");
-	plainText = strgsub(plainText, "¬2~", ">");
+	plainText = strgsub(workingText, "ï¿½1~", "<");
+	plainText = strgsub(plainText, "ï¿½2~", ">");
 
 	return plainText;
 end
@@ -10984,9 +10991,9 @@ end
 function NuN_ChatFormatCheckBox_OnClick()
 	if ( NuN_ChatFormatCheckBox:GetChecked() ) then
 		NuN_Message(NUN_TRANSMISSION_WARNING);
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	else
-		PlaySound("igMainMenuOptionCheckBoxOff");
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 	end
 end
 
@@ -13128,7 +13135,7 @@ function NuN_SetupRatings(initialSetup)
 	end
 
 	UnitPopupMenus["NUN_POPUP"] 	= {}
-	UnitPopupButtons["NUN_POPUP"] 	= { text = TEXT(NUN_POPUP_TITLE), dist = 0, nested = 1, notClickable = 1 };
+	UnitPopupButtons["NUN_POPUP"] 	= { text = NUN_POPUP_TITLE, dist = 0, nested = 1, notClickable = 1 };
 	if ( initialSetup ) then
 		local menuItemCount = getn(UnitPopupMenus["RAID"]) + 1;
 		local insertIndex = menuItemCount + 2;
@@ -13204,7 +13211,7 @@ nun_msgf("dropdownMenu:%s  (%s)   frame_tag:%s  unit_tag:%s  u_name:%s  userdata
 	if ( "NUN_POPUP" == UIDROPDOWNMENU_MENU_VALUE ) then
 		-- create the "Open Note" item and add it to the submenu at the first position
 		local info = UIDropDownMenu_CreateInfo();
-		info.text = TEXT(NUN_POPUP_TOGGLE);
+		info.text = NUN_POPUP_TOGGLE;
 		info.owner = UIDROPDOWN_MENU_VALUE;
 		info.checked = nil;
 		info.value = NUN_POPUP_TOGGLE;

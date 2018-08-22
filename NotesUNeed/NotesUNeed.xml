@@ -5,7 +5,7 @@
 	<Script file="Localisation.fr.lua" />
 	<Script file="NotesUNeed_Export.lua" />
 	<Script file="NotesUNeed.lua" />
-	<Script file="Modules\NUN_PratIntegration.lua" />
+	<!-- <Script file="Modules\NUN_PratIntegration.lua" /> -->
 
 	<!--@debug@
 	<Button name="ReloadButton" parent="UIParent">
@@ -470,7 +470,7 @@
 			</OnUpdate>
 		</Scripts>
 	</Frame>
-	<Frame name="NuN_QuestLogFrameNotifier" hidden="true" parent="QuestLogFrame" toplevel="true" frameStrata="LOW">
+	<!-- <Frame name="NuN_QuestLogFrameNotifier" hidden="true" parent="QuestLogFrame" toplevel="true" frameStrata="LOW">
 		<Anchor point="TOPLEFT">
 			<Offset>
 				<AbsDimension x="0" y="0" />
@@ -478,7 +478,7 @@
 		</Anchor>
 		<Size>
 			<AbsDimension x="1" y="1" />
-		</Size>
+		</Size> -->
 		<!--<Scripts>
 			<OnShow>
 				NuN_ForceUpdateQuestNotes("QUEST_LOG_UPDATE");
@@ -487,7 +487,7 @@
 				NuN_ForceUpdateQuestNotes("QUEST_LOG_UPDATE");
 			</OnHide>
 		</Scripts>-->
-	</Frame>
+	<!-- </Frame> -->
 	<!-- Main NuN Frame for displaying and editing note details -->
 	<Frame clampToScreen="true" name="NuNFrame" hidden="true" parent="UIParent" toplevel="true" movable="true" enableMouse="true">
 		<Size>
@@ -746,9 +746,9 @@
 				<Scripts>
 					<OnClick>
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 						NuN_TTCheckBox_OnClick(self,"Contact");
 					</OnClick>
@@ -1005,7 +1005,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOption");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 								NuN_SaveReport = true;
 								NuN_WriteNote();
 								NuN_SaveReport = nil;
@@ -1022,7 +1022,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOption");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 								NuNEditDetailsFrame:Hide();
 								NuNFrame:Hide();
 							</OnClick>
@@ -1038,7 +1038,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOption");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 								NuN_DeleteNote("Contact");
 							</OnClick>
 						</Scripts>
@@ -1053,7 +1053,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOption");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 								NuN_Options();
 							</OnClick>
 						</Scripts>
@@ -1068,7 +1068,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOption");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 								NuN_UnitInfo_OnClick();
 							</OnClick>
 							<OnEnter>
@@ -1089,7 +1089,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOption");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 								NuN_Who();
 							</OnClick>
 							<OnEnter>
@@ -1110,7 +1110,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOption");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 								NuN_DateStamp();
 							</OnClick>
 						</Scripts>
@@ -1125,7 +1125,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOption");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 								NuN_Loc();
 							</OnClick>
 							<OnEnter>
@@ -1199,7 +1199,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOption");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 								NuN_ClrDD();
 							</OnClick>
 							<OnEnter>
@@ -1921,7 +1921,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOption");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 								NuNButtonSaveNote:Enable();
 								NuNEditDetailsFrame:Hide();
 							</OnClick>
@@ -2058,9 +2058,9 @@
 						<Scripts>
 							<OnClick>
 								if ( self:GetChecked() ) then
-									PlaySound("igMainMenuOptionCheckBoxOff");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 								else
-									PlaySound("igMainMenuOptionCheckBoxOn");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								end
 								NuN_EditDetailSaveDefaultCheckButton_OnClick();
 							</OnClick>
@@ -2076,9 +2076,9 @@
 						<Scripts>
 							<OnClick>
 								if ( self:GetChecked() ) then
-									PlaySound("igMainMenuOptionCheckBoxOff");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 								else
-									PlaySound("igMainMenuOptionCheckBoxOn");
+									PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 								end
 							</OnClick>
 							<OnEnter>
@@ -2335,7 +2335,7 @@
 					<OnLoad>
 					</OnLoad>
 					<OnClick>
-						PlaySound("igMainMenuOption");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 						NuNOptions_Import();
 					</OnClick>
 				</Scripts>
@@ -2357,9 +2357,9 @@
 				<Scripts>
 					<OnClick>
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 						NuN_OptionsGuildCheckBox_OnClick();
 					</OnClick>
@@ -2388,7 +2388,7 @@
 					<OnLoad>
 					</OnLoad>
 					<OnClick>
-						PlaySound("igMainMenuOption");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 						NuNOptions_Export();
 					</OnClick>
 				</Scripts>
@@ -2410,9 +2410,9 @@
 				<Scripts>
 					<OnClick>
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 						NuN_OptionsAACheckBox_OnClick();
 					</OnClick>
@@ -2441,9 +2441,9 @@
 				<Scripts>
 					<OnClick>
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 						NuN_OptionsAddCheckBox_OnClick();
 					</OnClick>
@@ -2475,9 +2475,9 @@
 					</OnLoad>
 					<OnClick>
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 						NuN_OptionsVerboseCheckBox_OnClick();
 					</OnClick>
@@ -2506,9 +2506,9 @@
 				<Scripts>
 					<OnClick>
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 						NuN_OptionsDeleteCheckBox_OnClick();
 					</OnClick>
@@ -2699,9 +2699,9 @@
 				<Scripts>
 					<OnClick>
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 						NuN_DefaultLevelCheckBox_OnClick();
 					</OnClick>
@@ -2741,9 +2741,9 @@
 				<Scripts>
 					<OnClick>
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 						NuN_HelpTTCheckBox_OnClick();
 					</OnClick>
@@ -2783,9 +2783,9 @@
 				<Scripts>
 					<OnClick>
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 						NuN_ChatTagCheckBox_OnClick();
 					</OnClick>
@@ -2825,9 +2825,9 @@
 				<Scripts>
 					<OnClick>
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 						NuN_OverTTCheckBox_OnClick();
 					</OnClick>
@@ -2867,9 +2867,9 @@
 				<Scripts>
 					<OnClick>
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 						NuN_AutoQuestCheckBox_OnClick();
 					</OnClick>
@@ -2905,9 +2905,9 @@
 				<Scripts>
 					<OnClick>
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 						NuN_AutoNoteCheckBox_OnClick();
 					</OnClick>
@@ -2947,9 +2947,9 @@
 				<Scripts>
 					<OnClick>
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 						NuN_AutoPartyCheckBox_OnClick();
 					</OnClick>
@@ -2989,9 +2989,9 @@
 				<Scripts>
 					<OnClick>
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 						NuN_BehaveCheckBox_OnClick();
 					</OnClick>
@@ -3033,9 +3033,9 @@
 				<Scripts>
 					<OnClick>
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 						NuN_AutoMapCheckBox_OnClick();
 					</OnClick>
@@ -3077,9 +3077,9 @@
 				<Scripts>
 					<OnClick>
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 
 						NuN_CustomFontCheckBox_OnClick(self,button,down);
@@ -3122,9 +3122,9 @@
 				<Scripts>
 					<OnClick>
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 						NuN_GuildRefreshCheckBox_OnClick();
 					</OnClick>
@@ -3166,9 +3166,9 @@
 				<Scripts>
 					<OnClick>
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 						NuN_GRVerboseCheckBox_OnClick();
 					</OnClick>
@@ -3276,9 +3276,9 @@
 				<Scripts>
 					<OnClick>
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 						NuN_ModifierMasterCheckBox_OnClick();
 					</OnClick>
@@ -3303,7 +3303,7 @@
 				</Anchors>
 				<Scripts>
 					<OnMouseDown>
-						PlaySound("igMainMenuOption");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 						NuNOptions_SetModifier(button);
 					</OnMouseDown>
 					<OnEnter>
@@ -3374,7 +3374,7 @@
 						self:Disable();
 					</OnLoad>
 					<OnClick>
-						PlaySound("igMainMenuOption");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 						NuNOptions_DBImport();
 					</OnClick>
 				</Scripts>
@@ -3391,7 +3391,7 @@
 					<OnLoad>
 					</OnLoad>
 					<OnClick>
-						PlaySound("igMainMenuOption");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 						NuNOptions_Search();
 					</OnClick>
 				</Scripts>
@@ -3406,7 +3406,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOption");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 						NuNOptions_DBBackUp_OnClick();
 					</OnClick>
 				</Scripts>
@@ -3423,7 +3423,7 @@
 					<OnLoad>
 					</OnLoad>
 					<OnClick>
-						PlaySound("igMainMenuOption");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 						HideUIPanel(NuNOptionsFrame);
 					</OnClick>
 				</Scripts>
@@ -3440,7 +3440,7 @@
 					<OnLoad>
 					</OnLoad>
 					<OnClick>
-						PlaySound("igMainMenuOption");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 						NuNOptions_ResetDefaults();
 					</OnClick>
 					<OnEnter>
@@ -3461,7 +3461,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOption");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 						NuNOptions_DBRestore_OnClick();
 					</OnClick>
 				</Scripts>
@@ -3730,9 +3730,9 @@
 				<Scripts>
 					<OnClick>
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 					</OnClick>
 					<OnEnter>
@@ -3758,7 +3758,7 @@
 					<OnLoad>
 					</OnLoad>
 					<OnClick>
-						PlaySound("igMainMenuOption");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 						NuN_Transmit();
 					</OnClick>
 				</Scripts>
@@ -3885,7 +3885,7 @@
 					<OnLoad>
 					</OnLoad>
 					<OnClick>
-						PlaySound("igMainMenuOption");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 						HideUIPanel(NuN_ChatFrame);
 					</OnClick>
 				</Scripts>
@@ -3987,7 +3987,7 @@
 					<OnLoad>
 					</OnLoad>
 					<OnClick>
-						PlaySound("igMainMenuOption");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 						NuNGNoteFrame.confirmed = true;
 						NuNGNote_WriteNote();
 					</OnClick>
@@ -4008,7 +4008,7 @@
 					<OnLoad>
 					</OnLoad>
 					<OnClick>
-						PlaySound("igMainMenuOption");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 						HideUIPanel(NuN_ConfirmFrame);
 					</OnClick>
 				</Scripts>
@@ -4995,9 +4995,9 @@
 				<Scripts>
 					<OnClick>
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 						NuN_TTCheckBox_OnClick(self,"General");
 					</OnClick>
@@ -5026,9 +5026,9 @@
 				<Scripts>
 					<OnClick>
 						if ( self:GetChecked() ) then
-							PlaySound("igMainMenuOptionCheckBoxOff");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 						else
-							PlaySound("igMainMenuOptionCheckBoxOn");
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 						end
 					</OnClick>
 					<OnEnter>
@@ -5049,7 +5049,7 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PlaySound("igMainMenuOption");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 						NuN_NPCTarget();
 					</OnClick>
 					<OnEnter>
@@ -5255,7 +5255,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOption");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 								NuN_MapNote("Note", "", "", nil);
 							</OnClick>
 							<OnEnter>
@@ -5642,7 +5642,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOption");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 								NuNGNoteFrame.confirmed = false;
 								NuN_SaveReport = true;
 								NuNGNote_WriteNote();
@@ -5660,7 +5660,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOption");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 								NuNGNoteFrame:Hide();
 							</OnClick>
 						</Scripts>
@@ -5675,7 +5675,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOption");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 								NuN_DeleteNote("General");
 							</OnClick>
 							<OnEnter>
@@ -5696,7 +5696,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOption");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 								NuN_Options();
 							</OnClick>
 						</Scripts>
@@ -5711,7 +5711,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOption");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 								NuNGNote_DateStamp();
 							</OnClick>
 						</Scripts>
@@ -5726,7 +5726,7 @@
 						</Anchors>
 						<Scripts>
 							<OnClick>
-								PlaySound("igMainMenuOption");
+								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 								NuNGNote_Loc();
 							</OnClick>
 							<OnEnter>
@@ -6700,7 +6700,7 @@
 					<OnLoad>
 					</OnLoad>
 					<OnClick>
-						PlaySound("igMainMenuOption");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 						NuNcDeleteButton_OnClick();
 					</OnClick>
 				</Scripts>
@@ -6720,7 +6720,7 @@
 					<OnLoad>
 					</OnLoad>
 					<OnClick>
-						PlaySound("igMainMenuOption");
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 						HideUIPanel(NuNcDeleteFrame);
 					</OnClick>
 				</Scripts>
@@ -6805,7 +6805,7 @@
 				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 			</OnLoad>
 			<OnShow>
-				PlaySound("UChatScrollButton");
+				PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 				NuNPopup_OnShow();
 			</OnShow>
 			<OnHide>
@@ -6827,7 +6827,7 @@
 				if ( ColorPickerFrame.opacityFunc ) then
 					ColorPickerFrame.opacityFunc();
 				end
-				PlaySound("igMainMenuOptionCheckBoxOn");
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 			</OnMouseDown>
 		</Scripts>
 	</Frame>
