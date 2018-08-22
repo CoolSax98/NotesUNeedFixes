@@ -415,7 +415,7 @@ local UIParent = UIParent;
 local GameTooltip, GameTooltipTextLeft1 = GameTooltip, GameTooltipTextLeft1;
 local ShoppingTooltip1, ShoppingTooltip2 = ShoppingTooltip1, ShoppingTooltip2;
 local FriendsFrame, FriendsListFrame, IgnoreListFrame = FriendsFrame, FriendsListFrame, IgnoreListFrame;
-local WhoFrame, WorldMapFrame, QuestLogFrame, UnitPopupMenus = WhoFrame, WorldMapFrame, QuestLogFrame, UnitPopupMenus;
+local WhoFrame, WorldMapFrame, UnitPopupMenus = WhoFrame, WorldMapFrame, UnitPopupMenus;
 local TargetFrame, RaidFrame, GuildFrame = TargetFrame, RaidFrame, GuildFrame;
 local DEFAULT_CHAT_FRAME = DEFAULT_CHAT_FRAME;
 
@@ -4617,9 +4617,9 @@ function NuNGNote_WriteNote(noteName)
 
 		-- Refresh other frames that might reflect the recent Save
 		
-		if ( QuestLogFrame:IsVisible() ) then
-			QuestLog_Update();
-		end
+		-- if ( QuestLogFrame:IsVisible() ) then
+		-- 	QuestLog_Update();
+		-- end
 
 		if ( ( NuNSearchFrame:IsVisible() ) and ( NuNGNoteFrame.fromQuest ) ) then
 			NuN_FetchQuestHistory();
@@ -5949,9 +5949,9 @@ end
 function NuN_RetrieveIgnoreListParams()
 	-- this whole copy/paste thing we have to do from blizzard's code is really annoying....doesn't their UI guy know any OOP?
 	local numIgnores, numBlocks, numMutes, numToonBlocks = 0, 0, 0, 0;
-	if ( C_VoiceChat.IsEnabled() ) then
-		numMutes = GetNumMutes();
-	end
+	-- if ( C_VoiceChat.IsEnabled() ) then
+	-- 	numMutes = GetNumMutes();
+	-- end
 	
 	-- Headers stuff
 	local ignoredHeader, blockedHeader, mutedHeader, blockedToonHeader = 0, 0, 0, 0;
@@ -6270,26 +6270,26 @@ local function questInfoItem_Click(frame, mouseButton, isMouseButtonDown)
 	end
 	return NuNHooks.originalOnClick[frame:GetID()](frame, mouseButton, isMouseButtonDown);
 end
-function NuNF.RegisterModifier_QuestLogFrame(buttonName)
-	local button;
+-- function NuNF.RegisterModifier_QuestLogFrame(buttonName)
+-- 	local button;
 
-	-- Quest Title Buttons
-	if QuestLogScrollFrame and QuestLogScrollFrame.buttons then
-		for _, questTitleButton in pairs(QuestLogScrollFrame.buttons) do
-			button = questTitleButton;
-			NuNF.HookButtonClick(button, buttonName, questTitleButton_Click);
-		end
-	end
+-- 	-- Quest Title Buttons
+-- 	if QuestLogScrollFrame and QuestLogScrollFrame.buttons then
+-- 		for _, questTitleButton in pairs(QuestLogScrollFrame.buttons) do
+-- 			button = questTitleButton;
+-- 			NuNF.HookButtonClick(button, buttonName, questTitleButton_Click);
+-- 		end
+-- 	end
 	
-	-- Quest Reward Buttons
-	for i = 1, 10 do 
-		button = _G["QuestInfoItem" .. i];
-		NuNF.HookButtonClick(button, buttonName, questInfoItem_Click);
-	end
-end
+-- 	-- Quest Reward Buttons
+-- 	for i = 1, 10 do 
+-- 		button = _G["QuestInfoItem" .. i];
+-- 		NuNF.HookButtonClick(button, buttonName, questInfoItem_Click);
+-- 	end
+-- end
 function NuNF.RegisterModifier_Main(buttonName)
 	-- Quest Reward buttons
-	NuNF.RegisterModifier_QuestLogFrame(buttonName);
+	-- NuNF.RegisterModifier_QuestLogFrame(buttonName);
 
 	-- Companion buttons
 	--buttonName = NuNF.TranslateButtonName(buttonName);
@@ -6326,7 +6326,7 @@ function NuNF.NotesUNeed_RegisterFramesForClicks( delayInMilliseconds )
 			NuNF.RegisterModifier_InspectFrame(buttonName);
 			NuNF.RegisterModifier_TrainerFrame(buttonName);
 			NuNF.RegisterModifier_PlayerTalentFrame(buttonName);
-			NuNF.RegisterModifier_QuestLogFrame(buttonName);
+			-- NuNF.RegisterModifier_QuestLogFrame(buttonName);
 			--NuNF.RegisterModifier_Main(buttonName);
 			--NuNF.RegisterModifier_Main(buttonName);
 		end
@@ -7438,9 +7438,9 @@ function NuNGNote_Delete(noRefresh)
 			locals.deletedE = true;
 			NuNSearch_Search();
 		end
-		if ( ( QuestLogFrame:IsVisible() ) and ( not NuNGNoteFrame.fromQuest ) ) then
-			QuestLog_Update();
-		end
+		-- if ( ( QuestLogFrame:IsVisible() ) and ( not NuNGNoteFrame.fromQuest ) ) then
+		-- 	QuestLog_Update();
+		-- end
 		NuN_UpdateMapNotesIndex(c_note);
 	end
 end
@@ -9237,20 +9237,20 @@ function NuN_NoteButton_OnMouseWheel(noteButton, delta)
 		if ( NuN_IsFrameInteractive(GuildRosterFrame) ) then
 			pBttnTxt, pBttn = NuN_GetName_FrameButton(nBttnID, NuNC.UPDATETAG_GUILD_ROSTER);
 --[-[
-if locals.NuNDebug then
-	if pBttn and pBttn.string2 then
-	nun_msgf("MouseOver action - locals.ttName:%s    nBttnID:%s  pBttn:%s ==================================================================", tostring(pBttnTxt), tostring(nBttnID), pBttn.string2:GetText());
-	else
-	nun_msgf("MouseOver action - locals.ttName:%s    nBttnID:%s  pBttn:%s ==================================================================", tostring(pBttnTxt), tostring(nBttnID), "nil");
-	end
-end
+			if locals.NuNDebug then
+				if pBttn and pBttn.string2 then
+				nun_msgf("MouseOver action - locals.ttName:%s    nBttnID:%s  pBttn:%s ==================================================================", tostring(pBttnTxt), tostring(nBttnID), pBttn.string2:GetText());
+				else
+				nun_msgf("MouseOver action - locals.ttName:%s    nBttnID:%s  pBttn:%s ==================================================================", tostring(pBttnTxt), tostring(nBttnID), "nil");
+				end
+			end
 --]]
 		end
 	elseif ( NuN_IsFrameInteractive(WhoFrame) ) then
 		pBttnTxt = NuN_GetName_FrameButton(nBttnID, NuNC.UPDATETAG_WHO);
-	elseif ( NuN_IsFrameInteractive(QuestLogFrame) ) then
-		lOffset = nBttnID + FauxScrollFrame_GetOffset(QuestLogScrollFrame);
-		pBttnTxt, qLevel, qTag, qGroup, qHeader, qCollapsed, qComplete = GetQuestLogTitle(lOffset);
+	-- elseif ( NuN_IsFrameInteractive(QuestLogFrame) ) then
+	-- 	lOffset = nBttnID + FauxScrollFrame_GetOffset(QuestLogScrollFrame);
+	-- 	pBttnTxt, qLevel, qTag, qGroup, qHeader, qCollapsed, qComplete = GetQuestLogTitle(lOffset);
 	end	
 	
 	if ( pBttnTxt ) then
@@ -9336,42 +9336,42 @@ function NuN_NoteButton_OnInteract(nBttnID, uAction)
 			NuN_StaticTT();
 		end
 
-	elseif ( NuN_IsFrameInteractive(QuestLogFrame) ) then
-		lOffset = nBttnID + FauxScrollFrame_GetOffset(QuestLogScrollFrame);
-		pBttnTxt, qLevel, qTag, qGroup, qHeader, qCollapsed, qComplete = GetQuestLogTitle(lOffset);
-		local_player.currentNote.general = pBttnTxt;
-		if ( uAction == "Click" ) then
-			if ( ( receiptPending ) and ( locals.NuN_Receiving.type == "General" ) ) then
-				return;
-			end
-			SelectQuestLogEntry(lOffset);
-			QuestLog_Update();
-			if ( qHeader ) then
-				qText = "";
-			else
-				NuNGNoteFrame.fromQuest = nil;
-				if ( ( NuNDataRNotes[local_player.currentNote.general] ) or ( NuNDataANotes[local_player.currentNote.general] ) ) then
-					NuN_ShowSavedGNote();
-				else
-					if ( qLevel == nil ) then
-						qLevel = "--";
-					end
-					if ( qTag == nil ) then
-						qTag = "";
-					end
-					qText = "\n" .. local_player.currentNote.general.."     "..NUN_QLVL..qLevel.."     "..qTag.."     ".."\n\n"..NuNF.NuN_BuildQuestText().."\n";
-					if ( qHeader ) then
-						contact.type = NuNGet_CommandID(NUN_NOTETYPES, "   ");
-					else
-						contact.type = NuNGet_CommandID(NUN_NOTETYPES, "QST");
-					end
-					NuN_ShowTitledGNote( qText );
-				end
-			end
-		elseif ( uAction == "MouseOver" ) then
-			locals.ttName = local_player.currentNote.general;
-			NuN_StaticTT();
-		end
+	-- elseif ( NuN_IsFrameInteractive(QuestLogFrame) ) then
+	-- 	lOffset = nBttnID + FauxScrollFrame_GetOffset(QuestLogScrollFrame);
+	-- 	pBttnTxt, qLevel, qTag, qGroup, qHeader, qCollapsed, qComplete = GetQuestLogTitle(lOffset);
+	-- 	local_player.currentNote.general = pBttnTxt;
+	-- 	if ( uAction == "Click" ) then
+	-- 		if ( ( receiptPending ) and ( locals.NuN_Receiving.type == "General" ) ) then
+	-- 			return;
+	-- 		end
+	-- 		SelectQuestLogEntry(lOffset);
+	-- 		QuestLog_Update();
+	-- 		if ( qHeader ) then
+	-- 			qText = "";
+	-- 		else
+	-- 			NuNGNoteFrame.fromQuest = nil;
+	-- 			if ( ( NuNDataRNotes[local_player.currentNote.general] ) or ( NuNDataANotes[local_player.currentNote.general] ) ) then
+	-- 				NuN_ShowSavedGNote();
+	-- 			else
+	-- 				if ( qLevel == nil ) then
+	-- 					qLevel = "--";
+	-- 				end
+	-- 				if ( qTag == nil ) then
+	-- 					qTag = "";
+	-- 				end
+	-- 				qText = "\n" .. local_player.currentNote.general.."     "..NUN_QLVL..qLevel.."     "..qTag.."     ".."\n\n"..NuNF.NuN_BuildQuestText().."\n";
+	-- 				if ( qHeader ) then
+	-- 					contact.type = NuNGet_CommandID(NUN_NOTETYPES, "   ");
+	-- 				else
+	-- 					contact.type = NuNGet_CommandID(NUN_NOTETYPES, "QST");
+	-- 				end
+	-- 				NuN_ShowTitledGNote( qText );
+	-- 			end
+	-- 		end
+	-- 	elseif ( uAction == "MouseOver" ) then
+	-- 		locals.ttName = local_player.currentNote.general;
+	-- 		NuN_StaticTT();
+	-- 	end
 	end
 	
 	if ( NuN_IsFrameInteractive(GuildFrame) ) then
