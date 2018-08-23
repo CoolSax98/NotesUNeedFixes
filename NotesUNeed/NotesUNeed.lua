@@ -1189,7 +1189,7 @@ end
 
 function NuNF.NuN_CheckPartyByName(parmN)
 	local partym;
-	local numParty = GetNumPartyMembers();
+	local numParty = GetNumGroupMembers();
 
 	for groupIndex = 1, numParty, 1 do
  		if (GetPartyMember(groupIndex)) then
@@ -1206,7 +1206,7 @@ end
 function NuNF.NuN_CheckRaidByName(parmN)
 	local raidm;
 	local lclName;
-	local numRaid = GetNumRaidMembers();
+	local numRaid = GetNumGroupMembers();
 
 	for raidIndex = 1, numRaid, 1 do
 		lclName = GetRaidRosterInfo(raidIndex);
@@ -1656,7 +1656,7 @@ function NuNF.NuN_GetLoc()
 	local myCID, myC, mySubZ, myZID, myZ, px, py, coords;
 	local loc = false;
 
-	-- nooping this call for now @todo coolsax: replace with map api updates
+	-- nooping this call for now -- TODO: coolsax: replace with map api updates
 	return "";
 
 	-- myCID = GetCurrentMapContinent();
@@ -3094,9 +3094,9 @@ function NuN_OnLoad(self)
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");		-- 5.60
 	self:RegisterEvent("ADDON_LOADED");
 
-	--@todo: hmmmm, should we move all these functions into a seperate "hook" method so that we can also be really nice and neat and use an unhook method?
+	-- TODO: hmmmm, should we move all these functions into a seperate "hook" method so that we can also be really nice and neat and use an unhook method?
 	-- now we can load the GuildUI, so that we can hook the guild status update functions
-	--@todo orgevo: I really don't like force-loading the GuildUI here, so early in the loading process.  It could be loaded later, but I'm doing something wrong
+	-- TODO: orgevo: I really don't like force-loading the GuildUI here, so early in the loading process.  It could be loaded later, but I'm doing something wrong
 	-- with the guild notes buttons, when I'm trying to reparent them to the guild frame container buttons, so they don't show up.  gonna put this off till next
 	-- release, however.
 	locals.currentGuildRosterView = "playerStatus";
@@ -3122,10 +3122,10 @@ function NuN_OnLoad(self)
 	hooksecurefunc("FriendsFrameIgnoreButton_OnClick", NuNNew_FriendsFrameIgnoreButton_OnClick);
 	hooksecurefunc("FriendsFrameWhoButton_OnClick", NuNNew_FriendsFrameWhoButton_OnClick);
 	hooksecurefunc("PaperDollItemSlotButton_OnModifiedClick", NuNNew_PaperDollItemSlotButton_OnModifiedClick);
-	--	hooksecurefunc("ToggleWorldMap", NuNNew_ToggleWorldMap);		@todo orgevo: hmm, thinking about deprecating support for these two map addons (alpha map, and map notes)
+	--	hooksecurefunc("ToggleWorldMap", NuNNew_ToggleWorldMap);		-- TODO: orgevo: hmm, thinking about deprecating support for these two map addons (alpha map, and map notes)
 	hooksecurefunc("ToggleFrame", NuNNew_ToggleWorldMap);
 	
-	--	hooksecurefunc("QuestWatch_Update", NuN_QuestWatch_Update);		@todo orgevo: update and restore this code
+	--	hooksecurefunc("QuestWatch_Update", NuN_QuestWatch_Update);		-- TODO: orgevo: update and restore this code
 	hooksecurefunc("SetAbandonQuest", NuNNew_SetAbandonQuest);
 	hooksecurefunc("AddFriend", NuNNew_AddFriend);
 	hooksecurefunc("RemoveFriend", NuNNew_RemoveFriend);
@@ -3168,7 +3168,7 @@ function NuN_OnLoad(self)
 	locals.continents[5] = {};
 	locals.continents[6] = {};
 	local continent_zones = {};
-	-- @todo coolsax: replace this with updated Map Api
+	-- -- TODO: coolsax: replace this with updated Map Api
 	-- for continentID, continent in ipairs{GetMapContinents()} do
 	-- 	wipe(continent_zones);
 		
@@ -5988,7 +5988,6 @@ function NuNNew_IgnoreList_Update()
 		-- for the list items which correspond to headers (i.e. Ignored, Muted, etc.), they are made children of the button for that list item.  
 		if	ignoreButton ~= FriendsFrameIgnoredHeader:GetParent() and
 			ignoreButton ~= FriendsFrameBlockedInviteHeader:GetParent() and
-			ignoreButton ~= FriendsFrameBlockedToonHeader:GetParent() and
 			ignoreButton ~= FriendsFrameMutedHeader:GetParent() then
 			if ignoredItemIndex <= lastIgnoredIndex then
 				ignoredItemIndex = ignoredItemIndex - ignoredHeader;
@@ -6304,7 +6303,7 @@ function NuNF.RegisterModifier_Main(buttonName)
 --	MinimapZoneTextButton:RegisterForClicks(buttonName .. "Up");
 --	AzerothButton:RegisterForClicks(buttonName .. "Up");
 --	OutlandButton:RegisterForClicks(buttonName .. "Up");
---@todo
+-- TODO:
 end
 
 function NuNF.NotesUNeed_RegisterFramesForClicks( delayInMilliseconds )
@@ -6735,7 +6734,7 @@ function NuNNew_ChatFrame_MessageEventHandler(chatframe, event, ...)
 		end
 	end
 
---@todo orgevo - add this optimization 
+---- TODO: orgevo - add this optimization 
 --if ( strsub(event, 1, 8) == "CHAT_MSG" ) then
 
 	-- Suppress Friend not found messages when attempting to Befriend someone
@@ -6744,7 +6743,7 @@ function NuNNew_ChatFrame_MessageEventHandler(chatframe, event, ...)
 		if ( not NuNSettings[local_player.realmName].autoS ) then
 			local playerNameTxt = "";
 			if locals.nameLastAttemptedFriendUpdate then
-				--@todo orgevo - the intent here is to show which friend no longer exists, so the player can remove them from the list, but the AddFriend() functionality
+				---- TODO: orgevo - the intent here is to show which friend no longer exists, so the player can remove them from the list, but the AddFriend() functionality
 				-- is an asynchronous procedure, so I need to spend a little more time on this to implement it correctly
 				--playerNameTxt = " (" .. locals.nameLastAttemptedFriendUpdate .. ")";
 			end
@@ -6758,7 +6757,7 @@ function NuNNew_ChatFrame_MessageEventHandler(chatframe, event, ...)
 		if ( not NuNSettings[local_player.realmName].autoS ) then
 			local playerNameTxt = "";
 			if locals.nameLastAttemptedIgnoreUpdate then
-				--@todo orgevo - the intent here is to show which friend no longer exists, so the player can remove them from the list, but the AddFriend() functionality
+				---- TODO: orgevo - the intent here is to show which friend no longer exists, so the player can remove them from the list, but the AddFriend() functionality
 				-- is an asynchronous procedure, so I need to spend a little more time on this to implement it correctly
 				--playerNameTxt = " (" .. locals.nameLastAttemptedIgnoreUpdate .. ")";
 			end
@@ -8670,7 +8669,7 @@ end
 
 function GeneralNote_OnEscapePressed(editBox)
 --nun_msgf("GeneralNote_OnEscapePressed - editBox:%s", tostring(editBox:GetName()));
-	-- @todo orgevo: add a confirmation dialog here, to prevent user from accidentally closing note without saving
+	-- -- TODO: orgevo: add a confirmation dialog here, to prevent user from accidentally closing note without saving
 	NuN_TextEscape(NuNGNoteFrame, editBox);
 	local_player.currentNote.general = locals.NuN_GNote_OriTitle or locals.prevNote;
 	--NuNGNoteFrame:Hide();
@@ -9115,7 +9114,7 @@ function NuN_ShowGuildNote()
 end
 
 -- Update Note buttons on Social Frames
---@todo ronp - need to figure out how to make sure this is called when the player is scrolling through the guild list
+---- TODO: ronp - need to figure out how to make sure this is called when the player is scrolling through the guild list
 NuN_UpdateNoteButton = function(nBttn, nBttnID, refreshType)
 	local bName = nBttn:GetName();
 	local pBttnTxt, qHeader;
@@ -10454,7 +10453,7 @@ function NuN_Transmit(tType, tUser)
 				sendAll = nil;
 			end
 		elseif ( locals.sendTo == "PARTY" ) then
-			if ( ( not GetNumPartyMembers() ) or ( GetNumPartyMembers() < 1 ) ) then
+			if ( ( not GetNumGroupMembers() ) or ( GetNumGroupMembers() < 1 ) ) then
 				sendAll = nil;
 			end
 		end
@@ -11339,10 +11338,10 @@ function NuN_ProcessParty()
 	
 	if (UnitInRaid("player")) then
 		lGroupType = "raid";
-		lMembers = GetNumRaidMembers();
+		lMembers = GetNumGroupMembers();
 	else
 		lGroupType = "party";
-		lMembers = GetNumPartyMembers();
+		lMembers = GetNumGroupMembers();
 	end
 	
 	-- Need to update this check with an IsInInstance check..... !!!
@@ -11998,7 +11997,7 @@ function NuN_HyperButton_OnClick(nType)
 		end
 	end
 
-	--@todo orgevo - the following three blocks should be refactored to simply accept a table of tokens to search for; the logic is identical in each case....
+	---- TODO: orgevo - the following three blocks should be refactored to simply accept a table of tokens to search for; the logic is identical in each case....
 	-- extract hyperlinks to items
 	lTextLen = strlen(lText);
 	p1 = strfind(lText, "|Hitem");
