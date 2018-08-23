@@ -1703,6 +1703,7 @@ function NuNF.NuN_GetLoc()
 end
 
 function NuNF.NuN_GetDisplayText(dText)
+	dText = strgsub(dText, "¬n", "\n");
 	dText = strgsub(dText, "�n", "\n");
 	dText = strgsub(dText, "�q", "\"");
 	dText = strgsub(dText, "�s", "\\");
