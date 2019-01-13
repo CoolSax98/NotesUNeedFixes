@@ -388,7 +388,7 @@ local pairs, ipairs, next, type = pairs, ipairs, next, type
 local GetTime, GetCursorPosition = GetTime, GetCursorPosition;
 local GetFriendInfo = GetFriendInfo;
 local GetMouseFocus, GetCurrentKeyBoardFocus = GetMouseFocus, GetCurrentKeyBoardFocus;
-local GetNumIgnores = GetNumIgnores;
+local GetNumIgnores = _G.C_FriendList.GetNumIgnores;
 local GetIgnoreName = GetIgnoreName;
 local MouseIsOver, IsAltKeyDown = MouseIsOver, IsAltKeyDown;
 local UnitAffectingCombat = UnitAffectingCombat;
@@ -1311,7 +1311,11 @@ function NuNF.QueryTalents()
 	NuNTalents.tabs = GetNumSpecializations(useInspectInfo) or 0;
 	
 	-- return values from GetTalentTabInfo()
-	local tabID, tabName, tabDesc, tabIcon, tabPointsSpent, tabPreviewPointsSpent, tabPointsAllocated, _, tabUnlocked;
+	-- local tabID, tabName, tabDesc, tabIcon, tabPointsSpent, tabPreviewPointsSpent, tabPointsAllocated, _, tabUnlocked;
+
+	-- return value from GetSpecializationInfo()
+	-- TODO: coolsax - Finish replacing GetTalentTabInfo with GetSpecializationInfo
+	local specID, specName, specDesc, specIcon, specBackground, specRole
 	local prefix;
 	
 	-- return values from GetTalentInfo()
@@ -1322,7 +1326,9 @@ function NuNF.QueryTalents()
 		local closestMatchingTree = { tabRef = nil, totalPoints = 0 }
 		for _tab = 1, NuNTalents.tabs do
 			-- record tab
-			tabID, tabName, tabDesc, tabIcon, tabPointsSpent, _, tabPreviewPointsSpent, tabUnlocked = GetTalentTabInfo(_tab, useInspectInfo, nil, talentGroupIndex);
+			-- tabID, tabName, tabDesc, tabIcon, tabPointsSpent, _, tabPreviewPointsSpent, tabUnlocked = GetTalentTabInfo(_tab, useInspectInfo, nil, talentGroupIndex);
+			
+			specID, specName, specDesc, specIcon, specBackground, specRole = GetSpecializationInfo(_tab , useInspectInfo , nil, nil)
 --			nun_msgf("QueryTalents - tabID:%s  tabName:%s  tabPointsSpent:%s  tabPreviewPointsSpent:%s  tabUnlocked:%s  talentGroupIndex:%i   (closestMatchingTree.totalPoints:%i)",
 --				tostring(tabID), tostring(tabName), tostring(tabPointsSpent), tostring(tabPreviewPointsSpent), tostring(tabUnlocked), talentGroupIndex, closestMatchingTree.totalPoints);
 				-- check to see if this talent tree is the player's active spec
@@ -6236,7 +6242,6 @@ end
 function NuNF.RegisterModifier_PlayerTalentFrame(buttonName)
 	local button, func;
 	local MAX_NUM_TALENTS = 2;
-	print(MAX_NUM_TALENTS);
 	for i = 1, MAX_NUM_TALENTS do
 		button = _G["PlayerTalentFrameTalent" .. i];
 		NuNF.HookButtonClick(button, buttonName);
