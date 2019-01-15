@@ -1640,7 +1640,8 @@ function NuNF.NuN_DefaultSort()
 end
 
 function NuNF.NuN_GetDateStamp()
-	local dateStamp = date("%A, %d %B %Y  %H:%M:%S");
+	-- local dateStamp = date("%A, %d %B %Y  %H:%M:%S");
+	local dateStamp = date("%m/%d/%y, %H:%M")
 	dateStamp = NuNF.NuN_LocaliseDateStamp(dateStamp);
 	return dateStamp;
 end
@@ -6096,8 +6097,13 @@ end
 
 function NuNQuickNote.ProcessHyperlink( itemLink )
 	if itemLink and type(itemLink) == "string" then
-		local sanitizedLink = strgsub(itemLink, "\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\|", ":0:0:0:0:0:0:0|");
-		sanitizedLink = strgsub(sanitizedLink, "\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\124", ":0:0:0:0:0:0:0\124");
+		-- local sanitizedLink = strgsub(itemLink, "\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\|", ":0:0:0:0:0:0:0|");
+		-- sanitizedLink = strgsub(sanitizedLink, "\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\124", ":0:0:0:0:0:0:0\124");
+		-- |cffffffff|Hitem:6471::::::::21:66::::::|h[Perfect Deviate Scale]|h|r
+		local _, itemId, rest = strsplit(":", itemLink)
+		local sanitizedLink = strgsub(itemLink, "\:%-*%d+", ":");
+		sanitizedLink = strgsub(sanitizedLink, "Hitem:", "Hitem:" .. itemId)
+		sanitizedLink = strgsub(sanitizedLink, "|Hitem:(%d+):*|", "|Hitem:%1|")
 
 		if ( ( itemLink ~= nil ) and ( itemLink ~= "" ) ) then
 			if ( ( NuNGNoteFrame:IsVisible() ) or ( NuNFrame:IsVisible() ) ) then
@@ -6393,39 +6399,6 @@ function NuN_HandleModifiedItemClick( itemLink )
 		if mouseButton and IsNuNModifierKeyDown(mouseButton) then
 --			local itemLink = itemLink;
 			bResult = NuNQuickNote.ProcessHyperlink(itemLink);
---itemLink = strgsub(itemLink, "\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\|", ":0:0:0:0:0:0:0|");
---itemLink = strgsub(itemLink, "\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\124", ":0:0:0:0:0:0:0\124");
-			
-			-- and we have a note open to add the link to			
---[[			if itemLink then
-				if NuNGNoteFrame:IsVisible() then
-				
-					-- add the link to the note
-					NuNGNoteTextScroll:Insert(itemLink);
-					StackSplitFrame:Hide();
-					bResult = true;
-					
-				elseif NuNFrame:IsVisible() then
-					NuNText:Insert(itemLink);
-					StackSplitFrame:Hide();
-					bResult = true;
-
---				elseif sanitizedLink ~= nil then
-					-- otherwise, we'll want to see about potentially opening a new or existing note for this item
-					NuNGNoteFrame.fromQuest = nil;
-					if ( NuNData[locals.itmIndex_dbKey][itemLink] ) then
-						itemLink = ( NuNData[locals.itmIndex_dbKey][itemLink] );
-					end
-					if ( ( NuNDataRNotes[itemLink] ) or ( NuNDataANotes[itemLink] ) ) then
-						local_player.currentNote.general = itemLink;
-						NuN_ShowSavedGNote();
-					else
-						NuNF.NuN_GNoteFromItem(itemLink, "GameTooltip");
-					end
-					bResult = true;
-				end
-			end
---]]
 		end
 			
 -- debug output
