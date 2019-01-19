@@ -6099,11 +6099,14 @@ function NuNQuickNote.ProcessHyperlink( itemLink )
 	if itemLink and type(itemLink) == "string" then
 		-- local sanitizedLink = strgsub(itemLink, "\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\|", ":0:0:0:0:0:0:0|");
 		-- sanitizedLink = strgsub(sanitizedLink, "\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\124", ":0:0:0:0:0:0:0\124");
+		
 		-- |cffffffff|Hitem:6471::::::::21:66::::::|h[Perfect Deviate Scale]|h|r
+		-- |cffffffff|Hcurrency:1717:0|h[7th Legion Service Medal]|h|r
+
 		local _, itemId, rest = strsplit(":", itemLink)
-		local sanitizedLink = strgsub(itemLink, "\:%-*%d+", ":");
-		sanitizedLink = strgsub(sanitizedLink, "Hitem:", "Hitem:" .. itemId)
-		sanitizedLink = strgsub(sanitizedLink, "|Hitem:(%d+):*|", "|Hitem:%1|")
+		local sanitizedLink = strgsub(itemLink, "\:%-*%d*", "");
+		sanitizedLink = strgsub(sanitizedLink, "Hitem", "Hitem:" .. itemId)
+		sanitizedLink = strgsub(sanitizedLink, "Hcurrency", "Hcurrency:" .. itemId)
 
 		if ( ( itemLink ~= nil ) and ( itemLink ~= "" ) ) then
 			if ( ( NuNGNoteFrame:IsVisible() ) or ( NuNFrame:IsVisible() ) ) then
@@ -6670,6 +6673,7 @@ function NuNNew_QuestRewardCompleteButton_OnClick()
 	end
 end
 
+-- Receive notes starting here?
 function NuNNew_ChatFrame_MessageEventHandler(chatframe, event, ...)
 	local processedByNuN = nil;
 	local localDbg = "";
