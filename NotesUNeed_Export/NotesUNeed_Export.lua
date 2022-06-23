@@ -19,9 +19,9 @@ end
 
 -- Confirmations
 StaticPopupDialogs["NUN_CONFIRM_EXPORT"] = {
-	text = TEXT(NUN_CONFIRM),
-	button1 = TEXT(NUN_DB_EXPORT),
-	button2 = TEXT(CANCEL),
+	text = NUN_CONFIRM,
+	button1 = NUN_DB_EXPORT,
+	button2 = CANCEL,
 	hasEditBox = 1,
 --	showAlert = 0,
 	timeout = 0,

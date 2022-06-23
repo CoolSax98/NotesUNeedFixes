@@ -1209,15 +1209,16 @@ function NuNF.NuN_CheckPartyByName(parmN)
 	local partym;
 	local numParty = GetNumGroupMembers();
 
-	for groupIndex = 1, numParty, 1 do
-		if (GetPartyMember(groupIndex)) then
-			partym = "party" .. groupIndex;
-			local lName = GetUnitName(partym, true);
-			if (lName == parmN) then
-				return partym;
-			end
-		end
-	end
+	-- TODO: GetPartyMember is not available in Retail.
+	-- for groupIndex = 1, numParty, 1 do
+	-- 	if (GetPartyMember(groupIndex)) then
+	-- 		partym = "party" .. groupIndex;
+	-- 		local lName = GetUnitName(partym, true);
+	-- 		if (lName == parmN) then
+	-- 			return partym;
+	-- 		end
+	-- 	end
+	-- end
 	return nil;
 end
 
@@ -1252,6 +1253,7 @@ end
 
 --[[
 	Converts a legacy player talents table into the new (supporting dual-spec) format.
+	TODO: This is probably no longer needed.
 --]]
 local function migrateTalentsInfo(talents)
 	if (talents and bMigrateTalentInfo) then
@@ -1313,6 +1315,7 @@ local function migrateTalentsInfo(talents)
 	end
 end
 
+-- TODO: Need to rewrite this and figure out what information needs to be captured.
 function NuNF.QueryTalents()
 	if (not NuNTalents.player) then
 		NuNTalents = { mainspec = {}, offspec = {} };
@@ -1344,11 +1347,11 @@ function NuNF.QueryTalents()
 		local closestMatchingTree = { tabRef = nil, totalPoints = 0 }
 		for _tab = 1, NuNTalents.tabs do
 			-- record tab
-			-- tabID, tabName, tabDesc, tabIcon, tabPointsSpent, _, tabPreviewPointsSpent, tabUnlocked = GetTalentTabInfo(_tab, useInspectInfo, nil, talentGroupIndex);
+			tabID, tabName, tabDesc, tabIcon, tabPointsSpent, _, tabPreviewPointsSpent, tabUnlocked = GetTalentTabInfo(_tab, useInspectInfo, nil, talentGroupIndex);
 
 			specID, specName, specDesc, specIcon, specBackground, specRole = GetSpecializationInfo(_tab, useInspectInfo, nil, nil)
-			--			nun_msgf("QueryTalents - tabID:%s  tabName:%s  tabPointsSpent:%s  tabPreviewPointsSpent:%s  tabUnlocked:%s  talentGroupIndex:%i   (closestMatchingTree.totalPoints:%i)",
-			--				tostring(tabID), tostring(tabName), tostring(tabPointsSpent), tostring(tabPreviewPointsSpent), tostring(tabUnlocked), talentGroupIndex, closestMatchingTree.totalPoints);
+						nun_msgf("QueryTalents - tabID:%s  tabName:%s  tabPointsSpent:%s  tabPreviewPointsSpent:%s  tabUnlocked:%s  talentGroupIndex:%i   (closestMatchingTree.totalPoints:%i)",
+							tostring(tabID), tostring(tabName), tostring(tabPointsSpent), tostring(tabPreviewPointsSpent), tostring(tabUnlocked), talentGroupIndex, closestMatchingTree.totalPoints);
 			-- check to see if this talent tree is the player's active spec
 
 			local activeTalentGroupIndex = GetActiveSpecGroup(useInspectInfo);

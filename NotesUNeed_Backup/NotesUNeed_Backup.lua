@@ -6,8 +6,8 @@ NuNSettingsBackup = {};
 -- Confirmations
 StaticPopupDialogs["NUN_CONFIRM_BACKUP"] = {
 	text = NuNC.NUN_CONFIRM_RELOADUI,
-	button1 = TEXT(NUN_CONFIRM),
-	button2 = TEXT(CANCEL),
+	button1 = NUN_CONFIRM,
+	button2 = CANCEL,
 	showAlert = 1,
 	timeout = 0,
 	OnAccept = function()
@@ -15,15 +15,15 @@ StaticPopupDialogs["NUN_CONFIRM_BACKUP"] = {
 		NuNSettingsBackup = NuNSettings;
 		NuNSettings.Restored = nil;
 		NuNSettings.BackedUp = true;
-		ReloadUI();
+		C_UI.ReloadUI();
 	end,
 	hideOnEscape = 1,
 };
 
 StaticPopupDialogs["NUN_CONFIRM_RESTORE"] = {
 	text = NuNC.NUN_CONFIRM_RELOADUI,
-	button1 = TEXT(NUN_OPT_RESTORE),
-	button2 = TEXT(CANCEL),
+	button1 = NUN_OPT_RESTORE,
+	button2 = CANCEL,
 	showAlert = 1,
 	timeout = 0,
 	OnAccept = function()
@@ -44,7 +44,7 @@ StaticPopupDialogs["NUN_CONFIRM_RESTORE"] = {
 			NuNSettings = NuNSettingsBackup;
 			NuNSettings.BackedUp = nil;
 			NuNSettings.Restored = true;
-			ReloadUI();
+			C_UI.ReloadUI();
 		end
 	end,
 	hideOnEscape = 1,
