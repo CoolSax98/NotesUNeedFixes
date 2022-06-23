@@ -386,10 +386,10 @@ local pairs, ipairs, next, type = pairs, ipairs, next, type
 	Blizzard API functions
 	====================================================================]]
 local GetTime, GetCursorPosition = GetTime, GetCursorPosition;
-local GetFriendInfo = GetFriendInfo;
+local GetFriendInfo = C_FriendList.GetFriendInfo;
 local GetMouseFocus, GetCurrentKeyBoardFocus = GetMouseFocus, GetCurrentKeyBoardFocus;
-local GetNumIgnores = _G.C_FriendList.GetNumIgnores;
-local GetIgnoreName = GetIgnoreName;
+local GetNumIgnores = C_FriendList.GetNumIgnores;
+local GetIgnoreName = C_FriendList.GetIgnoreName;
 local MouseIsOver, IsAltKeyDown = MouseIsOver, IsAltKeyDown;
 local UnitAffectingCombat = UnitAffectingCombat;
 local UnitExists = UnitExists;
@@ -399,7 +399,7 @@ local UIDropDownMenu_SetWidth = UIDropDownMenu_SetWidth;
 local UIDropDownMenu_SetSelectedID = UIDropDownMenu_SetSelectedID;
 local UIDropDownMenu_SetText = UIDropDownMenu_SetText;
 
-local GuildRoster = GuildRoster;
+local GuildRoster = C_GuildInfo.GuildRoster;
 
 
 --[[====================================================================
@@ -4091,7 +4091,7 @@ NuN_Update_Ignored = function()
 			NuN_Message(DELETE .. " " .. IGNORE .. " " .. _name);
 		end
 		locals.nameLastAttemptedIgnoreUpdate = _name;
-		DelIgnore(_name);
+		C_FriendList.DelIgnore(_name);
 	end
 
 	for _name, player in pairs(startIgnoring) do
@@ -4100,7 +4100,7 @@ NuN_Update_Ignored = function()
 			NuN_Message(IGNORE .. " " .. _name);
 		end
 		locals.nameLastAttemptedIgnoreUpdate = _name;
-		AddIgnore(_name);
+		C_FriendList.AddIgnore(_name);
 	end
 
 	locals.NuN_FriendIgnoreActivity = nil;
@@ -4136,7 +4136,7 @@ function NuN_Update_Friends()
 
 	if (local_player.factionName ~= nil) then
 		local isFriendly = {};
-		for i = 1, GetNumFriends(), 1 do
+		for i = 1, C_FriendList.GetNumFriends(), 1 do
 			local lName = GetFriendInfo(i);
 			if ((not lName) or (lName == "") or (lName == UNKNOWN) or (lName == UNKNOWNOBJECT)) then -- 5.60
 				return true;
@@ -4146,7 +4146,7 @@ function NuN_Update_Friends()
 		end
 
 		-- Check WoW Friend List and validate against Saved Data
-		for i = 1, GetNumFriends(), 1 do
+		for i = 1, C_FriendList.GetNumFriends(), 1 do
 			iName = GetFriendInfo(i);
 			if ((iName ~= nil) and (iName ~= UNKNOWN) and (iName ~= UNKNOWNOBJECT)) then -- 5.60
 				if (NuNSettings[local_player.realmName].gNotFriends[iName]) then
@@ -4240,7 +4240,7 @@ function NuN_Update_Friends()
 			NuN_Message(FRIENDS .. " " .. _name);
 		end
 		locals.nameLastAttemptedFriendUpdate = _name;
-		AddFriend(_name);
+		C_FriendList.AddFriend(_name);
 	end
 
 	for _name, player in pairs(remFriends) do
@@ -4249,7 +4249,7 @@ function NuN_Update_Friends()
 			NuN_Message(DELETE .. " " .. FRIENDS .. " " .. _name);
 		end
 		locals.nameLastAttemptedIgnoreUpdate = _name;
-		RemoveFriend(_name);
+		C_FriendList.RemoveFriend(_name);
 	end
 
 	locals.NuN_FriendIgnoreActivity = nil;
@@ -6656,7 +6656,9 @@ Post-hook for secure function SetAbandonQuest().  Called when the user abandons 
 tracking this quest for the quest history module.
 --]]
 function NuNNew_SetAbandonQuest()
-	NuN_State.NuN_abandonQuest = GetAbandonQuestName();
+	-- TODO: revisit this implementation. The name is no longer available,
+	-- instead we are given the questID.
+	NuN_State.NuN_abandonQuest = C_QuestLog.GetAbandonQuest();
 end
 
 -- 5.60 Removed the Quest Frame Item on click note creation hooks   2.2 nerfed them, and they weren't missed so didn't try to find out what the new function names would be....
@@ -7619,7 +7621,7 @@ end
 -- Update Saved Data based on WoW Friends/Ignores
 function NuNOptions_Export()
 	local iName;
-	for i = 1, GetNumFriends(), 1 do
+	for i = 1, C_FriendList.GetNumFriends(), 1 do
 		iName = GetFriendInfo(i);
 		if ((iName ~= UNKNOWN) and (iName ~= UNKNOWNOBJECT)) then -- 5.60
 			if (locals.NuNDataPlayers[iName]) then
@@ -9016,11 +9018,11 @@ function NuN_ShowFriendNote()
 		return;
 	end
 
-	local numFriends = GetNumFriends();
+	local numFriends = C_FriendList.GetNumFriends();
 	local selectedFriend;
 	if (numFriends ~= nil) and (numFriends > 0) then
 		if (FriendsFrame.selectedFriendType == FRIENDS_BUTTON_TYPE_WOW) then
-			selectedFriend = GetSelectedFriend();
+			selectedFriend = C_FriendList.GetSelectedFriend();
 		elseif (FriendsFrame.selectedFriendType == FRIENDS_BUTTON_TYPE_BNET) then
 			selectedFriend = BNGetSelectedFriend();
 		end
@@ -14763,7 +14765,7 @@ end
 -- Helper function
 function NuN_Is_Friendly(aName)
 	local iName;
-	for i = 1, GetNumFriends(), 1 do
+	for i = 1, C_FriendList.GetNumFriends(), 1 do
 		iName = GetFriendInfo(i);
 		if (iName == aName) then
 			return true;
