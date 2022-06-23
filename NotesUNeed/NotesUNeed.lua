@@ -1316,6 +1316,7 @@ local function migrateTalentsInfo(talents)
 end
 
 -- TODO: Need to rewrite this and figure out what information needs to be captured.
+-- FIXME: This has outdated/replaced api calls.
 function NuNF.QueryTalents()
 	if (not NuNTalents.player) then
 		NuNTalents = { mainspec = {}, offspec = {} };
@@ -1336,7 +1337,7 @@ function NuNF.QueryTalents()
 
 	-- return value from GetSpecializationInfo()
 	-- TODO: coolsax - Finish replacing GetTalentTabInfo with GetSpecializationInfo
-	local specID, specName, specDesc, specIcon, specBackground, specRole
+	local specID, specName, specDesc, specIcon, specRole, specPrimaryStat
 	local prefix;
 
 	-- return values from GetTalentInfo()
@@ -1347,11 +1348,14 @@ function NuNF.QueryTalents()
 		local closestMatchingTree = { tabRef = nil, totalPoints = 0 }
 		for _tab = 1, NuNTalents.tabs do
 			-- record tab
-			tabID, tabName, tabDesc, tabIcon, tabPointsSpent, _, tabPreviewPointsSpent, tabUnlocked = GetTalentTabInfo(_tab, useInspectInfo, nil, talentGroupIndex);
+			tabID, tabName, tabDesc, tabIcon, tabPointsSpent, _, tabPreviewPointsSpent, tabUnlocked = GetTalentTabInfo(_tab,
+				useInspectInfo, nil, talentGroupIndex);
 
-			specID, specName, specDesc, specIcon, specBackground, specRole = GetSpecializationInfo(_tab, useInspectInfo, nil, nil)
-						nun_msgf("QueryTalents - tabID:%s  tabName:%s  tabPointsSpent:%s  tabPreviewPointsSpent:%s  tabUnlocked:%s  talentGroupIndex:%i   (closestMatchingTree.totalPoints:%i)",
-							tostring(tabID), tostring(tabName), tostring(tabPointsSpent), tostring(tabPreviewPointsSpent), tostring(tabUnlocked), talentGroupIndex, closestMatchingTree.totalPoints);
+			specID, specName, specDesc, specIcon, specRole, specPrimaryStat = GetSpecializationInfo(_tab, useInspectInfo, nil, nil)
+			nun_msgf("QueryTalents - tabID:%s  tabName:%s  tabPointsSpent:%s  tabPreviewPointsSpent:%s  tabUnlocked:%s  talentGroupIndex:%i   (closestMatchingTree.totalPoints:%i)"
+				,
+				tostring(tabID), tostring(tabName), tostring(tabPointsSpent), tostring(tabPreviewPointsSpent), tostring(tabUnlocked)
+				, talentGroupIndex, closestMatchingTree.totalPoints);
 			-- check to see if this talent tree is the player's active spec
 
 			local activeTalentGroupIndex = GetActiveSpecGroup(useInspectInfo);
