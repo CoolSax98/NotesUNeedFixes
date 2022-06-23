@@ -1163,7 +1163,7 @@ function NuNF.NuN_ExtractTooltipInfo(xTTText, theTT)
 			needRight = false;
 			tmpTxt = "";
 			if (lftTxt) then
-				if ((strfind(lftTxt, "\"")) or ((strfind(lftTxt, "/")) and (strfind(lftTxt, "\)")))) then
+				if ((strfind(lftTxt, "\"")) or ((strfind(lftTxt, "/")) and (strfind(lftTxt, ")")))) then
 					tmpTxt = NuNC.NUN_GOLD .. lftTxt;
 				elseif (strfind(lftTxt, ":")) then
 					tmpTxt = NuNC.NUN_GREEN .. lftTxt;
@@ -5023,9 +5023,9 @@ local function OnNotesUNeedFullyLoaded(self, ...)
 	end
 
 	for key, value in pairs(NuNData[locals.itmIndex_dbKey]) do
-		NuNData[locals.itmIndex_dbKey][key] = strgsub(value, "\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\|",
+		NuNData[locals.itmIndex_dbKey][key] = strgsub(value, ":%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+|",
 			":0:0:0:0:0:0:0|");
-		NuNData[locals.itmIndex_dbKey][key] = strgsub(value, "\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\124",
+		NuNData[locals.itmIndex_dbKey][key] = strgsub(value, ":%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+\124",
 			":0:0:0:0:0:0:0\124");
 	end
 	-- finally, initialize the value of the last opened note
@@ -6127,7 +6127,7 @@ function NuNQuickNote.ProcessHyperlink(itemLink)
 		-- |cffffffff|Hcurrency:1717:0|h[7th Legion Service Medal]|h|r
 
 		local _, itemId, rest = strsplit(":", itemLink)
-		local sanitizedLink = strgsub(itemLink, "\:%-*%d*", "");
+		local sanitizedLink = strgsub(itemLink, ":%-*%d*", "");
 		sanitizedLink = strgsub(sanitizedLink, "Hitem", "Hitem:" .. itemId)
 		sanitizedLink = strgsub(sanitizedLink, "Hcurrency", "Hcurrency:" .. itemId)
 
@@ -6570,8 +6570,8 @@ function NuNNew_SetItemRef(self, link, text, btn)
 			end
 
 		elseif (IsNuNModifierKeyDown(btn)) then -- 5.60
-			text = strgsub(text, "\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\|", ":0:0:0:0:0:0:0|");
-			text = strgsub(text, "\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\124", ":0:0:0:0:0:0:0\124");
+			text = strgsub(text, ":%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+|", ":0:0:0:0:0:0:0|");
+			text = strgsub(text, ":%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+\124", ":0:0:0:0:0:0:0\124");
 			if ((NuNGNoteFrame:IsVisible()) or (NuNFrame:IsVisible())) then
 				if (NuNGNoteFrame:IsVisible()) then
 					NuNGNoteTextScroll:Insert(text); -- + v5.00.11200
@@ -6623,8 +6623,8 @@ function NuNNew_PaperDollItemSlotButton_OnModifiedClick(btn)
 				itmLink = GetInventoryItemLink("player", btn:GetID());
 			end
 			if ((itmLink ~= nil) and (itmLink ~= "")) then
-				itmLink = strgsub(itmLink, "\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\|", ":0:0:0:0:0:0:0|");
-				itmLink = strgsub(itmLink, "\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\124", ":0:0:0:0:0:0:0\124");
+				itmLink = strgsub(itmLink, ":%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+|", ":0:0:0:0:0:0:0|");
+				itmLink = strgsub(itmLink, ":%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+\124", ":0:0:0:0:0:0:0\124");
 				if ((NuNGNoteFrame:IsVisible()) or (NuNFrame:IsVisible())) then
 					if (NuNGNoteFrame:IsVisible()) then
 						NuNGNoteTextScroll:Insert(itmLink); -- + v5.00.11200
@@ -10964,7 +10964,7 @@ function NuN_RemoveColours(colouredText)
 	while (true) do
 		local ps = strfind(workingText, "|r", next + 1);
 		if (ps) then
-			if (strsub(workingText, ps - 3, ps - 1) == "\]|h") then
+			if (strsub(workingText, ps - 3, ps - 1) == "]|h") then
 			else
 				if (strsub(workingText, ps - 2, ps - 1) == "|h") then
 					fromStart = -2;
