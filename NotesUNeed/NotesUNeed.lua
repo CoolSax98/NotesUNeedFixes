@@ -76,6 +76,7 @@ MapNotes integration			NotesUNeed allows creation of MapNotes at the Player's cu
 -- FIXME: Map Notes integration not working (FIND THIS)
 -- FIXME: Sometimes in a raid and can't target a player, it targets someone else instead (may not be our problem)
 -- FIXME: World boss, click find group, and no group listed, click start group, it creates a group for SoD raid
+
 NotesUNeed = {
 	locals = { player = {} },
 	Strings = {},
@@ -717,6 +718,7 @@ StaticPopupDialogs["NUN_CHANGE_RATING_ONE"] = {
 			if (NuNSettings[local_player.realmName].rightClickMenu == true) then
 				NuN_SetupRatings();
 			end
+			local r = 0;
 			if (NuN_BLCheckBox:GetChecked()) then
 				r = 1;
 			end
@@ -6065,7 +6067,7 @@ function NuNF.RegisterModifier_TradeSkillFrame(buttonName)
 		TradeSkillSkillIcon:RegisterForClicks(buttonName .. "Up");
 	end
 end
-
+-- REVIEW: Need to check these "Inspect" targets.
 function NuNF.RegisterModifier_InspectFrame(buttonName)
 	if (InspectPaperDollFrame) then
 		InspectHeadSlot:RegisterForClicks(buttonName .. "Up");
@@ -6136,6 +6138,7 @@ function NuNF.RegisterModifier_TrainerFrame(buttonName)
 		return NuNHooks.originalOnClick[frame:GetID()](frame, mouseButton, isMouseButtonDown);
 	end
 
+	-- REVIEW: is this still needed?
 	if (ClassTrainerScrollFrame and ClassTrainerScrollFrame.buttons) then
 		local numButtons = #ClassTrainerScrollFrame.buttons;
 		for btnIndex = 1, numButtons do
@@ -6211,9 +6214,10 @@ function NuNF.RegisterModifier_Main(buttonName)
 
 	-- Companion buttons
 	--buttonName = NuNF.TranslateButtonName(buttonName);
-	if _G.SpellBookCompanionButton1 then
-		for i = 1, 12 do _G["SpellBookCompanionButton" .. i]:RegisterForClicks(buttonName .. "Up"); end
-	end
+	-- REVIEW: This may be out of date. I believe this has moved to Mounts and Pets?
+	-- if _G.SpellBookCompanionButton1 then
+	-- 	for i = 1, 12 do _G["SpellBookCompanionButton" .. i]:RegisterForClicks(buttonName .. "Up"); end
+	-- end
 	for i = 1, 7 do _G["TradePlayerItem" .. i .. "ItemButton"]:RegisterForClicks(buttonName .. "Up"); end
 	for i = 1, 7 do _G["TradeRecipientItem" .. i .. "ItemButton"]:RegisterForClicks(buttonName .. "Up"); end
 	-- for i = 1, 7 do _G["BankFrameBag" .. i]:RegisterForClicks(buttonName .. "Up"); end
@@ -6367,6 +6371,7 @@ end
 -- with it (shift+clicking it, etc.)
 function NuN_ChatFrameOnHyperlinkShow(chatframe, link, text, buttonName)
 	local processedByNuN = NuNNew_SetItemRef(chatframe, link, text, buttonName);
+	local chatFrame = chatframe;
 
 	-- debug output
 	if locals.NuNDebug and chatFrame == DEFAULT_CHAT_FRAME and locals.debugging_msg_hooks then
@@ -7071,9 +7076,10 @@ end
 function NuN_UpdateCurLinks()
 	local cont, zone, curZ;
 
+	-- REVIEW: Probably need to rewrite this with the Map API. Need to find out if MapNotes is still a thing and updated. 
 	if (MapNotes_Data_Notes) then -- + v5.00.11200
 		cont = "WM ";  -- + v5.00.11200
-		local map = GetMapInfo();  -- + v5.00.11200
+		local map = C_Map.GetMapInfo(WorldMapFrame:GetMapID());  -- REVIEW: Is this what we are trying to get here?
 		if (map) then -- + v5.00.11200
 			cont = cont .. map;  -- + v5.00.11200
 		else -- + v5.00.11200
@@ -7135,7 +7141,7 @@ function NuNNew_MapNotes_WriteNote()
 	NuNHooks.NuNOri_MapNotes_WriteNote();
 	if (MapNotes_Data_Notes) then -- + v5.00.11200
 		local cont = "WM ";  -- + v5.00.11200
-		local map = GetMapInfo();  -- + v5.00.11200
+		local map = C_Map.GetMapInfo(C_Map.GetBestMapForUnit("player"));  -- REVIEW: what info do we need here? Update with the Map API for now. 
 		if (map) then -- + v5.00.11200
 			cont = cont .. map;  -- + v5.00.11200
 		else -- + v5.00.11200
@@ -7152,7 +7158,7 @@ function NuNNew_MapNotes_Quicknote()
 	NuNHooks.NuNOri_MapNotes_Quicknote();
 	if (MapNotes_Data_Notes) then -- + v5.00.11200
 		local cont = "WM ";  -- + v5.00.11200
-		local map = GetMapInfo();  -- + v5.00.11200
+		local map = C_Map.GetMapInfo(C_Map.GetBestMapForUnit("player"));  -- REVIEW: what info do we need here? Update with the Map API for now. 
 		if (map) then -- + v5.00.11200
 			cont = cont .. map;  -- + v5.00.11200
 		else -- + v5.00.11200
@@ -7187,7 +7193,7 @@ function NuN_Who()
 		NuN_WhoReturnStruct.name = local_player.currentNote.unit;  -- 5.60
 		NuN_WhoReturnStruct.secondTry = nil;
 		NuN_suppressExtraWho = true;
-		SendWho("n-" .. local_player.currentNote.unit); -- 5.60 "n-"..
+		C_FriendList.SendWho("n-" .. local_player.currentNote.unit); -- 5.60 "n-"..
 
 	elseif (NuN_WhoReturnStruct.func == NuN_Who) then -- 5.60
 		local wName = nil;
@@ -7199,9 +7205,9 @@ function NuN_Who()
 		local bttnDetailText1;
 		local wZone = nil;
 
-		local n = GetNumWhoResults();
+		local n = C_FriendList.GetNumWhoResults();
 		for i = 1, n, 1 do
-			wName, wGuildName, wLevel, wRace, wClass, wZone = GetWhoInfo(i);  -- 5.60 merged double call
+			wName, wGuildName, wLevel, wRace, wClass, wZone = C_FriendList.GetWhoInfo(i);  -- 5.60 merged double call
 			if (wName == local_player.currentNote.unit) then -- Not interested in Level / Zone
 				if (wGuildName ~= nil) then
 					contact.guild = wGuildName;
@@ -7312,7 +7318,7 @@ function NuNGNote_Delete(noRefresh)
 	else
 		if ((strfind(c_note, "|Hitem:")) and (not noRefresh)) then
 			for idx in pairs(NuNData[locals.itmIndex_dbKey]) do
-				if (NuNData[locals.itmIndex_dbKey][idx] == toDelete) then
+				if (NuNData[locals.itmIndex_dbKey][idx] == toDelete) then -- BUG: POSSIBLE: this doesn't look right. where is toDelete set? is this a bug?
 					NuNData[locals.itmIndex_dbKey][idx] = nil;
 				end
 			end
@@ -7462,7 +7468,7 @@ function NuNOptions_Import()
 						if (not NuNSettings[local_player.realmName].autoS) then
 							NuN_Message(IGNORE .. " " .. idx);
 						end
-						AddIgnore(idx);
+						C_FriendList.AddIgnore(idx); -- REVIEW: confirm use of idx as argument
 					end
 				end
 
@@ -7476,7 +7482,7 @@ function NuNOptions_Import()
 						if (not NuNSettings[local_player.realmName].autoS) then
 							NuN_Message(FRIENDS .. " " .. idx);
 						end
-						AddFriend(idx);
+						C_FriendList.AddFriend(idx); -- REVIEW: confirm use of idx as argument
 					end
 				end
 			end
@@ -8901,7 +8907,7 @@ function NuN_ShowFriendNote()
 				local_player.currentNote.unit, locals.discard--[[level]] , contact.class, locals.discard--[[area]] , connected = GetFriendInfo(selectedFriend);
 			elseif (FriendsFrame.selectedFriendType == FRIENDS_BUTTON_TYPE_BNET) then
 				local presenceID, firsstname, surName, toonID, client;
-				presenceID, firstname, surName, contact.class, toonID, client, connected = BNGetFriendInfo(selectedFriend);
+				presenceID, firstname, surName, contact.class, toonID, client, connected = C_BattleNet.GetFriendAccountInfo(selectedFriend); -- REVIEW:
 				if (firstname and surName) then
 					local_player.currentNote.unit = format(BATTLENET_NAME_FORMAT, firstname, surName);
 				elseif (firstname ~= nil) then
@@ -9331,6 +9337,7 @@ end
 end
 
 -- When clicking on a Social Frame NuN button, which frame was showing - Friends, Ignores, etc.
+-- REVIEW: What is this?
 function NuN_GetName_FrameButton(lBttnID, refreshType)
 	local lBttn, lBttnTxt;
 
@@ -9343,28 +9350,21 @@ function NuN_GetName_FrameButton(lBttnID, refreshType)
 				lBttnTxt = GetFriendInfo(friendID);
 			elseif (lBttn.buttonType == FRIENDS_BUTTON_TYPE_BNET) then
 				lBttnTxt = "";
-				local presenceID, firstName, lastName = BNGetFriendInfo(friendID);
-				if (firstName and lastName) then
-					lBttnTxt = format(BATTLENET_NAME_FORMAT, firstName, lastName);
-				elseif (firstName ~= nil) then
-					lBttnTxt = firstName;
-				elseif (lastName ~= nil) then
-					lBttnTxt = lastName;
+				local accountInfo = C_BattleNet.GetAccountInfoByID(friendID); -- TODO: use info from accountInfo instead
+				if (accountInfo and accountInfo.accountName) then
+					lBttnTxt = accountInfo.accountName;
 				end
 			end
 		end
 	elseif (refreshType == NuNC.UPDATETAG_IGNORE) then
 		lBttn = _G["FriendsFrameIgnoreButton" .. lBttnID];
 		if (lBttn and lBttn.type) then
-			local ignoreID, unused = lBttn.index;
+			local ignoreID = lBttn.index;
 			if (lBttn.type == SQUELCH_TYPE_IGNORE) then
 				lBttnTxt = GetIgnoreName(ignoreID);
 			elseif (lBttn.type == SQUELCH_TYPE_BLOCK_INVITE) then
-				unused, lBttnTxt = BNGetBlockedInfo(ignoreID);
-			elseif (lBttn.type == SQUELCH_TYPE_BLOCK_TOON) then
-				unused, lBttnTxt = BNGetBlockedToonInfo(ignoreID);
-			elseif (lBttn.type == SQUELCH_TYPE_MUTE) then
-				lBttnText = GetMuteName(ignoreID);
+				-- unused, lBttnTxt = BNGetBlockedInfo(ignoreID);
+				lBttnTxt = "PLACEHOLDER"; -- TODO: get the name of the player who blocked you
 			end
 		end
 		--		NuN_Message("GetName_FrameButton(I) - button:" .. tostring(lBttn) .. "    ButtonID:" .. tostring(lBttnID) .. "   buttonText:" .. tostring(lBttnTxt));
@@ -9779,7 +9779,7 @@ function NuN_WorldMapTooltip_OnShow(id, lTooltip)
 
 	if (MapNotes_Data_Notes) then -- + v5.00.11200
 		MNCont = "WM ";  -- + v5.00.11200
-		local cont = GetMapInfo();  -- + v5.00.11200
+		local cont = C_Map.GetMapInfo(WorldMapFrame:GetMapID());  -- REVIEW: 
 		if (cont) then -- + v5.00.11200
 			MNCont = MNCont .. cont;  -- + v5.00.11200
 		else -- + v5.00.11200
@@ -9940,7 +9940,7 @@ function NuN_WorldMapTooltip_OnHide()
 end
 
 function NuN_ItemRefTooltip_OnShow()
-	locals.currentTooltipTitleString = ItemRefTooltipTextLeft1:GetText();
+	locals.currentTooltipTitleString = ItemRefTooltipTextLeft1:GetText(); -- REVIEW: ItemRefTooltipTextLeft1 may not be available
 	locals.ttName = locals.currentTooltipTitleString;
 
 	if (NuNData[locals.itmIndex_dbKey][locals.ttName]) then
@@ -9977,7 +9977,7 @@ function NuN_FlagMoved()
 	if (not NuNSettings[local_player.realmName].pT) then
 		-- if pT was never set, it means that this is the first time the user tried moving a tooltip and this is our first run
 		NuNSettings[local_player.realmName].pT = {};
-		NuNSettings[local_player.realmName].pT.type = ttType;
+		-- NuNSettings[local_player.realmName].pT.type = ttType; -- REVIEW: ttType may not be available
 		NuNSettings[local_player.realmName].pT.name = locals.ttName;
 	end
 	NuNSettings[local_player.realmName].pT.x = NuN_PinnedTooltip.x;
@@ -10212,9 +10212,11 @@ function NuN_ManualTransmit(formatted, tType, parms)
 				end
 				local nTest = tonumber(tUser);
 				if (nTest) then
+					--- @diagnostic disable-next-line: redundant-parameter --NOTE: seems to be an incorrect warning
 					sendToChannel.id, sendToChannel.name = GetChannelName(nTest);
 				else
 					sendToChannel.name = tUser;
+					--- @diagnostic disable-next-line: redundant-parameter --NOTE: seems to be an incorrect warning
 					sendToChannel.id = GetChannelName(tUser);
 				end
 				tUser = sendToChannel.id;
@@ -10331,6 +10333,7 @@ function NuN_Transmit(tType, tUser)
 			NuN_Message("Invalid id");
 			return;
 		else
+			--- @diagnostic disable-next-line: redundant-parameter --NOTE: seems to be an incorrect warning
 			local cIndex, cName = GetChannelName(sendToChannel.id);
 			if (((type(sendToChannel.id) == "number") and (not cName)) or (not cIndex)) then
 				NuN_Message("Invalid name" .. sendToChannel.name .. " : " .. sendToChannel.id);
@@ -11463,6 +11466,7 @@ function NuN_LocStrip(locData)
 	return locData;
 end
 
+--TODO: Need to review all Map/MapNote stuff
 function NuN_MapNote(MNType, MNxtra1, MNxtra2, MNColour)
 	local MNCont, MNZone, x, y;
 	local checknote = nil;
@@ -11721,16 +11725,14 @@ function NuN_GetMapNotesKey()
 
 	NuN_State.inBG = false;
 
-	SetMapToCurrentZone();
-
-	x, y = GetPlayerMapPosition("player");
+	x, y = C_Map.GetPlayerMapPosition(C_Map.GetBestMapForUnit("player"), "player");
 	if (((x == 0) and (y == 0)) or (MNCont == 0)) then
 		return nil;
 	end
 
 	if (MapNotes_Data_Notes) then -- + v5.00.11200
 		MNCont = "WM ";  -- + v5.00.11200
-		local map = GetMapInfo();  -- + v5.00.11200
+		local map = C_Map.GetMapInfo(WorldMapFrame:GetMapID());  -- REVIEW: 
 		if (map) then -- + v5.00.11200
 			MNCont = MNCont .. map;  -- + v5.00.11200
 		else -- + v5.00.11200
@@ -11997,7 +11999,7 @@ function NuN_PreDeleteMapIndex(id, cont, zone)
 
 	if (MapNotes_Data_Notes) then -- + v5.00.11200
 		if (not cont) then
-			cont = GetMapInfo();
+			cont = C_Map.GetMapInfo(WorldMapFrame:GetMapID()); -- REVIEW:
 			if (cont) then
 				cont = "WM " .. cont;
 			else
@@ -12041,7 +12043,7 @@ function NuN_DeleteMapIndexNote(id, noteN)
 
 	if (MapNotes_Data_Notes) then -- + v5.00.11200
 		cont = "WM ";  -- + v5.00.11200
-		local map = GetMapInfo();  -- + v5.00.11200
+	local map = C_Map.GetMapInfo(WorldMapFrame:GetMapID());  -- REVIEW:
 		if (map) then -- + v5.00.11200
 			cont = cont .. map;  -- + v5.00.11200
 		else -- + v5.00.11200
@@ -12281,7 +12283,7 @@ function NuN_WriteReceiptLog()
 	if (locals.rMsgSeq > 9) then
 		locals.rMsgSeq = 1;
 	end
-	local_player.currentNote.general = "Receipt Log " .. locals.player_Name .. rMsgSeq .. ":";
+	local_player.currentNote.general = "Receipt Log " .. locals.player_Name .. locals.rMsgSeq .. ":";
 	if (not locals.NuN_Receiving.title) then
 		locals.NuN_Receiving.title = "T?";
 	end
@@ -12480,11 +12482,12 @@ function NuN_ShowReceivedContact()
 	-- Have a step to check for sends from different clients
 	--   If sent from a different language client, then need to check for default headings against the different languages defaults...
 	--   If a different language default, then can substitute with this Clients default...
+	-- REVIEW: This seems irrelevant
 	if ((locals.NuN_Receiving.user) and (locals.NuN_Receiving.lang ~= NUN_CLIENT)) then
 		if (locals.NuN_Receiving.lang == "English") then
 			NuN_xlateHeadings(locals.enHeadings);
 		elseif (locals.NuN_Receiving.lang == "German") then
-			NuN_xlateHeadings(deHeadings);
+			NuN_xlateHeadings(locals.deHeadings);
 		elseif (locals.NuN_Receiving.lang == "French") then
 			NuN_xlateHeadings(locals.frHeadings);
 		end
@@ -12512,7 +12515,8 @@ function NuN_ShowReceivedContact()
 	end
 end
 
-function NuN_xlateHeadings()
+-- NOTE: added argument just to clear the warnings. Not sure it is needed
+function NuN_xlateHeadings(headings)
 	for i = 1, locals.uBttns, 1 do
 		if ((locals.NuN_Receiving.user[i]) and (locals.NuN_Receiving.user[i].title)) then
 			if (locals.NuN_Receiving.user[i].title == locals.fromHeadings[i]) then
@@ -13383,11 +13387,12 @@ function NuN_QuestWatch_Update()
 		return;
 	end
 
-	for i = 1, GetNumQuestWatches() do
-		questIndex = GetQuestIndexForWatch(i);
+	-- TODO: Figure what is needed here
+	for i = 1, C_QuestLog.GetNumQuestWatches() do
+		questIndex = C_QuestLog.GetQuestIDForQuestWatchIndex(i);
 
 		if (questIndex) then
-			local theQuest = GetQuestLogTitle(questIndex);
+			local theQuest = C_QuestLog.GetInfo(questIndex).title;
 
 			if (theQuest) then
 				local qNoteLevel = nil;
@@ -13437,7 +13442,7 @@ function NuN_QuestWatch_Update()
 									not strfind(general.text, text) and (not strfind(text, ": 0")) and
 										(strlen(general.text) < NuNC.NUN_MAX_TXT_BUF))) then
 								if (not location) then
-									SetMapToCurrentZone();
+									-- SetMapToCurrentZone(); -- TODO: What is the replacement for this?
 									location = NuNF.NuN_GetLoc();
 									if (location) then
 										location = NuN_LocStrip(location);
@@ -13484,7 +13489,7 @@ function NuN_MainUpdate(self, elapsed)
 		elseif ((NuN_WhoReturnStruct.timeLimit > NuNC.NUN_WHO_TIMELIMIT) and (not NuN_WhoReturnStruct.secondTry)) then
 			NuN_WhoReturnStruct.secondTry = true;
 			NuN_suppressExtraWho = true;
-			SendWho("n-" .. NuN_WhoReturnStruct.name); -- 1 more try, as perhaps the first was ignored by Blizzard Timer
+			C_FriendList.SendWho("n-" .. NuN_WhoReturnStruct.name); -- 1 more try, as perhaps the first was ignored by Blizzard Timer
 			--			NuN_WhoReturnStruct.timeLimit = 9999;
 		end
 	end
@@ -13518,7 +13523,7 @@ function NuN_MainUpdate(self, elapsed)
 		NuN_AttemptedFriendIgnores = 0;
 
 		if (friendsPendingUpdate) then
-			if (GetNumFriends() > 0) then
+			if (C_FriendList.GetNumFriends() > 0) then
 				friendsPendingUpdate = NuN_Update_Friends();
 			else
 				friendsPendingUpdate = nil;
@@ -13694,7 +13699,7 @@ function NuN_SyncGuildMemberNotes(forceReport)
 	--		return;
 	--	end
 
-	local numGuildMembers = GetNumGuildMembers(true);
+	local numGuildMembers = GetNumGuildMembers();
 	local guildName = GetGuildInfo("player");
 
 	if (locals.NuNDebug) then
@@ -14179,7 +14184,7 @@ function NuN_ColourText(noteType, fBttn, mBttn)
 					end
 					HideUIPanel(ColorPickerFrame);
 				else
-					NuNF.NuN_ChooseTextColour(eBox, textToColour);
+					NuNF.NuN_ChooseTextColour(eBox, textToColour); -- REVIEW: textToColour is not defined as global
 				end
 			end
 		end
@@ -14244,7 +14249,7 @@ end
 -- Try my best to ensure all selected text that is not already "colourised" is NOW colourised...
 -- I can't guarantee it, as I don't exhaustively look for colour tags that are "in effect" BEFORE/AFTER the highlighted region... and I ain't going to either ;p This is pretty good for requirements
 function NuNF.NuN_Colouriser(textToColour, toColour)
-	local tF, tT, qTst = 0;
+	local tF, tT, qTst = 0, 0, "";
 	local colouredText = "";
 	local nextString;
 	local openTag = false;
@@ -15135,6 +15140,7 @@ end
 --  3	"Contact Note nof Found"
 function NuN_ReturnText(noteType, noteName)
 	if (noteType == "General") then
+		-- REVIEW: gLclNote is missing declaration
 		if ((NuNDataRNotes[gLclNote]) or (NuNDataANotes[gLclNote])) then
 			return NuNF.NuN_GetGText(gLclNote);
 		end
