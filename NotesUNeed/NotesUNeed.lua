@@ -2126,11 +2126,12 @@ function NuNF.NuN_BuildQuestText()
 
 	numQuestRewards = GetNumQuestLogRewards();  --Number of quest rewards
 	numQuestChoices = GetNumQuestLogChoices();  --Number of quest choices
-	if (GetQuestLogRewardSpell()) then
-		numQuestSpellRewards = 1;
-	end
+	-- REVIEW: Not sure what this is. It's not used anywhere.
+	-- if (GetQuestLogRewardSpell()) then
+	-- 	numQuestSpellRewards = 1;
+	-- end
 	QuestRewardMoney = GetQuestLogRewardMoney();
-	QuestRequiredMoney = GetQuestLogRequiredMoney();
+	QuestRequiredMoney = C_QuestLog.GetRequiredMoney();
 
 	tmpQText1, tmpQText2 = GetQuestLogQuestText();
 	qText = tmpQText2 .. "\n\n";
@@ -2257,21 +2258,22 @@ function NuNF.NuN_BuildQuestText()
 end
 
 function NuNF.NuN_CheckQuestList(findName)
-	local qTitle, qLevel, qTag, qGroup, qHeader, qCollapsed, qComplete;
+	local questInfo
 	local foundIndex = -1;
 	local rLevel, rTag, rComplete;
 
 	locals.NuNQuestLog = {};
 
-	for i = 1, GetNumQuestLogEntries(), 1 do
-		qTitle, qLevel, qTag, qGroup, qHeader, qCollapsed, qComplete = GetQuestLogTitle(i);
-		if ((qTitle) and (not qHeader)) then
-			locals.NuNQuestLog[qTitle] = 1;
-			if ((findName) and (findName == qTitle)) then
+	for i = 1, C_QuestLog.GetNumQuestLogEntries(), 1 do
+		-- NOTE: GetInfo() returns an info table
+		questInfo = C_QuestLog.GetInfo(i);
+		if ((questInfo.title) and (not questInfo.isHeader)) then
+			locals.NuNQuestLog[questInfo.title] = 1;
+			if ((findName) and (findName == questInfo.title)) then
 				foundIndex = i;
-				rLevel = qLevel;
-				rTag = qTag;
-				rComplete = qComplete;
+				rLevel = questInfo.level;
+				rTag = C_QuestLog.GetQuestTagInfo(i);  -- REVIEW: is this the right way to get the tag?
+				rComplete = C_QuestLog.IsComplete(i);  -- REVIEW: is this the right way to get the completion status?
 			end
 		end
 	end
@@ -2283,13 +2285,13 @@ function NuNF.NuN_UpdateQuestNotes(qEvent)
 	if ron_disabled then
 		local quest, qLevel, qTag, qGroup, qHeader, qCollapsed, qComplete;
 
-		local previousQ = GetQuestLogSelection();
+		local previousQ = C_QuestLog.GetSelectedQuest();
 
 		locals.qTriggs = 0;
 
 		if (local_player.factionName) then
-			for qI = 1, GetNumQuestLogEntries(), 1 do
-				quest, qLevel, qTag, qGroup, qHeader, qCollapsed, qComplete = GetQuestLogTitle(qI);
+			for qI = 1, C_QuestLog.GetNumQuestLogEntries(), 1 do
+				quest, qLevel, qTag, qGroup, qHeader, qCollapsed, qComplete = C_QuestLog.GetInfo(qI);
 				if ((quest) and (not qHeader)) then
 					NuNF.NuN_ProcessQuest(quest, qLevel, qTag, qHeader, qCollapsed, qComplete, qI, qEvent);
 				end
@@ -2302,7 +2304,7 @@ function NuNF.NuN_UpdateQuestNotes(qEvent)
 		end
 
 		if (previousQ > 0) then
-			SelectQuestLogEntry(previousQ);
+			C_QuestLog.SetSelectedQuest(previousQ);
 		end
 	end
 end
@@ -2323,7 +2325,7 @@ function NuNF.NuN_ProcessQuest(quest, qLevel, qTag, qHeader, qCollapsed, qComple
 			return;
 		end
 
-		SelectQuestLogEntry(qI);
+		C_QuestLog.SetSelectedQuest(qI);
 
 		local qChar = NuN_CheckTarget();
 		if (qChar == "N") then
@@ -4953,7 +4955,7 @@ function NuN_OnEvent(self, event, ...)
 		NuN_WhoReturnStruct.secondTry = nil;
 		NuN_suppressExtraWho = nil;
 		if ((NuNSettings[local_player.realmName]) and (NuNSettings[local_player.realmName].alternativewho)) then
-			SetWhoToUI(0); -- 5.60
+			C_FriendList.SetWhoToUi(0); -- 5.60
 			FriendsFrame:RegisterEvent("WHO_LIST_UPDATE"); -- 5.60
 		end
 
@@ -5063,8 +5065,9 @@ function NuN_OnEvent(self, event, ...)
 			end
 		end
 
-	elseif (event == "INSPECT_READY") then
-		NuNF.QueryTalents();
+		-- REMOVE: This is no longer needed. Will revist talent information in Dragonflight
+		-- elseif (event == "INSPECT_READY") then
+		-- 	NuNF.QueryTalents();
 
 	end
 end
@@ -5497,14 +5500,15 @@ function NuN_InitializeDropDown_Chat(frame)
 	end
 end
 
-function NuNF.SetDropDownSelectedID(frame, id, level, refresh)
-	frame.selectedID = id;
-	frame.selectedName = nil;
-	frame.selectedValue = nil;
-	if not level then level = 1 end
+-- REVIEW: This doesn't seem to be used anymore.  Should it be removed?
+-- function NuNF.SetDropDownSelectedID(frame, id, level, refresh)
+-- 	frame.selectedID = id;
+-- 	frame.selectedName = nil;
+-- 	frame.selectedValue = nil;
+-- 	if not level then level = 1 end
 
-	UIDropDownMenu_Refresh(frame, useValue, level);
-end
+-- 	UIDropDownMenu_Refresh(frame, useValue, level);
+-- end
 
 function NuNF.NuN_OnClickDropDown_Chat(selectedElement, btn, down)
 	UIDropDownMenu_SetSelectedID(NuNDropDown_Chat, selectedElement:GetID());
@@ -5872,6 +5876,7 @@ function NuNNew_IgnoreList_Update()
 	-- evo: fixed ignore list not updating idx correctly when TopItem was different from FirstItem
 	local scrollOffset = FauxScrollFrame_GetOffset(FriendsFrameIgnoreScrollFrame);
 	local ignoreButton, ignoredItemIndex, ignoreNoteButton;
+	-- REVIEW: Not sure what IGNORES_TO_DISPLAY is from. I can't find it in the docs and don't see it anywhere else.
 	for i = 1, IGNORES_TO_DISPLAY, 1 do
 		-- but the actual buttons are still 1-based
 		ignoredItemIndex = i + scrollOffset;
@@ -6026,11 +6031,13 @@ function NuNQuickNote.ProcessHyperlink(itemLink)
 	return false;
 end
 
-function NuN_AH_BrowseButton_OnClick(buttonFrame, mouseButton, down)
+function NuN_AH_BrowseButton_OnClick(buttonFrame, mouseButton, isMouseButtonDown)
 	local bResult = false;
 
 	local myParent = buttonFrame:GetParent();
-	local itmLink = GetAuctionItemLink("list", myParent:GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame));
+	-- REVIEW: Replace old api call. Not sure about the arguments being passed in here. Need an index of some sort for the auction item.
+	-- HACK: Need to get the item index
+	local itmLink = C_AuctionHouse.GetReplicateItemLink(1);
 	if (itmLink) then
 		bResult = HandleModifiedItemClick(itmLink);
 	end
@@ -6679,7 +6686,7 @@ function NuNNew_ChatFrame_MessageEventHandler(chatframe, event, ...)
 				NuN_WhoReturnStruct.timeLimit = nil;  -- 5.60
 				NuN_WhoReturnStruct.secondTry = nil;
 				if ((NuNSettings[local_player.realmName]) and (NuNSettings[local_player.realmName].alternativewho)) then
-					SetWhoToUI(0); -- 5.60
+					C_FriendList.SetWhoToUi(0); -- 5.60
 					FriendsFrame:RegisterEvent("WHO_LIST_UPDATE");
 				end
 				processedByNuN = true;
@@ -7170,7 +7177,7 @@ function NuN_Who()
 	if (not NuN_WhoReturnStruct.func) then -- 5.60
 		-- make sure the /who call triggers an EVENT, rather than a chat message 										-- 5.60
 		if ((NuNSettings[local_player.realmName]) and (NuNSettings[local_player.realmName].alternativewho)) then
-			SetWhoToUI(1); -- 5.60
+			C_FriendList.SetWhoToUi(1); -- 5.60
 			FriendsFrame:UnregisterEvent("WHO_LIST_UPDATE"); -- 5.60
 		end
 		-- unregister the who frame from the who update events, and trigger the who									-- 5.60
@@ -13470,7 +13477,7 @@ function NuN_MainUpdate(self, elapsed)
 			NuN_WhoReturnStruct.secondTry = nil;
 			NuN_suppressExtraWho = nil;
 			if ((NuNSettings[local_player.realmName]) and (NuNSettings[local_player.realmName].alternativewho)) then
-				SetWhoToUI(0); -- 5.60
+				C_FriendList.SetWhoToUi(0); -- 5.60
 				FriendsFrame:RegisterEvent("WHO_LIST_UPDATE"); -- 5.60
 			end
 
