@@ -5100,7 +5100,7 @@ function NuN_OnEvent(self, event, ...)
 		NuN_WhoReturnStruct.secondTry = nil;
 		NuN_suppressExtraWho = nil;
 		if ((NuNSettings[local_player.realmName]) and (NuNSettings[local_player.realmName].alternativewho)) then
-			SetWhoToUI(0); -- 5.60
+			C_FriendList.SetWhoToUi(0); -- 5.60
 			FriendsFrame:RegisterEvent("WHO_LIST_UPDATE"); -- 5.60
 		end
 
@@ -5645,14 +5645,15 @@ function NuN_InitializeDropDown_Chat(frame)
 	end
 end
 
-function NuNF.SetDropDownSelectedID(frame, id, level, refresh)
-	frame.selectedID = id;
-	frame.selectedName = nil;
-	frame.selectedValue = nil;
-	if not level then level = 1 end
+-- REVIEW: This doesn't seem to be used anymore.  Should it be removed?
+-- function NuNF.SetDropDownSelectedID(frame, id, level, refresh)
+-- 	frame.selectedID = id;
+-- 	frame.selectedName = nil;
+-- 	frame.selectedValue = nil;
+-- 	if not level then level = 1 end
 
-	UIDropDownMenu_Refresh(frame, useValue, level);
-end
+-- 	UIDropDownMenu_Refresh(frame, useValue, level);
+-- end
 
 function NuNF.NuN_OnClickDropDown_Chat(selectedElement, btn, down)
 	UIDropDownMenu_SetSelectedID(NuNDropDown_Chat, selectedElement:GetID());
@@ -6020,6 +6021,7 @@ function NuNNew_IgnoreList_Update()
 	-- evo: fixed ignore list not updating idx correctly when TopItem was different from FirstItem
 	local scrollOffset = FauxScrollFrame_GetOffset(FriendsFrameIgnoreScrollFrame);
 	local ignoreButton, ignoredItemIndex, ignoreNoteButton;
+	-- REVIEW: Not sure what IGNORES_TO_DISPLAY is from. I can't find it in the docs and don't see it anywhere else.
 	for i = 1, IGNORES_TO_DISPLAY, 1 do
 		-- but the actual buttons are still 1-based
 		ignoredItemIndex = i + scrollOffset;
@@ -6174,11 +6176,13 @@ function NuNQuickNote.ProcessHyperlink(itemLink)
 	return false;
 end
 
-function NuN_AH_BrowseButton_OnClick(buttonFrame, mouseButton, down)
+function NuN_AH_BrowseButton_OnClick(buttonFrame, mouseButton, isMouseButtonDown)
 	local bResult = false;
 
 	local myParent = buttonFrame:GetParent();
-	local itmLink = GetAuctionItemLink("list", myParent:GetID() + FauxScrollFrame_GetOffset(BrowseScrollFrame));
+	-- REVIEW: Replace old api call. Not sure about the arguments being passed in here. Need an index of some sort for the auction item.
+	-- HACK: Need to get the item index
+	local itmLink = C_AuctionHouse.GetReplicateItemLink(1);
 	if (itmLink) then
 		bResult = HandleModifiedItemClick(itmLink);
 	end
@@ -6827,7 +6831,7 @@ function NuNNew_ChatFrame_MessageEventHandler(chatframe, event, ...)
 				NuN_WhoReturnStruct.timeLimit = nil;  -- 5.60
 				NuN_WhoReturnStruct.secondTry = nil;
 				if ((NuNSettings[local_player.realmName]) and (NuNSettings[local_player.realmName].alternativewho)) then
-					SetWhoToUI(0); -- 5.60
+					C_FriendList.SetWhoToUi(0); -- 5.60
 					FriendsFrame:RegisterEvent("WHO_LIST_UPDATE");
 				end
 				processedByNuN = true;
@@ -7318,7 +7322,7 @@ function NuN_Who()
 	if (not NuN_WhoReturnStruct.func) then -- 5.60
 		-- make sure the /who call triggers an EVENT, rather than a chat message 										-- 5.60
 		if ((NuNSettings[local_player.realmName]) and (NuNSettings[local_player.realmName].alternativewho)) then
-			SetWhoToUI(1); -- 5.60
+			C_FriendList.SetWhoToUi(1); -- 5.60
 			FriendsFrame:UnregisterEvent("WHO_LIST_UPDATE"); -- 5.60
 		end
 		-- unregister the who frame from the who update events, and trigger the who									-- 5.60
@@ -13618,7 +13622,7 @@ function NuN_MainUpdate(self, elapsed)
 			NuN_WhoReturnStruct.secondTry = nil;
 			NuN_suppressExtraWho = nil;
 			if ((NuNSettings[local_player.realmName]) and (NuNSettings[local_player.realmName].alternativewho)) then
-				SetWhoToUI(0); -- 5.60
+				C_FriendList.SetWhoToUi(0); -- 5.60
 				FriendsFrame:RegisterEvent("WHO_LIST_UPDATE"); -- 5.60
 			end
 
