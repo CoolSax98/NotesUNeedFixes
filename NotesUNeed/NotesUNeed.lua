@@ -1315,126 +1315,125 @@ local function migrateTalentsInfo(talents)
 	end
 end
 
--- TODO: Need to rewrite this and figure out what information needs to be captured.
--- FIXME: This has outdated/replaced api calls.
-function NuNF.QueryTalents()
-	if (not NuNTalents.player) then
-		NuNTalents = { mainspec = {}, offspec = {} };
-		return;
-	else
-		NuNTalents.mainspec.total = 0;
-		NuNTalents.mainspec.summary = "";
-		NuNTalents.offspec.total = 0;
-		NuNTalents.offspec.summary = "";
-	end
+-- REMOVE: This is currently not needed. It's based on old talent information.
+-- function NuNF.QueryTalents()
+-- 	if (not NuNTalents.player) then
+-- 		NuNTalents = { mainspec = {}, offspec = {} };
+-- 		return;
+-- 	else
+-- 		NuNTalents.mainspec.total = 0;
+-- 		NuNTalents.mainspec.summary = "";
+-- 		NuNTalents.offspec.total = 0;
+-- 		NuNTalents.offspec.summary = "";
+-- 	end
 
-	-- this flag controls whether the following code uses data from received from inspecting a player or whether it just uses our own data (for debugging)
-	local useInspectInfo = (NuNTalents.player ~= locals.player_Name);
-	NuNTalents.tabs = GetNumSpecializations(useInspectInfo) or 0;
+-- 	-- this flag controls whether the following code uses data from received from inspecting a player or whether it just uses our own data (for debugging)
+-- 	local useInspectInfo = (NuNTalents.player ~= locals.player_Name);
+-- 	NuNTalents.tabs = GetNumSpecializations(useInspectInfo) or 0;
 
-	-- return values from GetTalentTabInfo()
-	-- local tabID, tabName, tabDesc, tabIcon, tabPointsSpent, tabPreviewPointsSpent, tabPointsAllocated, _, tabUnlocked;
+-- 	-- return values from GetTalentTabInfo()
+-- 	-- local tabID, tabName, tabDesc, tabIcon, tabPointsSpent, tabPreviewPointsSpent, tabPointsAllocated, _, tabUnlocked;
 
-	-- return value from GetSpecializationInfo()
-	-- TODO: coolsax - Finish replacing GetTalentTabInfo with GetSpecializationInfo
-	local specID, specName, specDesc, specIcon, specRole, specPrimaryStat
-	local prefix;
+-- 	-- return value from GetSpecializationInfo()
+-- 	-- TODO: coolsax - Finish replacing GetTalentTabInfo with GetSpecializationInfo
+-- 	local specID, specName, specDesc, specIcon, specRole, specPrimaryStat
+-- 	local prefix;
 
-	-- return values from GetTalentInfo()
-	local talentName, talentIcon, talentTier, talentColumn, talentRank, talentMaxRank, talentIsExceptional, previewRank, totalAllocatedRank;
-	local numActiveTalentSpecs = GetNumSpecializations(useInspectInfo);
-	for talentGroupIndex = 1, numActiveTalentSpecs do
-		prefix = "";
-		local closestMatchingTree = { tabRef = nil, totalPoints = 0 }
-		for _tab = 1, NuNTalents.tabs do
-			-- record tab
-			tabID, tabName, tabDesc, tabIcon, tabPointsSpent, _, tabPreviewPointsSpent, tabUnlocked = GetTalentTabInfo(_tab,
-				useInspectInfo, nil, talentGroupIndex);
+-- 	-- return values from GetTalentInfo()
+-- 	local talentName, talentIcon, talentTier, talentColumn, talentRank, talentMaxRank, talentIsExceptional, previewRank, totalAllocatedRank;
+-- 	local numActiveTalentSpecs = GetNumSpecializations(useInspectInfo);
+-- 	for talentGroupIndex = 1, numActiveTalentSpecs do
+-- 		prefix = "";
+-- 		local closestMatchingTree = { tabRef = nil, totalPoints = 0 }
+-- 		for _tab = 1, NuNTalents.tabs do
+-- 			-- record tab
+-- 			tabID, tabName, tabDesc, tabIcon, tabPointsSpent, _, tabPreviewPointsSpent, tabUnlocked = GetTalentTabInfo(_tab,
+-- 				useInspectInfo, nil, talentGroupIndex);
 
-			specID, specName, specDesc, specIcon, specRole, specPrimaryStat = GetSpecializationInfo(_tab, useInspectInfo, nil, nil)
-			nun_msgf("QueryTalents - tabID:%s  tabName:%s  tabPointsSpent:%s  tabPreviewPointsSpent:%s  tabUnlocked:%s  talentGroupIndex:%i   (closestMatchingTree.totalPoints:%i)"
-				,
-				tostring(tabID), tostring(tabName), tostring(tabPointsSpent), tostring(tabPreviewPointsSpent), tostring(tabUnlocked)
-				, talentGroupIndex, closestMatchingTree.totalPoints);
-			-- check to see if this talent tree is the player's active spec
+-- 			specID, specName, specDesc, specIcon, specRole, specPrimaryStat = GetSpecializationInfo(_tab, useInspectInfo, nil, nil)
+-- 			nun_msgf("QueryTalents - tabID:%s  tabName:%s  tabPointsSpent:%s  tabPreviewPointsSpent:%s  tabUnlocked:%s  talentGroupIndex:%i   (closestMatchingTree.totalPoints:%i)"
+-- 				,
+-- 				tostring(tabID), tostring(tabName), tostring(tabPointsSpent), tostring(tabPreviewPointsSpent), tostring(tabUnlocked)
+-- 				, talentGroupIndex, closestMatchingTree.totalPoints);
+-- 			-- check to see if this talent tree is the player's active spec
 
-			local activeTalentGroupIndex = GetActiveSpecGroup(useInspectInfo);
-			local currentSpec;
-			if talentGroupIndex == 1 then
-				currentSpec = NuNTalents.mainspec;
-			else
-				currentSpec = NuNTalents.offspec;
-			end
+-- 			local activeTalentGroupIndex = GetActiveSpecGroup(useInspectInfo);
+-- 			local currentSpec;
+-- 			if talentGroupIndex == 1 then
+-- 				currentSpec = NuNTalents.mainspec;
+-- 			else
+-- 				currentSpec = NuNTalents.offspec;
+-- 			end
 
-			if (tabUnlocked) then
-				local tabPointsAllocated = tabPointsSpent + tabPreviewPointsSpent;
+-- 			if (tabUnlocked) then
+-- 				local tabPointsAllocated = tabPointsSpent + tabPreviewPointsSpent;
 
-				-- check to see if this tab corresponds to the active talent group
-				if (tabPointsAllocated > closestMatchingTree.totalPoints) then
-					closestMatchingTree.tabRef = _tab;
-					closestMatchingTree.totalPoints = tabPointsAllocated;
+-- 				-- check to see if this tab corresponds to the active talent group
+-- 				if (tabPointsAllocated > closestMatchingTree.totalPoints) then
+-- 					closestMatchingTree.tabRef = _tab;
+-- 					closestMatchingTree.totalPoints = tabPointsAllocated;
 
-					currentSpec.name = tabName;
-					currentSpec.icon = tabIcon;
-				end
+-- 					currentSpec.name = tabName;
+-- 					currentSpec.icon = tabIcon;
+-- 				end
 
-				currentSpec.summary = currentSpec.summary .. prefix .. tabPointsAllocated;
-				currentSpec.total = currentSpec.total + tabPointsAllocated;
-				currentSpec[_tab] = {};
-				currentSpec[_tab].name = tabName;
-				currentSpec[_tab].points = tabPointsAllocated;
-				currentSpec[_tab].icon = tabIcon;
-				currentSpec[_tab].specifics = {};
+-- 				currentSpec.summary = currentSpec.summary .. prefix .. tabPointsAllocated;
+-- 				currentSpec.total = currentSpec.total + tabPointsAllocated;
+-- 				currentSpec[_tab] = {};
+-- 				currentSpec[_tab].name = tabName;
+-- 				currentSpec[_tab].points = tabPointsAllocated;
+-- 				currentSpec[_tab].icon = tabIcon;
+-- 				currentSpec[_tab].specifics = {};
 
-				-- record talent choices
-				local talentCount = GetNumTalents(_tab, useInspectInfo, false);
-				for talentIndex = 1, talentCount do
-					talentName, talentIcon, talentTier, talentColumn, talentRank, talentMaxRank, talentIsExceptional, _, previewRank = GetTalentInfo(_tab
-						, talentIndex, useInspectInfo, nil, talentGroupIndex);
-					totalAllocatedRank = talentRank;
-					--[[
-					commented out as previewRank always seems to have a value, regardless of whether the player has actually allocated points to the talent using the preview feature.
-					if ( totalAllocatedRank and previewRank ) then
-						totalAllocatedRank = totalAllocatedRank + previewRank;
-					end
-					--]]
-					--nun_msgf("  >> >> talentName:%s  talentTier:%s  talentColumn:%s  talentRank:%s  talentMaxRank:%s  previewRank:%s  totalAllocatedRank:%s  exceptional:%s",
-					--	tostring(talentName), tostring(talentTier), tostring(talentColumn), tostring(talentRank), tostring(talentMaxRank), tostring(previewRank), tostring(totalAllocatedRank), tostring(talentIsExceptional));
+-- 				-- record talent choices
+-- 				local talentCount = GetNumTalents(_tab, useInspectInfo, false);
+-- 				for talentIndex = 1, talentCount do
+-- 					talentName, talentIcon, talentTier, talentColumn, talentRank, talentMaxRank, talentIsExceptional, _, previewRank = GetTalentInfo(_tab
+-- 						, talentIndex, useInspectInfo, nil, talentGroupIndex);
+-- 					totalAllocatedRank = talentRank;
+-- 					--[[
+-- 					commented out as previewRank always seems to have a value, regardless of whether the player has actually allocated points to the talent using the preview feature.
+-- 					if ( totalAllocatedRank and previewRank ) then
+-- 						totalAllocatedRank = totalAllocatedRank + previewRank;
+-- 					end
+-- 					--]]
+-- 					--nun_msgf("  >> >> talentName:%s  talentTier:%s  talentColumn:%s  talentRank:%s  talentMaxRank:%s  previewRank:%s  totalAllocatedRank:%s  exceptional:%s",
+-- 					--	tostring(talentName), tostring(talentTier), tostring(talentColumn), tostring(talentRank), tostring(talentMaxRank), tostring(previewRank), tostring(totalAllocatedRank), tostring(talentIsExceptional));
 
-					if (talentName and talentRank and talentRank > 0) then
-						local talentData = {
-							talentTier = talentTier,
-							talentColumn = talentColumn,
-							talentName = talentName,
-							iconPath = talentIcon,
-							curR = totalAllocatedRank,
-							maxR = talentMaxRank,
-							exceptional = talentIsExceptional,
-						};
-						tinsert(currentSpec[_tab].specifics, talentData);
-					end
-				end
-			else
-				currentSpec.summary = currentSpec.summary .. prefix .. GRAY_FONT_COLOR_CODE .. "0" .. FONT_COLOR_CODE_CLOSE;
-			end
-			prefix = "-";
-		end
-	end
+-- 					if (talentName and talentRank and talentRank > 0) then
+-- 						local talentData = {
+-- 							talentTier = talentTier,
+-- 							talentColumn = talentColumn,
+-- 							talentName = talentName,
+-- 							iconPath = talentIcon,
+-- 							curR = totalAllocatedRank,
+-- 							maxR = talentMaxRank,
+-- 							exceptional = talentIsExceptional,
+-- 						};
+-- 						tinsert(currentSpec[_tab].specifics, talentData);
+-- 					end
+-- 				end
+-- 			else
+-- 				currentSpec.summary = currentSpec.summary .. prefix .. GRAY_FONT_COLOR_CODE .. "0" .. FONT_COLOR_CODE_CLOSE;
+-- 			end
+-- 			prefix = "-";
+-- 		end
+-- 	end
 
-	NuNTalents.total = NuNTalents.mainspec.total + NuNTalents.offspec.total;
+-- 	NuNTalents.total = NuNTalents.mainspec.total + NuNTalents.offspec.total;
 
-	-- Live update if record for player already exists...
-	if ((locals.NuNDataPlayers[NuNTalents.player]) and (NuNTalents.total > 0)) then
-		-- copy NuNTalents details to .talents array
-		locals.NuNDataPlayers[NuNTalents.player].talents = {};
-		NuNF.NuN_CopyTable(NuNTalents, locals.NuNDataPlayers[NuNTalents.player].talents);
+-- 	-- Live update if record for player already exists...
+-- 	if ((locals.NuNDataPlayers[NuNTalents.player]) and (NuNTalents.total > 0)) then
+-- 		-- copy NuNTalents details to .talents array
+-- 		locals.NuNDataPlayers[NuNTalents.player].talents = {};
+-- 		NuNF.NuN_CopyTable(NuNTalents, locals.NuNDataPlayers[NuNTalents.player].talents);
 
-	elseif (locals.NuNDataPlayers[NuNTalents.player]) then
-		locals.NuNDataPlayers[NuNTalents.player].talents = nil;
-	end
+-- 	elseif (locals.NuNDataPlayers[NuNTalents.player]) then
+-- 		locals.NuNDataPlayers[NuNTalents.player].talents = nil;
+-- 	end
 
-	NuNFrame:UnregisterEvent("INSPECT_READY");
-end
+-- 	NuNFrame:UnregisterEvent("INSPECT_READY");
+-- end
 
 -- 5.60 NuN_Target re-written to NuN_UnitInfo for adjusting Open Note details without (necessarily) saving to database
 function NuNF.NuN_UnitInfo(unitTest, contactName, theUnitID) -- 5.60 Allow passing of the unitID
@@ -1548,37 +1547,38 @@ function NuNF.NuN_UnitInfo(unitTest, contactName, theUnitID) -- 5.60 Allow passi
 			end
 		end
 
-		if ((contactName) and (contactName ~= "")) then
-			if ((CheckInteractDistance(theUnitID, 1))
-				and (CanInspect(theUnitID, true))
-				and ((UnitLevel(theUnitID) or 0) > 9)) then
+		-- REMOVE: no longer needed. Will revisit talent information in Dragonflight
+		-- if ((contactName) and (contactName ~= "")) then
+		-- 	if ((CheckInteractDistance(theUnitID, 1))
+		-- 		and (CanInspect(theUnitID, true))
+		-- 		and ((UnitLevel(theUnitID) or 0) > 9)) then
 
-				NuNTalents = {};
-				NuNTalents.mainspec = {};
-				NuNTalents.offspec = {};
-				NuNTalents.player = contactName;
-				NuNTalents.theUnitID = theUnitID;
+		-- 		NuNTalents = {};
+		-- 		NuNTalents.mainspec = {};
+		-- 		NuNTalents.offspec = {};
+		-- 		NuNTalents.player = contactName;
+		-- 		NuNTalents.theUnitID = theUnitID;
 
-				if (contactName == locals.player_Name) then
-					NuNF.QueryTalents();
-				else
-					local inspected = "";
-					if ((InspectFrame) and (InspectFrame:IsVisible())) then
-						inspected = InspectFrame.unit;
-					end
+		-- 		if (contactName == locals.player_Name) then
+		-- 			NuNF.QueryTalents();
+		-- 		else
+		-- 			local inspected = "";
+		-- 			if ((InspectFrame) and (InspectFrame:IsVisible())) then
+		-- 				inspected = InspectFrame.unit;
+		-- 			end
 
-					if (inspected == contactName) then
-						NuNF.QueryTalents();
+		-- 			if (inspected == contactName) then
+		-- 				NuNF.QueryTalents();
 
-					else
-						NuNFrame:RegisterEvent("INSPECT_READY");
-						NotifyInspect(theUnitID);
-					end
-				end
-			else
-				NuNTalents = { mainspec = {}, offspec = {} };
-			end
-		end
+		-- 			else
+		-- 				NuNFrame:RegisterEvent("INSPECT_READY");
+		-- 				NotifyInspect(theUnitID);
+		-- 			end
+		-- 		end
+		-- 	else
+		-- 		NuNTalents = { mainspec = {}, offspec = {} };
+		-- 	end
+		-- end
 
 	end
 
@@ -2271,11 +2271,12 @@ function NuNF.NuN_BuildQuestText()
 
 	numQuestRewards = GetNumQuestLogRewards();  --Number of quest rewards
 	numQuestChoices = GetNumQuestLogChoices();  --Number of quest choices
-	if (GetQuestLogRewardSpell()) then
-		numQuestSpellRewards = 1;
-	end
+	-- REVIEW: Not sure what this is. It's not used anywhere.
+	-- if (GetQuestLogRewardSpell()) then
+	-- 	numQuestSpellRewards = 1;
+	-- end
 	QuestRewardMoney = GetQuestLogRewardMoney();
-	QuestRequiredMoney = GetQuestLogRequiredMoney();
+	QuestRequiredMoney = C_QuestLog.GetRequiredMoney();
 
 	tmpQText1, tmpQText2 = GetQuestLogQuestText();
 	qText = tmpQText2 .. "\n\n";
@@ -2402,21 +2403,22 @@ function NuNF.NuN_BuildQuestText()
 end
 
 function NuNF.NuN_CheckQuestList(findName)
-	local qTitle, qLevel, qTag, qGroup, qHeader, qCollapsed, qComplete;
+	local questInfo
 	local foundIndex = -1;
 	local rLevel, rTag, rComplete;
 
 	locals.NuNQuestLog = {};
 
-	for i = 1, GetNumQuestLogEntries(), 1 do
-		qTitle, qLevel, qTag, qGroup, qHeader, qCollapsed, qComplete = GetQuestLogTitle(i);
-		if ((qTitle) and (not qHeader)) then
-			locals.NuNQuestLog[qTitle] = 1;
-			if ((findName) and (findName == qTitle)) then
+	for i = 1, C_QuestLog.GetNumQuestLogEntries(), 1 do
+		-- NOTE: GetInfo() returns an info table
+		questInfo = C_QuestLog.GetInfo(i);
+		if ((questInfo.title) and (not questInfo.isHeader)) then
+			locals.NuNQuestLog[questInfo.title] = 1;
+			if ((findName) and (findName == questInfo.title)) then
 				foundIndex = i;
-				rLevel = qLevel;
-				rTag = qTag;
-				rComplete = qComplete;
+				rLevel = questInfo.level;
+				rTag = C_QuestLog.GetQuestTagInfo(i);  -- REVIEW: is this the right way to get the tag?
+				rComplete = C_QuestLog.IsComplete(i);  -- REVIEW: is this the right way to get the completion status?
 			end
 		end
 	end
@@ -2428,13 +2430,13 @@ function NuNF.NuN_UpdateQuestNotes(qEvent)
 	if ron_disabled then
 		local quest, qLevel, qTag, qGroup, qHeader, qCollapsed, qComplete;
 
-		local previousQ = GetQuestLogSelection();
+		local previousQ = C_QuestLog.GetSelectedQuest();
 
 		locals.qTriggs = 0;
 
 		if (local_player.factionName) then
-			for qI = 1, GetNumQuestLogEntries(), 1 do
-				quest, qLevel, qTag, qGroup, qHeader, qCollapsed, qComplete = GetQuestLogTitle(qI);
+			for qI = 1, C_QuestLog.GetNumQuestLogEntries(), 1 do
+				quest, qLevel, qTag, qGroup, qHeader, qCollapsed, qComplete = C_QuestLog.GetInfo(qI);
 				if ((quest) and (not qHeader)) then
 					NuNF.NuN_ProcessQuest(quest, qLevel, qTag, qHeader, qCollapsed, qComplete, qI, qEvent);
 				end
@@ -2447,7 +2449,7 @@ function NuNF.NuN_UpdateQuestNotes(qEvent)
 		end
 
 		if (previousQ > 0) then
-			SelectQuestLogEntry(previousQ);
+			C_QuestLog.SetSelectedQuest(previousQ);
 		end
 	end
 end
@@ -2468,7 +2470,7 @@ function NuNF.NuN_ProcessQuest(quest, qLevel, qTag, qHeader, qCollapsed, qComple
 			return;
 		end
 
-		SelectQuestLogEntry(qI);
+		C_QuestLog.SetSelectedQuest(qI);
 
 		local qChar = NuN_CheckTarget();
 		if (qChar == "N") then
@@ -5208,8 +5210,9 @@ function NuN_OnEvent(self, event, ...)
 			end
 		end
 
-	elseif (event == "INSPECT_READY") then
-		NuNF.QueryTalents();
+		-- REMOVE: This is no longer needed. Will revist talent information in Dragonflight
+		-- elseif (event == "INSPECT_READY") then
+		-- 	NuNF.QueryTalents();
 
 	end
 end
