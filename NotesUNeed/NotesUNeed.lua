@@ -69,6 +69,13 @@ MapNotes integration			NotesUNeed allows creation of MapNotes at the Player's cu
 						Open, the map and play with the MapNote thus created.
 						
 ]] --
+
+-- FIXME: Save is broken (FIND THIS)
+-- FIXME: item and link would create a note with some keybinds, and the item would be saved in the note
+-- it would create a new note with the color of the item (FIND THIS)
+-- FIXME: Map Notes integration not working (FIND THIS)
+-- FIXME: Sometimes in a raid and can't target a player, it targets someone else instead (may not be our problem)
+-- FIXME: World boss, click find group, and no group listed, click start group, it creates a group for SoD raid
 NotesUNeed = {
 	locals = { player = {} },
 	Strings = {},
@@ -531,6 +538,8 @@ local AltArray = {};
 
 local maxRatings = 26;
 
+-- TODO: How do we want to store talent information?
+-- What is the use of this table?
 local NuNTalents = { mainspec = {}, offspec = {} };
 
 ----------------------------------------------------------------------------------------------------------------------------
@@ -1315,128 +1324,6 @@ local function migrateTalentsInfo(talents)
 	end
 end
 
--- TODO: Need to rewrite this and figure out what information needs to be captured.
--- FIXME: This has outdated/replaced api calls.
-function NuNF.QueryTalents()
-	if (not NuNTalents.player) then
-		NuNTalents = { mainspec = {}, offspec = {} };
-		return;
-	else
-		NuNTalents.mainspec.total = 0;
-		NuNTalents.mainspec.summary = "";
-		NuNTalents.offspec.total = 0;
-		NuNTalents.offspec.summary = "";
-	end
-
-	-- this flag controls whether the following code uses data from received from inspecting a player or whether it just uses our own data (for debugging)
-	local useInspectInfo = (NuNTalents.player ~= locals.player_Name);
-	NuNTalents.tabs = GetNumSpecializations(useInspectInfo) or 0;
-
-	-- return values from GetTalentTabInfo()
-	-- local tabID, tabName, tabDesc, tabIcon, tabPointsSpent, tabPreviewPointsSpent, tabPointsAllocated, _, tabUnlocked;
-
-	-- return value from GetSpecializationInfo()
-	-- TODO: coolsax - Finish replacing GetTalentTabInfo with GetSpecializationInfo
-	local specID, specName, specDesc, specIcon, specRole, specPrimaryStat
-	local prefix;
-
-	-- return values from GetTalentInfo()
-	local talentName, talentIcon, talentTier, talentColumn, talentRank, talentMaxRank, talentIsExceptional, previewRank, totalAllocatedRank;
-	local numActiveTalentSpecs = GetNumSpecializations(useInspectInfo);
-	for talentGroupIndex = 1, numActiveTalentSpecs do
-		prefix = "";
-		local closestMatchingTree = { tabRef = nil, totalPoints = 0 }
-		for _tab = 1, NuNTalents.tabs do
-			-- record tab
-			tabID, tabName, tabDesc, tabIcon, tabPointsSpent, _, tabPreviewPointsSpent, tabUnlocked = GetTalentTabInfo(_tab,
-				useInspectInfo, nil, talentGroupIndex);
-
-			specID, specName, specDesc, specIcon, specRole, specPrimaryStat = GetSpecializationInfo(_tab, useInspectInfo, nil, nil)
-			nun_msgf("QueryTalents - tabID:%s  tabName:%s  tabPointsSpent:%s  tabPreviewPointsSpent:%s  tabUnlocked:%s  talentGroupIndex:%i   (closestMatchingTree.totalPoints:%i)"
-				,
-				tostring(tabID), tostring(tabName), tostring(tabPointsSpent), tostring(tabPreviewPointsSpent), tostring(tabUnlocked)
-				, talentGroupIndex, closestMatchingTree.totalPoints);
-			-- check to see if this talent tree is the player's active spec
-
-			local activeTalentGroupIndex = GetActiveSpecGroup(useInspectInfo);
-			local currentSpec;
-			if talentGroupIndex == 1 then
-				currentSpec = NuNTalents.mainspec;
-			else
-				currentSpec = NuNTalents.offspec;
-			end
-
-			if (tabUnlocked) then
-				local tabPointsAllocated = tabPointsSpent + tabPreviewPointsSpent;
-
-				-- check to see if this tab corresponds to the active talent group
-				if (tabPointsAllocated > closestMatchingTree.totalPoints) then
-					closestMatchingTree.tabRef = _tab;
-					closestMatchingTree.totalPoints = tabPointsAllocated;
-
-					currentSpec.name = tabName;
-					currentSpec.icon = tabIcon;
-				end
-
-				currentSpec.summary = currentSpec.summary .. prefix .. tabPointsAllocated;
-				currentSpec.total = currentSpec.total + tabPointsAllocated;
-				currentSpec[_tab] = {};
-				currentSpec[_tab].name = tabName;
-				currentSpec[_tab].points = tabPointsAllocated;
-				currentSpec[_tab].icon = tabIcon;
-				currentSpec[_tab].specifics = {};
-
-				-- record talent choices
-				local talentCount = GetNumTalents(_tab, useInspectInfo, false);
-				for talentIndex = 1, talentCount do
-					talentName, talentIcon, talentTier, talentColumn, talentRank, talentMaxRank, talentIsExceptional, _, previewRank = GetTalentInfo(_tab
-						, talentIndex, useInspectInfo, nil, talentGroupIndex);
-					totalAllocatedRank = talentRank;
-					--[[
-					commented out as previewRank always seems to have a value, regardless of whether the player has actually allocated points to the talent using the preview feature.
-					if ( totalAllocatedRank and previewRank ) then
-						totalAllocatedRank = totalAllocatedRank + previewRank;
-					end
-					--]]
-					--nun_msgf("  >> >> talentName:%s  talentTier:%s  talentColumn:%s  talentRank:%s  talentMaxRank:%s  previewRank:%s  totalAllocatedRank:%s  exceptional:%s",
-					--	tostring(talentName), tostring(talentTier), tostring(talentColumn), tostring(talentRank), tostring(talentMaxRank), tostring(previewRank), tostring(totalAllocatedRank), tostring(talentIsExceptional));
-
-					if (talentName and talentRank and talentRank > 0) then
-						local talentData = {
-							talentTier = talentTier,
-							talentColumn = talentColumn,
-							talentName = talentName,
-							iconPath = talentIcon,
-							curR = totalAllocatedRank,
-							maxR = talentMaxRank,
-							exceptional = talentIsExceptional,
-						};
-						tinsert(currentSpec[_tab].specifics, talentData);
-					end
-				end
-			else
-				currentSpec.summary = currentSpec.summary .. prefix .. GRAY_FONT_COLOR_CODE .. "0" .. FONT_COLOR_CODE_CLOSE;
-			end
-			prefix = "-";
-		end
-	end
-
-	NuNTalents.total = NuNTalents.mainspec.total + NuNTalents.offspec.total;
-
-	-- Live update if record for player already exists...
-	if ((locals.NuNDataPlayers[NuNTalents.player]) and (NuNTalents.total > 0)) then
-		-- copy NuNTalents details to .talents array
-		locals.NuNDataPlayers[NuNTalents.player].talents = {};
-		NuNF.NuN_CopyTable(NuNTalents, locals.NuNDataPlayers[NuNTalents.player].talents);
-
-	elseif (locals.NuNDataPlayers[NuNTalents.player]) then
-		locals.NuNDataPlayers[NuNTalents.player].talents = nil;
-	end
-
-	NuNFrame:UnregisterEvent("INSPECT_READY");
-end
-
--- 5.60 NuN_Target re-written to NuN_UnitInfo for adjusting Open Note details without (necessarily) saving to database
 function NuNF.NuN_UnitInfo(unitTest, contactName, theUnitID) -- 5.60 Allow passing of the unitID
 	local unitInfoName;
 
@@ -1547,39 +1434,6 @@ function NuNF.NuN_UnitInfo(unitTest, contactName, theUnitID) -- 5.60 Allow passi
 				end
 			end
 		end
-
-		if ((contactName) and (contactName ~= "")) then
-			if ((CheckInteractDistance(theUnitID, 1))
-				and (CanInspect(theUnitID, true))
-				and ((UnitLevel(theUnitID) or 0) > 9)) then
-
-				NuNTalents = {};
-				NuNTalents.mainspec = {};
-				NuNTalents.offspec = {};
-				NuNTalents.player = contactName;
-				NuNTalents.theUnitID = theUnitID;
-
-				if (contactName == locals.player_Name) then
-					NuNF.QueryTalents();
-				else
-					local inspected = "";
-					if ((InspectFrame) and (InspectFrame:IsVisible())) then
-						inspected = InspectFrame.unit;
-					end
-
-					if (inspected == contactName) then
-						NuNF.QueryTalents();
-
-					else
-						NuNFrame:RegisterEvent("INSPECT_READY");
-						NotifyInspect(theUnitID);
-					end
-				end
-			else
-				NuNTalents = { mainspec = {}, offspec = {} };
-			end
-		end
-
 	end
 
 	return theUnitID;
@@ -1696,6 +1550,7 @@ function NuNF.NuN_GetLoc()
 	local loc = false;
 
 	-- nooping this call for now -- TODO: coolsax: replace with map api updates
+	-- TODO: discuss what information we actually want to store in the notes
 	return "";
 
 	-- myCID = GetCurrentMapContinent();
@@ -4485,13 +4340,13 @@ end
 --@end-debug@]===]
 
 	-- Talents ?
-	if (
-		(NuNTalents.player) and (NuNTalents.total) and (NuNTalents.player == local_player.currentNote.unit) and
-			(NuNTalents.total > 0)) then
-		-- copy NuNTalents details to .talents array
-		locals.NuNDataPlayers[local_player.currentNote.unit].talents = {};
-		NuNF.NuN_CopyTable(NuNTalents, locals.NuNDataPlayers[local_player.currentNote.unit].talents)
-	end
+	-- if (
+	-- 	(NuNTalents.player) and (NuNTalents.total) and (NuNTalents.player == local_player.currentNote.unit) and
+	-- 		(NuNTalents.total > 0)) then
+	-- 	-- copy NuNTalents details to .talents array
+	-- 	locals.NuNDataPlayers[local_player.currentNote.unit].talents = {};
+	-- 	NuNF.NuN_CopyTable(NuNTalents, locals.NuNDataPlayers[local_player.currentNote.unit].talents)
+	-- end
 
 	-- Refresh the note browser, as this write may need to be reflected in it
 	if ((NuNSearchFrame:IsVisible()) and (not strfind(NuNSearchTitleText:GetText(), NUN_QUESTS_TEXT))) then
@@ -15090,6 +14945,7 @@ function NuN_DisplayTooltip(self, ttBase, shouldWrap)
 	end
 end
 
+-- REMOVE: This 
 -- Talents Tooltip
 function NuN_TalentsTooltip(self)
 	local talents;
