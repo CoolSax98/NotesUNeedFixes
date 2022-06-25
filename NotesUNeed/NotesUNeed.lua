@@ -70,12 +70,13 @@ MapNotes integration			NotesUNeed allows creation of MapNotes at the Player's cu
 						
 ]] --
 
--- FIXME: Save is broken (FIND THIS)
+-- FIXME: Save after editing an existing is broken (FIND THIS)
 -- FIXME: item and link would create a note with some keybinds, and the item would be saved in the note
 -- it would create a new note with the color of the item (FIND THIS)
 -- FIXME: Map Notes integration not working (FIND THIS)
 -- FIXME: Sometimes in a raid and can't target a player, it targets someone else instead (may not be our problem)
 -- FIXME: World boss, click find group, and no group listed, click start group, it creates a group for SoD raid
+--TODO: Learn how about saving and loading of notes.
 
 NotesUNeed = {
 	locals = { player = {} },
@@ -3025,7 +3026,7 @@ function NuN_OnLoad(self)
 	hooksecurefunc("IgnoreList_Update", NuNNew_IgnoreList_Update);
 	hooksecurefunc("WhoList_Update", NuNNew_WhoList_Update);
 	-- hooksecurefunc("QuestLog_Update", NuNNew_QuestLog_Update); -- This is throwing errors 8.0.1
-	hooksecurefunc("AbandonQuest", NuNNew_AbandonQuest);
+	-- hooksecurefunc("AbandonQuest", NuNNew_AbandonQuest);
 	hooksecurefunc("QuestDetailAcceptButton_OnClick", NuNNew_QuestDetailAcceptButton_OnClick);
 	hooksecurefunc("QuestRewardCompleteButton_OnClick", NuNNew_QuestRewardCompleteButton_OnClick);
 	hooksecurefunc("FriendsFrameFriendButton_OnClick", NuNNew_FriendsFrameFriendButton_OnClick);
@@ -4673,7 +4674,7 @@ local function OnNotesUNeedFullyLoaded(self, ...)
 
 	NuN_PinnedTooltip:SetScale(NuNSettings[local_player.realmName].tScale);
 	NuN_Tooltip:SetScale(NuNSettings[local_player.realmName].tScale);
-	WorldMapTooltip:SetScale(NuNSettings[local_player.realmName].mScale);
+	-- WorldMapTooltip:SetScale(NuNSettings[local_player.realmName].mScale); -- REMOVE: WorldMapTooltip is not valid anymore
 	NuN_MapTooltip:SetScale(NuNSettings[local_player.realmName].mScale);
 	NuNPopup:SetScale(NuNSettings[local_player.realmName].mScale);
 
@@ -14092,7 +14093,7 @@ function NuN_StripColorCode(txt)
 	end
 	return txt;
 end
-
+-- BUG: Right clicking on the preset button causes text to become unformatted.
 function NuN_ColourText(noteType, fBttn, mBttn)
 	local eBox = NuNGNoteTextScroll;
 
@@ -14107,8 +14108,10 @@ function NuN_ColourText(noteType, fBttn, mBttn)
 
 		-- Open Colour Picker to change a preset if necessary
 		if (fBttn.preset) then
+			-- BUG: This is not working. The color picker opens but isn't reset. 
 			-- Reset the preset if Alt key is down
 			if (IsAltKeyDown()) then
+				_G.print("Resetting Preset");
 				local hexVal = NuNC.NUN_CPRESETS[fBttn:GetID()];
 				local cKey = "cc";
 				if (fBttn.parentType == "General") then
