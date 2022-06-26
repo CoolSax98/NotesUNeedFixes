@@ -7,7 +7,7 @@
 	<Script file="NotesUNeed.lua" />
 	<!-- <Script file="Modules\NUN_PratIntegration.lua" /> -->
 
-	<!--@debug@
+	<!-- @debug@
 	<Button name="ReloadButton" parent="UIParent">
 		<Size>
 			<AbsDimension x="128" y="32"/>
@@ -30,7 +30,7 @@
 		<NormalText inherits="DialogButtonNormalText" text="Reload"/>
 		<HighlightText inherits="DialogButtonHighlightText" text="Reload"/>
 	</Button>
-	@end-debug@-->
+	@end-debug@ -->
 
 	<!--  the following might eventually become their own modules
 	<Script file="NotesUNeedPlayerRatings.lua" />
@@ -945,7 +945,7 @@
 										ScrollingEdit_OnTextChanged(self, self:GetParent());
 										NuN_TextWarning(self, "NuNTextLabel");
 										if ( ColorPickerFrame:IsVisible() ) then
-											NuNF.NuN_CancelPresetColour(ColorPickerFrame.previousValues);
+											NuNFrame.NuN_CancelPresetColour(ColorPickerFrame.previousValues);
 											HideUIPanel(ColorPickerFrame);
 										end
 										NuNText.cPosStart = nil;
@@ -967,7 +967,7 @@
 										NuNText.cPosStart = nil;
 										NuNText.cPosEnd = nil;
 										if ( ColorPickerFrame:IsVisible() ) then
-											NuNF.NuN_CancelPresetColour(ColorPickerFrame.previousValues);
+											NuNFrame.NuN_CancelPresetColour(ColorPickerFrame.previousValues);
 											HideUIPanel(ColorPickerFrame);
 										end
 										FauxScrollFrame_SetOffset(NuNScrollFrame, 0);
@@ -5587,7 +5587,7 @@
 										NuNGNoteTextScroll.cPosStart = nil;
 										NuNGNoteTextScroll.cPosEnd = nil;
 										if ( ColorPickerFrame:IsVisible() ) then
-											NuNF.NuN_CancelPresetColour(ColorPickerFrame.previousValues);
+											NuNFrame.NuN_CancelPresetColour(ColorPickerFrame.previousValues);
 											HideUIPanel(ColorPickerFrame);
 										end
 									</OnTextChanged>
@@ -5605,7 +5605,7 @@
 										NuNGNoteTextScroll.cPosStart = nil;
 										NuNGNoteTextScroll.cPosEnd = nil;
 										if ( ColorPickerFrame:IsVisible() ) then
-											NuNF.NuN_CancelPresetColour(ColorPickerFrame.previousValues);
+											NuNFrame.NuN_CancelPresetColour(ColorPickerFrame.previousValues);
 											HideUIPanel(ColorPickerFrame);
 										end
 									</OnShow>
@@ -5794,6 +5794,8 @@
 		</Anchors>
 		<TitleRegion setAllPoints="true" />
 		<Frames>
+		<!-- RESEARCH - How to properly build frames -->
+		<!-- FIXME -->
 			<Frame name="NuNMicroBorder" setAllPoints="true" hidden="true" frameStrata="BACKGROUND">
 				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 					<BackgroundInsets>
@@ -5808,8 +5810,8 @@
 				</Backdrop>
 				<Scripts>
 					<OnLoad>
-						self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-						self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+						<!-- self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b); -->
+						<!-- self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b); -->
 						self:SetFrameLevel(self:GetFrameLevel() - 1);
 					</OnLoad>
 				</Scripts>
@@ -6034,8 +6036,8 @@
 				self.fadeStartTime = 0.0;
 				self.fadeHoldTime = 1.0;
 				self.fadeOutTime = 1.0;
-				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+				<!-- self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b); -->
+				<!-- self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b); -->
 			</OnLoad>
 			<OnShow>
 				if ( WorldMapFrame:IsVisible() ) then
@@ -6139,8 +6141,8 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+				<!-- self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b); -->
+				<!-- self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b); -->
 				self:RegisterForDrag("LeftButton");
 				self.type = "Empty";
 				self.subType = "Empty";
@@ -6155,7 +6157,7 @@
 			</OnDragStop>
 		</Scripts>
 	</GameTooltip>
-	<Frame name="NuN_MapTooltipControl" parent="WorldMapTooltip">
+	<!-- <Frame name="NuN_MapTooltipControl" parent="WorldMapTooltip">
 		<Scripts>
 			<OnShow>
 				NuN_WorldMapTooltip_OnShow(self:GetID());
@@ -6164,12 +6166,12 @@
 				NuN_WorldMapTooltip_OnHide();
 			</OnHide>
 		</Scripts>
-	</Frame>
+	</Frame> -->
 	<GameTooltip name="NuN_MapTooltip" inherits="GameTooltipTemplate" parent="UIParent">
 		<Scripts>
 			<OnLoad>
-				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+				<!-- self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b); -->
+				<!-- self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b); -->
 			</OnLoad>
 		</Scripts>
 	</GameTooltip>
@@ -6608,8 +6610,8 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+				<!-- self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b); -->
+				<!-- self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b); -->
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -6801,8 +6803,8 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+				<!-- self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b); -->
+				<!-- self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b); -->
 			</OnLoad>
 			<OnShow>
 				PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);

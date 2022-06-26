@@ -540,7 +540,7 @@ local AltArray = {};
 
 local maxRatings = 26;
 
--- TODO: How do we want to store talent information?
+-- REVIEW: How do we want to store talent information?
 -- What is the use of this table?
 local NuNTalents = { mainspec = {}, offspec = {} };
 
@@ -3029,20 +3029,20 @@ function NuN_OnLoad(self)
 	-- hooksecurefunc("AbandonQuest", NuNNew_AbandonQuest);
 	hooksecurefunc("QuestDetailAcceptButton_OnClick", NuNNew_QuestDetailAcceptButton_OnClick);
 	hooksecurefunc("QuestRewardCompleteButton_OnClick", NuNNew_QuestRewardCompleteButton_OnClick);
-	hooksecurefunc("FriendsFrameFriendButton_OnClick", NuNNew_FriendsFrameFriendButton_OnClick);
-	hooksecurefunc("FriendsFrameIgnoreButton_OnClick", NuNNew_FriendsFrameIgnoreButton_OnClick);
-	hooksecurefunc("FriendsFrameWhoButton_OnClick", NuNNew_FriendsFrameWhoButton_OnClick);
+	-- hooksecurefunc("FriendsFrameFriendButton_OnClick", NuNNew_FriendsFrameFriendButton_OnClick);
+	-- hooksecurefunc("FriendsFrameIgnoreButton_OnClick", NuNNew_FriendsFrameIgnoreButton_OnClick);
+	-- hooksecurefunc("FriendsFrameWhoButton_OnClick", NuNNew_FriendsFrameWhoButton_OnClick);
 	hooksecurefunc("PaperDollItemSlotButton_OnModifiedClick", NuNNew_PaperDollItemSlotButton_OnModifiedClick);
 	--	hooksecurefunc("ToggleWorldMap", NuNNew_ToggleWorldMap);		-- TODO: orgevo: hmm, thinking about deprecating support for these two map addons (alpha map, and map notes)
 	hooksecurefunc("ToggleFrame", NuNNew_ToggleWorldMap);
 
 	--	hooksecurefunc("QuestWatch_Update", NuN_QuestWatch_Update);		-- TODO: orgevo: update and restore this code
-	hooksecurefunc("SetAbandonQuest", NuNNew_SetAbandonQuest);
-	hooksecurefunc("AddFriend", NuNNew_AddFriend);
-	hooksecurefunc("RemoveFriend", NuNNew_RemoveFriend);
-	hooksecurefunc("AddIgnore", NuNNew_AddIgnore);
-	hooksecurefunc("DelIgnore", NuNNew_DelIgnore);
-	hooksecurefunc("AddOrDelIgnore", NuNNew_AddOrDelIgnore);
+	-- hooksecurefunc("SetAbandonQuest", NuNNew_SetAbandonQuest);
+	-- hooksecurefunc("AddFriend", NuNNew_AddFriend);
+	-- hooksecurefunc("RemoveFriend", NuNNew_RemoveFriend);
+	-- hooksecurefunc("AddIgnore", NuNNew_AddIgnore);
+	-- hooksecurefunc("DelIgnore", NuNNew_DelIgnore);
+	-- hooksecurefunc("AddOrDelIgnore", NuNNew_AddOrDelIgnore);
 
 
 
@@ -13490,7 +13490,8 @@ function NuN_MainUpdate(self, elapsed)
 		elseif ((NuN_WhoReturnStruct.timeLimit > NuNC.NUN_WHO_TIMELIMIT) and (not NuN_WhoReturnStruct.secondTry)) then
 			NuN_WhoReturnStruct.secondTry = true;
 			NuN_suppressExtraWho = true;
-			C_FriendList.SendWho("n-" .. NuN_WhoReturnStruct.name); -- 1 more try, as perhaps the first was ignored by Blizzard Timer
+			-- REVIEW: This is now restricted and requires a hardware event
+			-- C_FriendList.SendWho("n-" .. NuN_WhoReturnStruct.name); -- 1 more try, as perhaps the first was ignored by Blizzard Timer
 			--			NuN_WhoReturnStruct.timeLimit = 9999;
 		end
 	end
@@ -14095,6 +14096,8 @@ function NuN_StripColorCode(txt)
 end
 -- BUG: Right clicking on the preset button causes text to become unformatted.
 function NuN_ColourText(noteType, fBttn, mBttn)
+	-- IDEA: Working here
+	print("NuN_ColourText");
 	local eBox = NuNGNoteTextScroll;
 
 	if (noteType == "General") then
@@ -14109,6 +14112,7 @@ function NuN_ColourText(noteType, fBttn, mBttn)
 		-- Open Colour Picker to change a preset if necessary
 		if (fBttn.preset) then
 			-- BUG: This is not working. The color picker opens but isn't reset. 
+			print("Are we hitting this?")
 			-- Reset the preset if Alt key is down
 			if (IsAltKeyDown()) then
 				_G.print("Resetting Preset");
