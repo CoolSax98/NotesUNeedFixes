@@ -2789,7 +2789,7 @@ function NuNF.NuN_HtoD(h)
 
 	return r, g, b;
 end
-
+-- REVIEW: --BUG: The cPosStart sometimes get messed up because the mouseDown event is fired multiple times.
 -- return text that has been highlighted in the Edit Boxes using the mouse
 function NuNF.NuN_GetSelectedText(eBox)
 	local tLen, tS, tE;
@@ -2797,7 +2797,6 @@ function NuNF.NuN_GetSelectedText(eBox)
 	if ((eBox.cPosStart) and (eBox.cPosEnd)) then
 		tLen = math.abs(eBox.cPosStart - eBox.cPosEnd);
 	end
-
 	if ((tLen) and (tLen > 0)) then
 		if (eBox.cPosStart < eBox.cPosEnd) then
 			tS = eBox.cPosStart;
@@ -2809,7 +2808,7 @@ function NuNF.NuN_GetSelectedText(eBox)
 
 		local selectedText = eBox:GetText();
 		selectedText = strsub(selectedText, tS + 1, tE);
-
+		eBox:HighlightText(tS, tE); -- HACK: workaround to for mouse down event firing multiple times, moving the recorded cPosStart.
 		if (selectedText) then
 			return selectedText;
 		end
@@ -4653,7 +4652,7 @@ local function OnNotesUNeedFullyLoaded(self, ...)
 	end
 
 	if (TipBuddyTooltip) then
-		NuN_TipBuddyTooltipControl:SetParent(TipBuddyTooltip);
+		-- NuN_TipBuddyTooltipControl:SetParent(TipBuddyTooltip);
 	end
 	NuNHooks.NuNOri_AlphaMapNotes_OnEnter = AlphaMapNotes_OnEnter;
 	AlphaMapNotes_OnEnter = NuNNew_AlphaMapNotes_OnEnter;
@@ -5831,9 +5830,10 @@ end
 function NuNNew_FriendsList_Update()
 	local bttnIndx;
 
+	-- FIXME: Friend list code needs to be updated
 	for i = 1, 10, 1 do
-		bttnIndx = _G["NuN_FriendNotesButton" .. i];
-		NuN_UpdateNoteButton(bttnIndx, i, NuNC.UPDATETAG_FRIEND);
+		-- bttnIndx = _G["NuN_FriendNotesButton" .. i];
+		-- NuN_UpdateNoteButton(bttnIndx, i, NuNC.UPDATETAG_FRIEND);
 	end
 end
 
@@ -9579,7 +9579,7 @@ end
 
 -- NotesUNeed tooltip shows alongside the game tooltip, rather than modifying the normal tooltip itself
 function NuN_GameTooltip_OnShow(self, tTip)
-	local storePinned = NuN_PinnedTooltip.type;
+	-- local storePinned = NuN_PinnedTooltip.type;
 	local p1 = 1;
 	local strippedName = "";
 	local sNLen = 0;
@@ -12983,7 +12983,7 @@ function NuN_SetupRatings(initialSetup)
 	end
 
 	UnitPopupMenus["NUN_POPUP"]   = {}
-	UnitPopupButtons["NUN_POPUP"] = { text = NUN_POPUP_TITLE, dist = 0, nested = 1, notClickable = 1 };
+	-- UnitPopupButtons["NUN_POPUP"] = { text = NUN_POPUP_TITLE, dist = 0, nested = 1, notClickable = 1 };
 	if (initialSetup) then
 		local menuItemCount = getn(UnitPopupMenus["RAID"]) + 1;
 		local insertIndex = menuItemCount + 2;
@@ -14094,10 +14094,8 @@ function NuN_StripColorCode(txt)
 	end
 	return txt;
 end
--- BUG: Right clicking on the preset button causes text to become unformatted.
 function NuN_ColourText(noteType, fBttn, mBttn)
-	-- IDEA: Working here
-	print("NuN_ColourText");
+	-- BUG: EditFrame is calls OnCursorChanged too many times when selecting from the end of the content some times.
 	local eBox = NuNGNoteTextScroll;
 
 	if (noteType == "General") then
@@ -14111,11 +14109,8 @@ function NuN_ColourText(noteType, fBttn, mBttn)
 
 		-- Open Colour Picker to change a preset if necessary
 		if (fBttn.preset) then
-			-- BUG: This is not working. The color picker opens but isn't reset. 
-			print("Are we hitting this?")
 			-- Reset the preset if Alt key is down
 			if (IsAltKeyDown()) then
-				_G.print("Resetting Preset");
 				local hexVal = NuNC.NUN_CPRESETS[fBttn:GetID()];
 				local cKey = "cc";
 				if (fBttn.parentType == "General") then

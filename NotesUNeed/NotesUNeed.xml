@@ -6176,7 +6176,7 @@
 		</Scripts>
 	</GameTooltip>
 	<!-- VERY BIZARRE THAT THE PARENT BELOW IS "NuN_MapTooltipControl" !!! -->
-	<Frame name="NuN_TipBuddyTooltipControl" parent="NuN_MapTooltipControl">
+	<!-- <Frame name="NuN_TipBuddyTooltipControl" parent="NuN_MapTooltipControl">
 		<Scripts>
 			<OnShow>
 				NuN_GameTooltip_OnShow(self, TipBuddyTooltip);
@@ -6185,9 +6185,9 @@
 				NuN_GameTooltip_OnHide();
 			</OnHide>
 		</Scripts>
-	</Frame>
+	</Frame> -->
 	<!-- Buttons integrated in to the Original Friends/Ignores/Guild Panels -->
-	<Button name="NuN_FriendNotesButton1" inherits="NuN_NoteButtonTemplate" parent="FriendsFrameFriendsScrollFrameButton1" id="1" />
+	<!-- <Button name="NuN_FriendNotesButton1" inherits="NuN_NoteButtonTemplate" parent="FriendsFrameFriendsScrollFrameButton1" id="1" />
 	<Button name="NuN_FriendNotesButton2" inherits="NuN_NoteButtonTemplate" parent="FriendsFrameFriendsScrollFrameButton2" id="2" />
 	<Button name="NuN_FriendNotesButton3" inherits="NuN_NoteButtonTemplate" parent="FriendsFrameFriendsScrollFrameButton3" id="3" />
 	<Button name="NuN_FriendNotesButton4" inherits="NuN_NoteButtonTemplate" parent="FriendsFrameFriendsScrollFrameButton4" id="4" />
@@ -6196,8 +6196,8 @@
 	<Button name="NuN_FriendNotesButton7" inherits="NuN_NoteButtonTemplate" parent="FriendsFrameFriendsScrollFrameButton7" id="7" />
 	<Button name="NuN_FriendNotesButton8" inherits="NuN_NoteButtonTemplate" parent="FriendsFrameFriendsScrollFrameButton8" id="8" />
 	<Button name="NuN_FriendNotesButton9" inherits="NuN_NoteButtonTemplate" parent="FriendsFrameFriendsScrollFrameButton9" id="9" />
-	<Button name="NuN_FriendNotesButton10" inherits="NuN_NoteButtonTemplate" parent="FriendsFrameFriendsScrollFrameButton10" id="10" />
-	<Button name="NuN_IgnoreNotesButton1" inherits="NuN_NoteButtonTemplate" parent="FriendsFrameIgnoreButton1" id="1" />
+	<Button name="NuN_FriendNotesButton10" inherits="NuN_NoteButtonTemplate" parent="FriendsFrameFriendsScrollFrameButton10" id="10" /> -->
+	<!-- <Button name="NuN_IgnoreNotesButton1" inherits="NuN_NoteButtonTemplate" parent="FriendsFrameIgnoreButton1" id="1" />
 	<Button name="NuN_IgnoreNotesButton2" inherits="NuN_NoteButtonTemplate" parent="FriendsFrameIgnoreButton2" id="2" />
 	<Button name="NuN_IgnoreNotesButton3" inherits="NuN_NoteButtonTemplate" parent="FriendsFrameIgnoreButton3" id="3" />
 	<Button name="NuN_IgnoreNotesButton4" inherits="NuN_NoteButtonTemplate" parent="FriendsFrameIgnoreButton4" id="4" />
@@ -6215,8 +6215,8 @@
 	<Button name="NuN_IgnoreNotesButton16" inherits="NuN_NoteButtonTemplate" parent="FriendsFrameIgnoreButton16" id="16" />
 	<Button name="NuN_IgnoreNotesButton17" inherits="NuN_NoteButtonTemplate" parent="FriendsFrameIgnoreButton17" id="17" />
 	<Button name="NuN_IgnoreNotesButton18" inherits="NuN_NoteButtonTemplate" parent="FriendsFrameIgnoreButton18" id="18" />
-	<Button name="NuN_IgnoreNotesButton19" inherits="NuN_NoteButtonTemplate" parent="FriendsFrameIgnoreButton19" id="19" />
-	<Button name="NuN_WhoNotesButton1" inherits="NuN_NoteButtonTemplate2" parent="WhoFrameButton1" id="1" />
+	<Button name="NuN_IgnoreNotesButton19" inherits="NuN_NoteButtonTemplate" parent="FriendsFrameIgnoreButton19" id="19" /> -->
+	<!-- <Button name="NuN_WhoNotesButton1" inherits="NuN_NoteButtonTemplate2" parent="WhoFrameButton1" id="1" />
 	<Button name="NuN_WhoNotesButton2" inherits="NuN_NoteButtonTemplate2" parent="WhoFrameButton2" id="2" />
 	<Button name="NuN_WhoNotesButton3" inherits="NuN_NoteButtonTemplate2" parent="WhoFrameButton3" id="3" />
 	<Button name="NuN_WhoNotesButton4" inherits="NuN_NoteButtonTemplate2" parent="WhoFrameButton4" id="4" />
@@ -6232,7 +6232,7 @@
 	<Button name="NuN_WhoNotesButton14" inherits="NuN_NoteButtonTemplate2" parent="WhoFrameButton14" id="14" />
 	<Button name="NuN_WhoNotesButton15" inherits="NuN_NoteButtonTemplate2" parent="WhoFrameButton15" id="15" />
 	<Button name="NuN_WhoNotesButton16" inherits="NuN_NoteButtonTemplate2" parent="WhoFrameButton16" id="16" />
-	<Button name="NuN_WhoNotesButton17" inherits="NuN_NoteButtonTemplate2" parent="WhoFrameButton17" id="17" />
+	<Button name="NuN_WhoNotesButton17" inherits="NuN_NoteButtonTemplate2" parent="WhoFrameButton17" id="17" /> -->
 	<Button name="NuN_GuildRosterButton1" inherits="NuN_NoteButtonTemplate2" hidden="true" parent="GuildRosterContainerButton1" id="1" />
 	<Button name="NuN_GuildRosterButton2" inherits="NuN_NoteButtonTemplate2" hidden="true" parent="GuildRosterContainerButton2" id="2" />
 	<Button name="NuN_GuildRosterButton3" inherits="NuN_NoteButtonTemplate2" hidden="true" parent="GuildRosterContainerButton3" id="3" />
