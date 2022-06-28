@@ -21,15 +21,15 @@ NUN_CONFIRM = "Confirm";
 NUN_RESTORE_DETAIL = "Restore Default";
 NUN_OPTIONS = "Options";
 NUN_OPTIONS_HEADER = "NotesUNeed Options";
-NUN_IMPORT = "Update Friend & Ignore Lists from Notes";					-- ??
-NUN_EXPORT = "Update Notes from Friend & Ignore Lists";					-- ??
+NUN_IMPORT = "Update Friend & Ignore Lists from Notes";  -- ??
+NUN_EXPORT = "Update Notes from Friend & Ignore Lists";  -- ??
 NUN_AUTO_GUILD = "Add to Friends even when in same Guild";
-NUN_AUTO_ADD = "Auto-Maintain Friends/Ignores";						-- ??
+NUN_AUTO_ADD = "Auto-Maintain Friends/Ignores";  -- ??
 NUN_AUTO_AA = "Auto-create Notes when Friends/Ignores are added";
-NUN_AUTO_VERBOSE = "Silent Mode";							-- ??
-NUN_OPT_BACKUP = "BackUp";								-- ??
-NUN_OPT_IMPORT = "Import";								-- ??
-NUN_OPT_RESTORE = "Restore";								-- ??
+NUN_AUTO_VERBOSE = "Silent Mode";  -- ??
+NUN_OPT_BACKUP = "BackUp";  -- ??
+NUN_OPT_IMPORT = "Import";  -- ??
+NUN_OPT_RESTORE = "Restore";  -- ??
 NUN_AUTO_DELETE = "Auto-delete Notes when Friends/Ignores are Removed";
 NUN_AUTO_DELETE2 = "(Manually Saved notes will not be deleted)";
 NUN_AUTO_IGNORE = "Ignore. Auto-Noted on : ";
@@ -40,30 +40,30 @@ NUN_SEARCH = "Search";
 NUN_CLOSE = "Close";
 NUN_SEARCH_CRITERIA = "Search for : ";
 NUN_GOBACK = "Back";
-NUN_NOTE_NAME = "<Contact/Note Name>";		-- must be Capitalised when searching for Contacts, else use given case for General Note search
+NUN_NOTE_NAME = "<Contact/Note Name>";  -- must be Capitalised when searching for Contacts, else use given case for General Note search
 NUN_NOTE = "-g <Note Title>";
-NUN_CC = "-ca <Contact Name>  OR  -ch <Contact Name>";			-- must Capitalise
+NUN_CC = "-ca <Contact Name>  OR  -ch <Contact Name>";  -- must Capitalise
 NUN_EXECUTE = "-x <Note Title>";
-NUN_RESET_I = "-i <Contact Name>";		-- ??
-NUN_RESET_F = "-f <Contact Name>";		-- ??
-NUN_RESET_LISTS = "-resetlists";		-- ??
+NUN_RESET_I = "-i <Contact Name>";  -- ??
+NUN_RESET_F = "-f <Contact Name>";  -- ??
+NUN_RESET_LISTS = "-resetlists";  -- ??
 NUN_FINISHED_PROCESSING = "NotesUNeed Finished Processing";
 NUN_STAMP = "TimeStamp";
 NUN_LOC = "Location";
 NUN_LVL_REACHED = "\nReached Level ";
 NUN_QLVL = "Quest Lvl : ";
 NUN_CLRDD = "ClearDropDown";
-NUN_INCLUDE_IN_TOOLTIP="Include In Tooltip";
+NUN_INCLUDE_IN_TOOLTIP = "Include In Tooltip";
 NUN_SAVE_AS_DEFAULT = "Save as Default";
-NUN_MASS_DELETE = "Mass Delete";	-- ??
-NUN_DB_EXPORT = "Export";		-- ??
+NUN_MASS_DELETE = "Mass Delete";  -- ??
+NUN_DB_EXPORT = "Export";  -- ??
 NUN_MAPNOTED = "Note added to the map of |cFFFFD100%s|r.";
 NUN_LOGOFF_TO_APPLY_CHANGES = "Will not be saved to disk until you logout."
 NUN_DELETE_QUESTHISTORY = "Delete Quest Hisotry";
 
 NUN_OBJECTIVES = "Objectives";
 
-NUN_OFF = "Offline";				-- ??
+NUN_OFF = "Offline";  -- ??
 
 NUN_NEW = "New";
 NUN_PLAYER = "Me";
@@ -73,17 +73,17 @@ NUN_MANU = "Manual";
 NUN_PARTY = "Party";
 NUN_SENT = "Sent";
 
-NUN_GUILD			= "Guild";						-- 5.60
-NUN_NEW_GUILDMATE 	= "New Guild Members ";			-- 5.60
-NUN_X_GUILDMATE 	= "X   Guild Members ";			-- 5.60
+NUN_GUILD         = "Guild";  -- 5.60
+NUN_NEW_GUILDMATE = "New Guild Members ";  -- 5.60
+NUN_X_GUILDMATE   = "X   Guild Members ";  -- 5.60
 
-NUN_HIT_POINTS	= "Hit Points  ";
-NUN_MANA	= "Mana/Energy ";
-NUN_STRENGTH	= "Strength    ";
-NUN_AGILITY	= "Agility     ";
-NUN_STAMINA	= "Stamina     ";
-NUN_INTELLECT	= "Intellect   ";
-NUN_SPIRIT	= "Spirit      ";
+NUN_HIT_POINTS = "Hit Points  ";
+NUN_MANA = "Mana/Energy ";
+NUN_STRENGTH = "Strength    ";
+NUN_AGILITY = "Agility     ";
+NUN_STAMINA = "Stamina     ";
+NUN_INTELLECT = "Intellect   ";
+NUN_SPIRIT = "Spirit      ";
 
 
 NUN_DFLTHEADINGS = {
@@ -101,6 +101,12 @@ NUN_HRACES = {
 	"Undead",
 	"Blood Elf",
 	"Goblin",
+	"Zandalari Troll",
+	"Vulpera",
+	"Mag'har Orc",
+	"Highmountain Tauren",
+	"Nightborne",
+	"Pandaren",
 };
 
 NUN_ARACES = {
@@ -110,6 +116,12 @@ NUN_ARACES = {
 	"Night Elf",
 	"Draenei",
 	"Worgen",
+	"Void Elf",
+	"Lightforged Draenei",
+	"Dark Iron Dwarf",
+	"Kul Tiran",
+	"Mechagnome",
+	"Pandaren",
 };
 
 NUN_ALLCLASSES = {
@@ -123,6 +135,8 @@ NUN_ALLCLASSES = {
 	"Warlock",
 	"Warrior",
 	"Death Knight",
+	"Demon Hunter",
+	"Monk",
 };
 
 NUN_HCLASSES = {
@@ -136,6 +150,8 @@ NUN_HCLASSES = {
 	"Warrior",
 	"Paladin",
 	"Death Knight",
+	"Demon Hunter",
+	"Monk",
 };
 
 NUN_ACLASSES = {
@@ -149,6 +165,8 @@ NUN_ACLASSES = {
 	"Warrior",
 	"Shaman",
 	"Death Knight",
+	"Demon Hunter",
+	"Monk",
 };
 
 NUN_ARENAR = {
@@ -219,32 +237,32 @@ NUN_PROFESSIONS = {
 -- The following array can be rearranged and sorted by the Translated Display values, BUT the Command Values must NOT be Translated
 
 NUN_SEARCHFOR = {
-	{	Display = "All",			-- Only translate Display
-		Command = "All"},
-	{	Display = "Class",			-- Only translate Display
-		Command = "Class"},
---	{	Display = "Date-Time",			-- Only translate Display
---		Command = "Date"},
-	{	Display = "Notes",			-- Only translate Display
-		Command = "Notes"},
-	{	Display = "Notes:Generic",		-- Only translate Display
-		Command = "Notes:Generic"},
-	{	Display = "Notes:Items",		-- Only translate Display
-		Command = "Notes:Items"},
-	{	Display = "Notes:Logs",			-- Only translate Display
-		Command = "Notes:Logs"},
-	{	Display = "Notes:LUA",			-- Only translate Display
-		Command = "Notes:LUA"},
-	{	Display = "Notes:NPCs",			-- Only translate Display
-		Command = "Notes:NPCs"},
-	{	Display = "Notes:Quests",		-- Only translate Display
-		Command = "Notes:Quests"},
-	{	Display = "Profession",			-- Only translate Display
-		Command = "Profession"},
---	{	Display = "Quest History",		-- Only translate Display
---		Command = "Quest History"},
-	{	Display = "Text",			-- Only translate Display
-		Command = "Text"}
+	{ Display = "All", -- Only translate Display
+		Command = "All" },
+	{ Display = "Class", -- Only translate Display
+		Command = "Class" },
+	--	{	Display = "Date-Time",			-- Only translate Display
+	--		Command = "Date"},
+	{ Display = "Notes", -- Only translate Display
+		Command = "Notes" },
+	{ Display = "Notes:Generic", -- Only translate Display
+		Command = "Notes:Generic" },
+	{ Display = "Notes:Items", -- Only translate Display
+		Command = "Notes:Items" },
+	{ Display = "Notes:Logs", -- Only translate Display
+		Command = "Notes:Logs" },
+	{ Display = "Notes:LUA", -- Only translate Display
+		Command = "Notes:LUA" },
+	{ Display = "Notes:NPCs", -- Only translate Display
+		Command = "Notes:NPCs" },
+	{ Display = "Notes:Quests", -- Only translate Display
+		Command = "Notes:Quests" },
+	{ Display = "Profession", -- Only translate Display
+		Command = "Profession" },
+	--	{	Display = "Quest History",		-- Only translate Display
+	--		Command = "Quest History"},
+	{ Display = "Text", -- Only translate Display
+		Command = "Text" }
 };
 
 NUN_SEXES = {
@@ -256,25 +274,25 @@ NUN_SEXES = {
 -- The following array can be rearranged and sorted by the Translated Display values, BUT the Command Values must NOT be Translated
 
 NUN_TRANSMITTO = {
-	{ 	Display = "Guild",			-- Only translate Display
+	{ Display = "Guild", -- Only translate Display
 		Command = "GUILD" },
-	{ 	Display = "Officers",			-- Only translate Display
+	{ Display = "Officers", -- Only translate Display
 		Command = "OFFICER" },
-	{ 	Display = "Party",			-- Only translate Display
+	{ Display = "Party", -- Only translate Display
 		Command = "PARTY" },
-	{	Display = "Raid",			-- Only translate Display
+	{ Display = "Raid", -- Only translate Display
 		Command = "RAID" },
-	{	Display = "Raid Warning",		-- Only translate Display
+	{ Display = "Raid Warning", -- Only translate Display
 		Command = "RAID_WARNING" },
-	{	Display = "Battleground",		-- Only translate Display
+	{ Display = "Battleground", -- Only translate Display
 		Command = "BATTLEGROUND" },
-	{	Display = "Say",			-- Only translate Display
+	{ Display = "Say", -- Only translate Display
 		Command = "SAY" },
-	{	Display = "Self",			-- Only translate Display
+	{ Display = "Self", -- Only translate Display
 		Command = "SELF" },
-	{	Display = "Whisper",			-- Only translate Display
+	{ Display = "Whisper", -- Only translate Display
 		Command = "WHISPER" },
-	{	Display = "Channel",			-- Only translate Display
+	{ Display = "Channel", -- Only translate Display
 		Command = "CHANNEL" }
 };
 
@@ -284,18 +302,18 @@ NUN_TRANSMITTO = {
 -- Keep Blank Entry at the top.
 
 NUN_NOTETYPES = {
-	{	Display = "   ",			-- Keep first
-		Command = "   "},
-	{	Display = "ITM",			-- Only translate Display
-		Command = "ITM"},
-	{	Display = "LOG",			-- Only translate Display
-		Command = "LOG"},
-	{	Display = "NPC",			-- Only translate Display
-		Command = "NPC"},
-	{	Display = "QST",			-- Only translate Display
-		Command = "QST"},
-	{	Display = "LUA",
-		Command = "LUA"}
+	{ Display = "   ", -- Keep first
+		Command = "   " },
+	{ Display = "ITM", -- Only translate Display
+		Command = "ITM" },
+	{ Display = "LOG", -- Only translate Display
+		Command = "LOG" },
+	{ Display = "NPC", -- Only translate Display
+		Command = "NPC" },
+	{ Display = "QST", -- Only translate Display
+		Command = "QST" },
+	{ Display = "LUA",
+		Command = "LUA" }
 };
 
 
@@ -372,7 +390,7 @@ BINDING_HEADER_NUN = "NotesUNeed";
 BINDING_NAME_NUN_OPTIONS = "Toggle NotesUNeed Options";
 BINDING_NAME_NUN_TARGET = "Silent Target Note";
 BINDING_NAME_NUN_MICRO = "Toggle NotesUNeed MicroButtons";
-BINDING_NAME_NUN_BLANK= "Create new blank note";
+BINDING_NAME_NUN_BLANK = "Create new blank note";
 BINDING_NAME_NUN_OPENTARGET = "Create/Open note for Target";
 BINDING_NAME_NUN_HIGNORE = "Hide Ignored Player Notes/Tooltips";
 BINDING_NAME_NUN_LAST = "Re-Open Last Note";
@@ -380,7 +398,7 @@ BINDING_NAME_NUN_SRCH = "Browse All Notes";
 BINDING_NAME_NUN_PINUP = "Toggle PinUp Tooltip";
 
 NUN_AUTONOTED = " : Noted by NotesUNeed";
-NUN_OPT_IMPORT_TOOLTIP = "This option allows you to import NotesUNeed data from another user.  They must first use the \"Export\" feature to generate the file." 
+NUN_OPT_IMPORT_TOOLTIP = "This option allows you to import NotesUNeed data from another user.  They must first use the \"Export\" feature to generate the file."
 NUN_OPT_EXPORT_TOOLTIP = "Select this option to export all non-personal notes to a seperate file which you can then email to a friend."
 NUN_OPT_RESTORE_TOOLTIP = "Select this option to begin the process of rebuilding your notes database using an existing backup."
 NUN_OPT_BACKUP_TOOLTIP = "Select this option to open the backup wizard, which will help you save a backup of your notes database."
@@ -415,12 +433,12 @@ NUN_WAIST = "Waist";
 NUN_LEGS = "Legs";
 NUN_FEET = "Feet";
 NUN_WRIST = "Wrist";
-NUN_HANDS = "Hands";			-- The text for the Hands Character Slot i.e. what gloves they are wearing
+NUN_HANDS = "Hands";  -- The text for the Hands Character Slot i.e. what gloves they are wearing
 NUN_FINGER = "Finger";
 NUN_TRINKET = "Trinket";
 NUN_BACK = "Back";
-NUN_HAND = "Hand";				-- The text associated with the equipped weapon and shield slots
-NUN_HAND2 = "~~~~~";			-- Only used in German Localisation; Never want to find this string in English Version
+NUN_HAND = "Hand";  -- The text associated with the equipped weapon and shield slots
+NUN_HAND2 = "~~~~~";  -- Only used in German Localisation; Never want to find this string in English Version
 NUN_GUN = "Gun";
 NUN_BOW_U = "Bow";
 NUN_BOW_L = "bow";
@@ -465,15 +483,15 @@ NUN_RECEIPT_PENDING = "Can not accept any more NotesUNeed notes while pending ac
 NUN_SENDING_NOTE = "Transmitting Formatted Note";
 
 NUN_MODIFIERS = {
-	["Control"]			= "Ctrl",
-	["Alt"]				= "Alt",
-	["Shift"]			= "Shift",
-	["LeftControl"]		= "L-Ctrl",
-	["RightControl"]	= "R-Ctrl",
-	["LeftAlt"]			= "L-Alt",
-	["RightAlt"]		= "R-Alt",
-	["LeftShift"]		= "L-Shift",
-	["RightShift"]		= "R-Shift",
+	["Control"]      = "Ctrl",
+	["Alt"]          = "Alt",
+	["Shift"]        = "Shift",
+	["LeftControl"]  = "L-Ctrl",
+	["RightControl"] = "R-Ctrl",
+	["LeftAlt"]      = "L-Alt",
+	["RightAlt"]     = "R-Alt",
+	["LeftShift"]    = "L-Shift",
+	["RightShift"]   = "R-Shift",
 };
 
 NUN_SN_IMPORT = "Import Social Note";
@@ -550,153 +568,153 @@ NUN_ORATINGS_TEXT = {
 
 -- Remove some from Global Scope
 -- (Some need to remain Global (e.g. XML referenced constants), and I'm not rewriting it ALL ;p )
-NuNC.NUN_NEW_NOTE = "New Note";
-NuNC.NUN_SAVED_NOTE = "Saved Note";
-NuNC.NUN_QUEST_NOTE = "Quest History Detail";
-NuNC.NUN_HELP_TEXT0  = "|cffffff00NotesUNeed command help :|r";
-NuNC.NUN_HELP_TEXT1  = "|cff00ff00Use |r|cffffffff/nun|r|cff00ff00 without any arguments to toggle the NotesUNeed Options Window.|r";
-NuNC.NUN_HELP_TEXT2  = "|cff00ff00Use |r|cffffffff/nun <command>|r|cff00ff00 to perform the following commands:|r";
-NuNC.NUN_HELP_TEXT3  = " |cffffffff-h|r|cff00ff00: displays these help messages.|r";
-NuNC.NUN_HELP_TEXT4  = " |cffffffff-a|r|cff00ff00: displays a list of all Contact and General notes for you to browse.|r";
-NuNC.NUN_HELP_TEXT5  = " |cffffffff<Contact/Note Name>|r|cff00ff00: entering a note name will display that Contact's note if one has been saved, or display the General note of that name if one has been saved.|r";
-NuNC.NUN_HELP_TEXT6  = " |cffffffff-t|r|cff00ff00: will Generate a Contact note for your current target, if you have targetted a valid player controlled character.|r";
-NuNC.NUN_HELP_TEXT7  = " |cffffffff-g <Note Title>|r|cff00ff00: will Generate a Generic note with the title provided, or display the note if it already exists.|r";
-NuNC.NUN_HELP_TEXT8 = " |cffffffff-tt|r|cff00ff00: will Toggle NotesUNeed ToolTips on/off.|r";
-NuNC.NUN_HELP_TEXT9 = " |cffffffff-ca <Contact Name>  OR  -ch <Contact Name>|r|cff00ff00: will Create an Alliance or Horde Contact note respectively for the provided name, without Validation !|r";
-NuNC.NUN_HELP_TEXT10 = " |cffffffff-micro|r|cff00ff00: will Toggle the NotesUNeed MicroButtons.|r";
-NuNC.NUN_HELP_TEXT11 = " |cffffffff-x <Note Title>|r|cff00ff00: execute note as Lua Script|r";
-NuNC.NUN_HELP_TEXT12 = " |cffffffff-i <Contact Name>|r|cff00ff00: reset NuN Ignore Status for named player|r";				-- ??
-NuNC.NUN_HELP_TEXT13 = " |cffffffff-f <Contact Name>|r|cff00ff00: reset NuN Friend Status for named player|r";				-- ??
-NuNC.NUN_HELP_TEXT14 = " |cffffffff-resetlists|r|cff00ff00: reset NotesUNeed Details to current player's Friends/Ignores|r";	-- ??
-NuNC.NUN_HELP_TEXT15 = " |cffffffff-gr|r|cff00ff00: auto-note Guild Members";
-NuNC.NUN_HELP_TEXT16 = " |cffffffff-grv|r|cff00ff00: Guild note verbose reporting";
-NuNC.NUN_HELP_TEXT17 = " |cffffffff-restrictwho|r|cff00ff00: Toggle automatic /who Requests";
-NuNC.NUN_MICROOPTIONS_TOOLTIP_TXT1 = "NotesUNeed Options";
-NuNC.NUN_MICROOPTIONS_TOOLTIP_TXT2 = "  Click to Toggle the NotesUNeed Options Frame";
-NuNC.NUN_MICROBROWSEA_TOOLTIP_TXT1 = "NotesUNeed Browse";
-NuNC.NUN_MICROBROWSEA_TOOLTIP_TXT2 = "  Click to Browse ALL Notes";
-NuNC.NUN_MICROCONTACT_TOOLTIP_TXT1 = "NotesUNeed Contact";
-NuNC.NUN_MICROCONTACT_TOOLTIP_TXT2 = "  Click to check/create a note for current Target";
-NuNC.NUN_MICROCONTACT_TOOLTIP_TXT3 = "   or View Own Contact note if no Target";
-NuNC.NUN_MICROGENNOTE_TOOLTIP_TXT1 = "NotesUNeed General Note";
-NuNC.NUN_MICROGENNOTE_TOOLTIP_TXT2 = "  Click to create a new blank General Note.";
-NuNC.NUN_RESETBUTTON_TOOLTIP_TXT1 = "Reset Checkboxes, & Contact Detail Headings to :";
-NuNC.NUN_RESETBUTTON_TOOLTIP_TXT2 = "  Guild, Guild Rank, Real Name, e-mail, WWW.";
-NuNC.NUN_LOCBUTTON_TOOLTIP_TXT1 = "Record Current Location";
-NuNC.NUN_LOCBUTTON_TOOLTIP_TXT2 = "  Your Current Location will be added to the Main Text Box";
-NuNC.NUN_GNOTETITLE_TOOLTIP_TXT1 = "Note Title must be Specified";
-NuNC.NUN_GNOTETITLE_TOOLTIP_TXT2 = " Press <Enter> to Confirm and Edit Note";
-NuNC.NUN_INCLUDEINTOOLTIP_TOOLTIP_TXT1="Tooltip Include"
-NuNC.NUN_INCLUDEINTOOLTIP_TOOLTIP_TXT2="Add this value to the tooltip that appears when mousing over the note's name in the note search dialog.";
-NuNC.NUN_SAVEDEF_TOOLTIP_TXT1 = "Check to Save a New Default Heading";
-NuNC.NUN_SAVEDEF_TOOLTIP_TXT2 = "  Change will take affect immediately.";
-NuNC.NUN_RESTOREDEF_TOOLTIP_TXT1 = "Click to Replace Current text with Default Heading";
-NuNC.NUN_RESTOREDEF_TOOLTIP_TXT2 = "  To Restore NotesUNeed Original Headings use the";
-NuNC.NUN_RESTOREDEF_TOOLTIP_TXT3 = "    'Reset Defaults'  button in the Options Frame";
-NuNC.NUN_RESTOREDEF_TOOLTIP_TXT4 = "  Change will take affect immediately.";
-NuNC.NUN_TARGETBUTTON_TOOLTIP_TXT1 = "Retrieve Target-style Information";
-NuNC.NUN_TARGETBUTTON_TOOLTIP_TXT2 = "  Distance to target restricts the information. If the";
-NuNC.NUN_TARGETBUTTON_TOOLTIP_TXT3 = "  current Contact is not Targetted, NotesUNeed will ";
-NuNC.NUN_TARGETBUTTON_TOOLTIP_TXT4 = "  attempt to Target them";
-NuNC.NUN_NPCTARGETBUTTON_TOOLTIP_TXT1 = "Retrieve Target-style Information";
-NuNC.NUN_NPCTARGETBUTTON_TOOLTIP_TXT2 = "  Must have an NPC Targetted";
-NuNC.NUN_WHOBUTTON_TOOLTIP_TXT1 = "Retrieve Who-style Information";
-NuNC.NUN_WHOBUTTON_TOOLTIP_TXT2 = "  The Contact must be online for the /who command to work";
-NuNC.NUN_WHOBUTTON_TOOLTIP_TXT3 = "  Several clicks may be required while the /who command refreshes.";
-NuNC.NUN_USERBUTTON_TOOLTIP_TXT1 = "User Definable Headings & Details";
-NuNC.NUN_USERBUTTON_TOOLTIP_TXT2 = "  Click to alter. Headings may be saved for individuals";
-NuNC.NUN_USERBUTTON_TOOLTIP_TXT3 = "  or new Defaults Saved";
-NuNC.NUN_CLEARDD_TOOLTIP_TXT1 = "Clear Drop Down List";
-NuNC.NUN_CLEARDD_TOOLTIP_TXT2 = " Clears the Last Changed Drop Down Box";
-NuNC.NUN_FFBUTTON_TOOLTIP_TXT1 = "Edit NotesUNeed Note";
-NuNC.NUN_FFBUTTON_TOOLTIP_TXT2 = " Must have a contact selected";
-NuNC.NUN_TT_PIN_TOOLTIP_TXT1 = "Pin Up NotesUNeed Tooltip";
-NuNC.NUN_TT_PIN_TOOLTIP_TXT2 = " Click to display a draggable";
-NuNC.NUN_TT_PIN_TOOLTIP_TXT3 = " tooltip for the current Note";
-NuNC.NUN_TT_PIN_EDIT_TXT1 = "Edit Note";
-NuNC.NUN_TT_PIN_EDIT_TXT2 = " Edit the details of this Tooltips Note";
-NuNC.NUN_TT_OPENCHAT_TXT1 = "Send Note";
-NuNC.NUN_TT_OPENCHAT_TXT2 = " Send Note via Whisper, or Party Chat,  or";
-NuNC.NUN_TT_OPENCHAT_TXT3 = " Guild Chat, etc.";
-NuNC.NUN_TT_CHATCHECK_TXT1 = "Only send Scroll Box Text";
-NuNC.NUN_TT_CHATCHECK_TXT2 = " Check here if you wish to skip the information";
-NuNC.NUN_TT_CHATCHECK_TXT3 = " in the DropDown boxes and User Details Buttons";
-NuNC.NUN_TT_CHATFORMATCHECK_TXT1 = "Format Note for NotesUNeed User";
-NuNC.NUN_TT_CHATFORMATCHECK_TXT2 = "  Formatting will allow the recipient to";
-NuNC.NUN_TT_CHATFORMATCHECK_TXT3 = "  add the note to their NotesUNeed database";
-NuNC.NUN_TT_CHATFORMATCHECK_TXT4 = " ! Formatted Note details will still be visible to channel subscribers without NotesUNeed ! ";
-NuNC.NUN_TT_CHATFORMATCHECK_TXT5 = " ! Take care not to Spam ! ";
-NuNC.NUN_TT_LEVEL_TXT1 = "Save at Account Level";
-NuNC.NUN_TT_LEVEL_TXT2 = " Leave Unchecked to save and view this note only";
-NuNC.NUN_TT_LEVEL_TXT3 = " on this Server Realm";
-NuNC.NUN_TT_GTYPE_TXT1 = "Select General Note Type";
-NuNC.NUN_TT_GTYPE_TXT2 = "  Redefining a note type can help when searching";
-NuNC.NUN_TT_GTYPE_TXT3 = "  for it again. May leave/select blank type.";
-NuNC.NUN_TT_SCALE_TXT1 = "Change Frame Scale";
-NuNC.NUN_TT_SCALE_TXT2 = "  Use to shrink or enlarge the Frames and / or ";
-NuNC.NUN_TT_SCALE_TXT3 = " the NotesUNeed Tooltip Text to suit your needs";
-NuNC.NUN_TT_GDELETE_TXT1 = "!! PLEASE NOTE !!";
-NuNC.NUN_TT_GDELETE_TXT2 = "  Currently this button will NOT delete the";
-NuNC.NUN_TT_GDELETE_TXT3 = "    Quest Note - but WILL delete the entry";
-NuNC.NUN_TT_GDELETE_TXT4 = "    in this character's Quest History";
-NuNC.NUN_TT_PDOWN_TXT1 = "Decrement Party Count";
-NuNC.NUN_TT_PDOWN_TXT2 = "  Click to manually reduce the counter of the";
-NuNC.NUN_TT_PDOWN_TXT3 = "  number of times you have partied together.";
-NuNC.NUN_TT_BHAVE_TXT1 = "Change Edit Note Frame Behaviour";
-NuNC.NUN_TT_BHAVE_TXT2 = "Leave Unchecked for Edit Frames to behave as";
-NuNC.NUN_TT_BHAVE_TXT3 = "  they have in earlier versions. Check to stop";
-NuNC.NUN_TT_BHAVE_TXT4 = "  Note Edit Boxes automatically getting focus,";
-NuNC.NUN_TT_BHAVE_TXT5 = "  and to lose Focus when Escape is pressed.";
-NuNC.NUN_TT_MAPNOTES_TXT1 = "MapNotes Note Creation";
-NuNC.NUN_TT_MAPNOTES_TXT2 = "  Click to create a MapNote at YOUR current";
-NuNC.NUN_TT_MAPNOTES_TXT3 = "  location, based on this Notes Name.";
-NuNC.NUN_TT_MAPCHECK_TXT1 = "Auto Create NPC MapNotes";
-NuNC.NUN_TT_MAPCHECK_TXT2 = "  Requires separate MapNotes AddOn.";
-NuNC.NUN_TT_MAPCHECK_TXT3 = "  Check to automatically create MapNote";
-NuNC.NUN_TT_MAPCHECK_TXT4 = "  Icons on the Map when Noting NPCs.";
-NuNC.NUN_TT_MAPCHECK_TXT5 = "  Also marks NPC Quest Givers";
-NuNC.NUN_TT_HYPERLINKS_TXT1 = "Note Hyperlinks";
-NuNC.NUN_TT_HYPERLINKS_TXT2 = "  Outputs the Note's HyperLinks to";
-NuNC.NUN_TT_HYPERLINKS_TXT3 = "  the Chat Frame for easy access";
-NuNC.NUN_TT_RUN_TXT1 = "Run Script";
-NuNC.NUN_TT_RUN_TXT2 = " Execute note as Lua Script";
-NuNC.NUN_TT_MAINTAIN_TXT1 = "Maintain Global Friends/Ignores Lists";		-- ??
-NuNC.NUN_TT_MAINTAIN_TXT2 = "  NotesUNeed will maintain a single set of Friends/Ignores for all your Alts.\n  e.g. Add a Friend to one Alt, and NotesUNeed will automatically try to Add that Friend when you log in as a different Alt on the same Realm.";		-- ??
-NuNC.NUN_TT_VERBOSE_TXT1 = "Silent Friend/Ignore List Maintenance";		-- ??
-NuNC.NUN_TT_VERBOSE_TXT2 = "  Check to stop receiving extra messages informing you of when NotesUNeed is adding/removing Friends/Ignores.";		-- ??
-NuNC.NUN_TT_AA_TXT1 = "Auto-Add Notes when Adding Friends/Ignores";
-NuNC.NUN_TT_AA_TXT2 = "Must leave Checked if letting NotesUNeed Manage your Friend/Ignore Lists";
-NuNC.NUN_TT_GR_TXT1 = "Auto-Maintain Notes for Guild Members";
-NuNC.NUN_TT_GRV_TXT1 = "Report Basic Guild Stats to Chat";
-NuNC.NUN_TT_GRV_TXT2 = " Echoes total number of members and\n names of members leaving / joining since\n last data refresh";
-NuNC.NUN_TT_MODIFIER_TXT1 = "Set NuN Modifier Keys";
-NuNC.NUN_TT_MODIFIER_TXT2 = "Simply Left/Right Click to choose Mouse Button";
-NuNC.NUN_TT_MODIFIER_TXT3 = "-OR- Hold down required Modifer Keys & Click to Save Them";
-NuNC.NUN_TT_MODIFIER_TXT4 = " Left  Click : Records left or right buttons as the same modifier key";
-NuNC.NUN_TT_MODIFIER_TXT5 = " Right Click : Records left and right buttons as different modifiers";
-NuNC.NUN_TT_MODIFIER_TXT6 = "e.g. to set Modifier keys of |cff00ff00<LeftControl><LeftAlt> : MiddleButton|r"
-NuNC.NUN_TT_MODIFIER_TXT7 = "1.) Hold down <Ctrl> & <Alt> on the left side of the keyboard and RIGHT-Click"
-NuNC.NUN_TT_MODIFIER_TXT8 = "2.) Then Middle click the button without any keyboard keys being pressed"
-NuNC.NUN_TT_MODCB_TXT1 = "Enable NotesUNeed Item/Hyperlink Clicks";
-NuNC.NUN_TT_MODCB_TXT2 = " Use the key combination/mouse combination below\n to Create/Open Notes from Container Items\n or Item/Player Links";
-NuNC.NUN_TT_CPRESET_TXT1 = "Preset Colour";
-NuNC.NUN_TT_CPRESET_TXT2 = "Left Click to apply preset colour";
-NuNC.NUN_TT_CPRESET_TXT3 = "Right Click to change preset colour";
-NuNC.NUN_TT_CPRESET_TXT4 = "<Alt>-Right Click to RESET the preset";
-NuNC.NUN_TT_CCHOOSE_TXT1 = "Choose Colour";
-NuNC.NUN_TT_CCHOOSE_TXT2 = "Left Click to choose a colour";
-NuNC.NUN_TT_CCHOOSE_TXT3 = "Right Click to Toggle Colour TAGS";
-NuNC.NUN_TT_DELAY_TXT1 = "Pause between Channel Messages";
-NuNC.NUN_TT_DELAY_TXT2 = " Press Enter to confirm changes";
-NuNC.NUN_TT_DELAY_TXT3 = " Default 0.9";
-NuNC.NUN_TT_AUTOP_OFF1 = "Auto Party Noting turned off!";
-NuNC.NUN_REWARDS = "Quest Rewards : ";
-NuNC.NUN_CHOICES = "Choose From : ";
-NuNC.NUN_CREATED = "CREATED";
-NuNC.NUN_COMPLETE = "COMPLETED";
-NuNC.NUN_FINISHED = "HANDED IN";
-NuNC.NUN_CONFIRM_RELOADUI = "Performing this action requires the UI to be reloaded - do you wish to continue?"
+NuNC.NUN_NEW_NOTE                      = "New Note";
+NuNC.NUN_SAVED_NOTE                    = "Saved Note";
+NuNC.NUN_QUEST_NOTE                    = "Quest History Detail";
+NuNC.NUN_HELP_TEXT0                    = "|cffffff00NotesUNeed command help :|r";
+NuNC.NUN_HELP_TEXT1                    = "|cff00ff00Use |r|cffffffff/nun|r|cff00ff00 without any arguments to toggle the NotesUNeed Options Window.|r";
+NuNC.NUN_HELP_TEXT2                    = "|cff00ff00Use |r|cffffffff/nun <command>|r|cff00ff00 to perform the following commands:|r";
+NuNC.NUN_HELP_TEXT3                    = " |cffffffff-h|r|cff00ff00: displays these help messages.|r";
+NuNC.NUN_HELP_TEXT4                    = " |cffffffff-a|r|cff00ff00: displays a list of all Contact and General notes for you to browse.|r";
+NuNC.NUN_HELP_TEXT5                    = " |cffffffff<Contact/Note Name>|r|cff00ff00: entering a note name will display that Contact's note if one has been saved, or display the General note of that name if one has been saved.|r";
+NuNC.NUN_HELP_TEXT6                    = " |cffffffff-t|r|cff00ff00: will Generate a Contact note for your current target, if you have targetted a valid player controlled character.|r";
+NuNC.NUN_HELP_TEXT7                    = " |cffffffff-g <Note Title>|r|cff00ff00: will Generate a Generic note with the title provided, or display the note if it already exists.|r";
+NuNC.NUN_HELP_TEXT8                    = " |cffffffff-tt|r|cff00ff00: will Toggle NotesUNeed ToolTips on/off.|r";
+NuNC.NUN_HELP_TEXT9                    = " |cffffffff-ca <Contact Name>  OR  -ch <Contact Name>|r|cff00ff00: will Create an Alliance or Horde Contact note respectively for the provided name, without Validation !|r";
+NuNC.NUN_HELP_TEXT10                   = " |cffffffff-micro|r|cff00ff00: will Toggle the NotesUNeed MicroButtons.|r";
+NuNC.NUN_HELP_TEXT11                   = " |cffffffff-x <Note Title>|r|cff00ff00: execute note as Lua Script|r";
+NuNC.NUN_HELP_TEXT12                   = " |cffffffff-i <Contact Name>|r|cff00ff00: reset NuN Ignore Status for named player|r";  -- ??
+NuNC.NUN_HELP_TEXT13                   = " |cffffffff-f <Contact Name>|r|cff00ff00: reset NuN Friend Status for named player|r";  -- ??
+NuNC.NUN_HELP_TEXT14                   = " |cffffffff-resetlists|r|cff00ff00: reset NotesUNeed Details to current player's Friends/Ignores|r";  -- ??
+NuNC.NUN_HELP_TEXT15                   = " |cffffffff-gr|r|cff00ff00: auto-note Guild Members";
+NuNC.NUN_HELP_TEXT16                   = " |cffffffff-grv|r|cff00ff00: Guild note verbose reporting";
+NuNC.NUN_HELP_TEXT17                   = " |cffffffff-restrictwho|r|cff00ff00: Toggle automatic /who Requests";
+NuNC.NUN_MICROOPTIONS_TOOLTIP_TXT1     = "NotesUNeed Options";
+NuNC.NUN_MICROOPTIONS_TOOLTIP_TXT2     = "  Click to Toggle the NotesUNeed Options Frame";
+NuNC.NUN_MICROBROWSEA_TOOLTIP_TXT1     = "NotesUNeed Browse";
+NuNC.NUN_MICROBROWSEA_TOOLTIP_TXT2     = "  Click to Browse ALL Notes";
+NuNC.NUN_MICROCONTACT_TOOLTIP_TXT1     = "NotesUNeed Contact";
+NuNC.NUN_MICROCONTACT_TOOLTIP_TXT2     = "  Click to check/create a note for current Target";
+NuNC.NUN_MICROCONTACT_TOOLTIP_TXT3     = "   or View Own Contact note if no Target";
+NuNC.NUN_MICROGENNOTE_TOOLTIP_TXT1     = "NotesUNeed General Note";
+NuNC.NUN_MICROGENNOTE_TOOLTIP_TXT2     = "  Click to create a new blank General Note.";
+NuNC.NUN_RESETBUTTON_TOOLTIP_TXT1      = "Reset Checkboxes, & Contact Detail Headings to :";
+NuNC.NUN_RESETBUTTON_TOOLTIP_TXT2      = "  Guild, Guild Rank, Real Name, e-mail, WWW.";
+NuNC.NUN_LOCBUTTON_TOOLTIP_TXT1        = "Record Current Location";
+NuNC.NUN_LOCBUTTON_TOOLTIP_TXT2        = "  Your Current Location will be added to the Main Text Box";
+NuNC.NUN_GNOTETITLE_TOOLTIP_TXT1       = "Note Title must be Specified";
+NuNC.NUN_GNOTETITLE_TOOLTIP_TXT2       = " Press <Enter> to Confirm and Edit Note";
+NuNC.NUN_INCLUDEINTOOLTIP_TOOLTIP_TXT1 = "Tooltip Include"
+NuNC.NUN_INCLUDEINTOOLTIP_TOOLTIP_TXT2 = "Add this value to the tooltip that appears when mousing over the note's name in the note search dialog.";
+NuNC.NUN_SAVEDEF_TOOLTIP_TXT1          = "Check to Save a New Default Heading";
+NuNC.NUN_SAVEDEF_TOOLTIP_TXT2          = "  Change will take affect immediately.";
+NuNC.NUN_RESTOREDEF_TOOLTIP_TXT1       = "Click to Replace Current text with Default Heading";
+NuNC.NUN_RESTOREDEF_TOOLTIP_TXT2       = "  To Restore NotesUNeed Original Headings use the";
+NuNC.NUN_RESTOREDEF_TOOLTIP_TXT3       = "    'Reset Defaults'  button in the Options Frame";
+NuNC.NUN_RESTOREDEF_TOOLTIP_TXT4       = "  Change will take affect immediately.";
+NuNC.NUN_TARGETBUTTON_TOOLTIP_TXT1     = "Retrieve Target-style Information";
+NuNC.NUN_TARGETBUTTON_TOOLTIP_TXT2     = "  Distance to target restricts the information. If the";
+NuNC.NUN_TARGETBUTTON_TOOLTIP_TXT3     = "  current Contact is not Targetted, NotesUNeed will ";
+NuNC.NUN_TARGETBUTTON_TOOLTIP_TXT4     = "  attempt to Target them";
+NuNC.NUN_NPCTARGETBUTTON_TOOLTIP_TXT1  = "Retrieve Target-style Information";
+NuNC.NUN_NPCTARGETBUTTON_TOOLTIP_TXT2  = "  Must have an NPC Targetted";
+NuNC.NUN_WHOBUTTON_TOOLTIP_TXT1        = "Retrieve Who-style Information";
+NuNC.NUN_WHOBUTTON_TOOLTIP_TXT2        = "  The Contact must be online for the /who command to work";
+NuNC.NUN_WHOBUTTON_TOOLTIP_TXT3        = "  Several clicks may be required while the /who command refreshes.";
+NuNC.NUN_USERBUTTON_TOOLTIP_TXT1       = "User Definable Headings & Details";
+NuNC.NUN_USERBUTTON_TOOLTIP_TXT2       = "  Click to alter. Headings may be saved for individuals";
+NuNC.NUN_USERBUTTON_TOOLTIP_TXT3       = "  or new Defaults Saved";
+NuNC.NUN_CLEARDD_TOOLTIP_TXT1          = "Clear Drop Down List";
+NuNC.NUN_CLEARDD_TOOLTIP_TXT2          = " Clears the Last Changed Drop Down Box";
+NuNC.NUN_FFBUTTON_TOOLTIP_TXT1         = "Edit NotesUNeed Note";
+NuNC.NUN_FFBUTTON_TOOLTIP_TXT2         = " Must have a contact selected";
+NuNC.NUN_TT_PIN_TOOLTIP_TXT1           = "Pin Up NotesUNeed Tooltip";
+NuNC.NUN_TT_PIN_TOOLTIP_TXT2           = " Click to display a draggable";
+NuNC.NUN_TT_PIN_TOOLTIP_TXT3           = " tooltip for the current Note";
+NuNC.NUN_TT_PIN_EDIT_TXT1              = "Edit Note";
+NuNC.NUN_TT_PIN_EDIT_TXT2              = " Edit the details of this Tooltips Note";
+NuNC.NUN_TT_OPENCHAT_TXT1              = "Send Note";
+NuNC.NUN_TT_OPENCHAT_TXT2              = " Send Note via Whisper, or Party Chat,  or";
+NuNC.NUN_TT_OPENCHAT_TXT3              = " Guild Chat, etc.";
+NuNC.NUN_TT_CHATCHECK_TXT1             = "Only send Scroll Box Text";
+NuNC.NUN_TT_CHATCHECK_TXT2             = " Check here if you wish to skip the information";
+NuNC.NUN_TT_CHATCHECK_TXT3             = " in the DropDown boxes and User Details Buttons";
+NuNC.NUN_TT_CHATFORMATCHECK_TXT1       = "Format Note for NotesUNeed User";
+NuNC.NUN_TT_CHATFORMATCHECK_TXT2       = "  Formatting will allow the recipient to";
+NuNC.NUN_TT_CHATFORMATCHECK_TXT3       = "  add the note to their NotesUNeed database";
+NuNC.NUN_TT_CHATFORMATCHECK_TXT4       = " ! Formatted Note details will still be visible to channel subscribers without NotesUNeed ! ";
+NuNC.NUN_TT_CHATFORMATCHECK_TXT5       = " ! Take care not to Spam ! ";
+NuNC.NUN_TT_LEVEL_TXT1                 = "Save at Account Level";
+NuNC.NUN_TT_LEVEL_TXT2                 = " Leave Unchecked to save and view this note only";
+NuNC.NUN_TT_LEVEL_TXT3                 = " on this Server Realm";
+NuNC.NUN_TT_GTYPE_TXT1                 = "Select General Note Type";
+NuNC.NUN_TT_GTYPE_TXT2                 = "  Redefining a note type can help when searching";
+NuNC.NUN_TT_GTYPE_TXT3                 = "  for it again. May leave/select blank type.";
+NuNC.NUN_TT_SCALE_TXT1                 = "Change Frame Scale";
+NuNC.NUN_TT_SCALE_TXT2                 = "  Use to shrink or enlarge the Frames and / or ";
+NuNC.NUN_TT_SCALE_TXT3                 = " the NotesUNeed Tooltip Text to suit your needs";
+NuNC.NUN_TT_GDELETE_TXT1               = "!! PLEASE NOTE !!";
+NuNC.NUN_TT_GDELETE_TXT2               = "  Currently this button will NOT delete the";
+NuNC.NUN_TT_GDELETE_TXT3               = "    Quest Note - but WILL delete the entry";
+NuNC.NUN_TT_GDELETE_TXT4               = "    in this character's Quest History";
+NuNC.NUN_TT_PDOWN_TXT1                 = "Decrement Party Count";
+NuNC.NUN_TT_PDOWN_TXT2                 = "  Click to manually reduce the counter of the";
+NuNC.NUN_TT_PDOWN_TXT3                 = "  number of times you have partied together.";
+NuNC.NUN_TT_BHAVE_TXT1                 = "Change Edit Note Frame Behaviour";
+NuNC.NUN_TT_BHAVE_TXT2                 = "Leave Unchecked for Edit Frames to behave as";
+NuNC.NUN_TT_BHAVE_TXT3                 = "  they have in earlier versions. Check to stop";
+NuNC.NUN_TT_BHAVE_TXT4                 = "  Note Edit Boxes automatically getting focus,";
+NuNC.NUN_TT_BHAVE_TXT5                 = "  and to lose Focus when Escape is pressed.";
+NuNC.NUN_TT_MAPNOTES_TXT1              = "MapNotes Note Creation";
+NuNC.NUN_TT_MAPNOTES_TXT2              = "  Click to create a MapNote at YOUR current";
+NuNC.NUN_TT_MAPNOTES_TXT3              = "  location, based on this Notes Name.";
+NuNC.NUN_TT_MAPCHECK_TXT1              = "Auto Create NPC MapNotes";
+NuNC.NUN_TT_MAPCHECK_TXT2              = "  Requires separate MapNotes AddOn.";
+NuNC.NUN_TT_MAPCHECK_TXT3              = "  Check to automatically create MapNote";
+NuNC.NUN_TT_MAPCHECK_TXT4              = "  Icons on the Map when Noting NPCs.";
+NuNC.NUN_TT_MAPCHECK_TXT5              = "  Also marks NPC Quest Givers";
+NuNC.NUN_TT_HYPERLINKS_TXT1            = "Note Hyperlinks";
+NuNC.NUN_TT_HYPERLINKS_TXT2            = "  Outputs the Note's HyperLinks to";
+NuNC.NUN_TT_HYPERLINKS_TXT3            = "  the Chat Frame for easy access";
+NuNC.NUN_TT_RUN_TXT1                   = "Run Script";
+NuNC.NUN_TT_RUN_TXT2                   = " Execute note as Lua Script";
+NuNC.NUN_TT_MAINTAIN_TXT1              = "Maintain Global Friends/Ignores Lists";  -- ??
+NuNC.NUN_TT_MAINTAIN_TXT2              = "  NotesUNeed will maintain a single set of Friends/Ignores for all your Alts.\n  e.g. Add a Friend to one Alt, and NotesUNeed will automatically try to Add that Friend when you log in as a different Alt on the same Realm.";  -- ??
+NuNC.NUN_TT_VERBOSE_TXT1               = "Silent Friend/Ignore List Maintenance";  -- ??
+NuNC.NUN_TT_VERBOSE_TXT2               = "  Check to stop receiving extra messages informing you of when NotesUNeed is adding/removing Friends/Ignores.";  -- ??
+NuNC.NUN_TT_AA_TXT1                    = "Auto-Add Notes when Adding Friends/Ignores";
+NuNC.NUN_TT_AA_TXT2                    = "Must leave Checked if letting NotesUNeed Manage your Friend/Ignore Lists";
+NuNC.NUN_TT_GR_TXT1                    = "Auto-Maintain Notes for Guild Members";
+NuNC.NUN_TT_GRV_TXT1                   = "Report Basic Guild Stats to Chat";
+NuNC.NUN_TT_GRV_TXT2                   = " Echoes total number of members and\n names of members leaving / joining since\n last data refresh";
+NuNC.NUN_TT_MODIFIER_TXT1              = "Set NuN Modifier Keys";
+NuNC.NUN_TT_MODIFIER_TXT2              = "Simply Left/Right Click to choose Mouse Button";
+NuNC.NUN_TT_MODIFIER_TXT3              = "-OR- Hold down required Modifer Keys & Click to Save Them";
+NuNC.NUN_TT_MODIFIER_TXT4              = " Left  Click : Records left or right buttons as the same modifier key";
+NuNC.NUN_TT_MODIFIER_TXT5              = " Right Click : Records left and right buttons as different modifiers";
+NuNC.NUN_TT_MODIFIER_TXT6              = "e.g. to set Modifier keys of |cff00ff00<LeftControl><LeftAlt> : MiddleButton|r"
+NuNC.NUN_TT_MODIFIER_TXT7              = "1.) Hold down <Ctrl> & <Alt> on the left side of the keyboard and RIGHT-Click"
+NuNC.NUN_TT_MODIFIER_TXT8              = "2.) Then Middle click the button without any keyboard keys being pressed"
+NuNC.NUN_TT_MODCB_TXT1                 = "Enable NotesUNeed Item/Hyperlink Clicks";
+NuNC.NUN_TT_MODCB_TXT2                 = " Use the key combination/mouse combination below\n to Create/Open Notes from Container Items\n or Item/Player Links";
+NuNC.NUN_TT_CPRESET_TXT1               = "Preset Colour";
+NuNC.NUN_TT_CPRESET_TXT2               = "Left Click to apply preset colour";
+NuNC.NUN_TT_CPRESET_TXT3               = "Right Click to change preset colour";
+NuNC.NUN_TT_CPRESET_TXT4               = "<Alt>-Right Click to RESET the preset";
+NuNC.NUN_TT_CCHOOSE_TXT1               = "Choose Colour";
+NuNC.NUN_TT_CCHOOSE_TXT2               = "Left Click to choose a colour";
+NuNC.NUN_TT_CCHOOSE_TXT3               = "Right Click to Toggle Colour TAGS";
+NuNC.NUN_TT_DELAY_TXT1                 = "Pause between Channel Messages";
+NuNC.NUN_TT_DELAY_TXT2                 = " Press Enter to confirm changes";
+NuNC.NUN_TT_DELAY_TXT3                 = " Default 0.9";
+NuNC.NUN_TT_AUTOP_OFF1                 = "Auto Party Noting turned off!";
+NuNC.NUN_REWARDS                       = "Quest Rewards : ";
+NuNC.NUN_CHOICES                       = "Choose From : ";
+NuNC.NUN_CREATED                       = "CREATED";
+NuNC.NUN_COMPLETE                      = "COMPLETED";
+NuNC.NUN_FINISHED                      = "HANDED IN";
+NuNC.NUN_CONFIRM_RELOADUI              = "Performing this action requires the UI to be reloaded - do you wish to continue?"
 
 ------------------------- DO NOT TRANSLATE THE FOLLOWING ------------------------------
-			 -- (But must remain in localisation file) --
+-- (But must remain in localisation file) --
 NUN_CLIENT = "English";
