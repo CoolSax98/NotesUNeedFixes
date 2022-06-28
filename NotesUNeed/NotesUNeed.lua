@@ -8723,6 +8723,11 @@ function NuN_NewContact(unitType)
 	end
 
 	-- set the unit type for the note we're about to open
+	-- if there no unit info (no target), bail out
+	local unit = GetUnitName(unitType, true);
+	if (not unit) then
+		return;
+	end
 	local_player.currentNote.unit = GetUnitName(unitType, true);
 
 	local Friendly;
