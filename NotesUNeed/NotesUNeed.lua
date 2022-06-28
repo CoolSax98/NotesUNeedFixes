@@ -4159,7 +4159,7 @@ function NuN_WriteNote()
 	end
 
 	if (not locals.NuNDataPlayers[local_player.currentNote.unit].faction) then
-		if ((contact.route == "Target") or (contact.route == "Create") or (contact.route == "Receipt")) then
+		if ((contact.route == "target") or (contact.route == "Create") or (contact.route == "Receipt")) then
 			locals.NuNDataPlayers[local_player.currentNote.unit].faction = c_faction;
 		else
 			locals.NuNDataPlayers[local_player.currentNote.unit].faction = local_player.factionName;
