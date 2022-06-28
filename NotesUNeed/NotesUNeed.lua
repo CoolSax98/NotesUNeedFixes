@@ -2584,9 +2584,14 @@ function NuNF.NuN_InitialiseSavedVariables()
 	end
 
 	-- 5.60 Database shortcuts
+
+	-- NOTE: Player notes are always realm based.
 	locals.NuNDataPlayers = NuNData[local_player.realmName];
 	--evo NuN_Message("NuNF.NuN_InitialiseSavedVariables   local_player.realmName (cVar:realmName): '" .. tostring(local_player.realmName) .. ")" .. "  data:" .. tostring(locals.NuNDataPlayers));
+
+	-- Account Notes
 	NuNDataANotes = NuNData[locals.Notes_dbKey];
+	-- Realm Notes
 	NuNDataRNotes = NuNData[local_player.realmName][locals.Notes_dbKey];
 	locals.questHistory.Tag = locals.player_Name;
 	locals.questHistory.Realm = local_player.realmName;
@@ -5877,6 +5882,8 @@ function NuNNew_IgnoreList_Update()
 	--@{
 	-- 3.3.5 changed the ignore list so that the first "button" in the list is now a "header" button
 	-- evo: fixed ignore list not updating idx correctly when TopItem was different from FirstItem
+	--[[
+		-- NOTE: Need to rewrite this based on the updated FriendFrame code. For now, commenting out the code below.
 	local scrollOffset = FauxScrollFrame_GetOffset(FriendsFrameIgnoreScrollFrame);
 	local ignoreButton, ignoredItemIndex, ignoreNoteButton;
 	-- REVIEW: Not sure what IGNORES_TO_DISPLAY is from. I can't find it in the docs and don't see it anywhere else.
@@ -5922,6 +5929,7 @@ function NuNNew_IgnoreList_Update()
 			end
 		end
 	end
+	]]
 end
 
 function NuN_InterceptGuildRoster_SetView(newView)
@@ -5988,18 +5996,20 @@ local function DecodeHyperlink(hyperlink)
 	return tostring(hyperlink);
 end
 
+local function SimplifyHyperlink(link)
+	-- TODO: Need to handle more than just item links.
+	local preamble, itemId, rest = strsplit(":", link)
+	local sanitizedLink = strgsub(link, ":%-*%d*", "")
+
+	sanitizedLink = strgsub(sanitizedLink, preamble, preamble .. ":" .. itemId)
+	-- print('simplify hyperlink: ' .. DecodeHyperlink(sanitizedLink));
+	return sanitizedLink
+end
+
 function NuNQuickNote.ProcessHyperlink(itemLink)
+	-- REVIEW:  CHECKING LINKS
 	if itemLink and type(itemLink) == "string" then
-		-- local sanitizedLink = strgsub(itemLink, "\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\|", ":0:0:0:0:0:0:0|");
-		-- sanitizedLink = strgsub(sanitizedLink, "\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\:%-*%d+\124", ":0:0:0:0:0:0:0\124");
-
-		-- |cffffffff|Hitem:6471::::::::21:66::::::|h[Perfect Deviate Scale]|h|r
-		-- |cffffffff|Hcurrency:1717:0|h[7th Legion Service Medal]|h|r
-
-		local _, itemId, rest = strsplit(":", itemLink)
-		local sanitizedLink = strgsub(itemLink, ":%-*%d*", "");
-		sanitizedLink = strgsub(sanitizedLink, "Hitem", "Hitem:" .. itemId)
-		sanitizedLink = strgsub(sanitizedLink, "Hcurrency", "Hcurrency:" .. itemId)
+		local sanitizedLink = SimplifyHyperlink(itemLink)
 
 		if ((itemLink ~= nil) and (itemLink ~= "")) then
 			if ((NuNGNoteFrame:IsVisible()) or (NuNFrame:IsVisible())) then
@@ -6023,6 +6033,7 @@ function NuNQuickNote.ProcessHyperlink(itemLink)
 					StackSplitFrame:Hide();
 					return true;
 				else
+					-- print("NuNQuickNote: " .. sanitizedLink .. " not found in notes");
 					NuNF.NuN_GNoteFromItem(sanitizedLink, "GameTooltip");
 					StackSplitFrame:Hide();
 					return true;
@@ -6445,8 +6456,8 @@ function NuNNew_SetItemRef(self, link, text, btn)
 			end
 
 		elseif (IsNuNModifierKeyDown(btn)) then -- 5.60
-			text = strgsub(text, ":%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+|", ":0:0:0:0:0:0:0|");
-			text = strgsub(text, ":%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+\124", ":0:0:0:0:0:0:0\124");
+			text = SimplifyHyperlink(text);
+
 			if ((NuNGNoteFrame:IsVisible()) or (NuNFrame:IsVisible())) then
 				if (NuNGNoteFrame:IsVisible()) then
 					NuNGNoteTextScroll:Insert(text); -- + v5.00.11200
