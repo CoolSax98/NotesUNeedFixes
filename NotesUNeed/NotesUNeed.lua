@@ -1142,7 +1142,7 @@ function NuNF.DropDowns_Initialise()
 end
 
 function NuNF.ConvertManualItemNote(noteName)
-	local text = NuNF.NuNGetGText(noteName);
+	local text = NuNF.NuN_GetGText(noteName);
 	return text;
 end
 
@@ -6012,7 +6012,7 @@ local function SimplifyHyperlink(link)
 	-- TODO: Need to handle more than just item links.
 	local preamble, itemId, rest = strsplit(":", link)
 	local sanitizedLink = strgsub(link, ":%-*%d*", "")
-	local linkName = strgsub(sanitizedLink, "^.*%[(.*)%]", "%1")
+	local linkName = strgsub(sanitizedLink, "^.*%[(.*)%].*$", "%1")
 
 	sanitizedLink = strgsub(sanitizedLink, preamble, preamble .. ":" .. itemId)
 	-- print('simplify hyperlink: ' .. DecodeHyperlink(sanitizedLink));
