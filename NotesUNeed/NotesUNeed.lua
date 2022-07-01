@@ -1141,10 +1141,22 @@ function NuNF.DropDowns_Initialise()
 
 end
 
+function NuNF.ConvertManualItemNote(noteName)
+	local text = NuNF.NuNGetGText(noteName);
+	return text;
+end
+
 function NuNF.NuN_GNoteFromItem(link, theTT)
 	local catTxt = "";
-
+	-- IDEA: following the flow of the alt+left click on item in chat
+	print("NuNF.NuN_GNoteFromItem: " .. link);
+	-- REVIEW: if a manual note for this item link has been detected, fetch the noteand use that instead of the tooltip text
+	if (local_player.currentNote.manualItemNote) then
+		catTxt = NuNF.ConvertManualItemNote(local_player.currentNote.manualItemNote);
+		print("NuNF.NuN_GNoteFromItem: manualItemNote: " .. catTxt);
+	else
 	catTxt = NuNF.NuN_ExtractTooltipInfo(catTxt, theTT);
+	end
 	local_player.currentNote.general = link;
 	contact.type = NuNGet_CommandID(NUN_NOTETYPES, "ITM");
 	NuN_ShowTitledGNote(catTxt);
@@ -6000,16 +6012,23 @@ local function SimplifyHyperlink(link)
 	-- TODO: Need to handle more than just item links.
 	local preamble, itemId, rest = strsplit(":", link)
 	local sanitizedLink = strgsub(link, ":%-*%d*", "")
+	local linkName = strgsub(sanitizedLink, "^.*%[(.*)%]", "%1")
 
 	sanitizedLink = strgsub(sanitizedLink, preamble, preamble .. ":" .. itemId)
 	-- print('simplify hyperlink: ' .. DecodeHyperlink(sanitizedLink));
-	return sanitizedLink
+	return sanitizedLink, linkName;
 end
 
 function NuNQuickNote.ProcessHyperlink(itemLink)
 	-- REVIEW:  CHECKING LINKS
 	if itemLink and type(itemLink) == "string" then
-		local sanitizedLink = SimplifyHyperlink(itemLink)
+		local sanitizedLink, linkName = SimplifyHyperlink(itemLink)
+		print('ProcessHyperlink: ')
+		print(linkName)
+		-- IDEA :  CHECK IF ITEM IS ALREADY A MANUAL NOTE
+		-- Extract the name from the link
+		-- use the check if a note already exists
+		-- if it exists, copy the contents into a new now with the link as key and delete the old one.
 
 		if ((itemLink ~= nil) and (itemLink ~= "")) then
 			if ((NuNGNoteFrame:IsVisible()) or (NuNFrame:IsVisible())) then
@@ -6024,16 +6043,30 @@ function NuNQuickNote.ProcessHyperlink(itemLink)
 				end
 			elseif sanitizedLink ~= nil and sanitizedLink ~= "" then
 				NuNGNoteFrame.fromQuest = nil;
+				-- REVIEW: This looks like dead code. should not have link = link in the itmIndex table
 				if (NuNData[locals.itmIndex_dbKey][sanitizedLink]) then
 					sanitizedLink = (NuNData[locals.itmIndex_dbKey][sanitizedLink]);
 				end
+
+				-- If a note exists with the linkName as the key in the NuNDataRNotes or NunDataANotes table,
+				-- save the note to the currentNote
+				print('ProcessHyperlink: ')
+				print(NuNDataRNotes[linkName])
+				print(NuNDataANotes[linkName])
+				if ((NuNDataRNotes[linkName]) or (NuNDataANotes[linkName])) then
+					print("NuNQuickNote.ProcessHyperlink: " .. linkName .. " already exists");
+					local_player.currentNote.manualItemNote = linkName;
+				end
+
 				if ((NuNDataRNotes[sanitizedLink]) or (NuNDataANotes[sanitizedLink])) then
+					-- TODO: handle merging the manual note if there is one
 					local_player.currentNote.general = sanitizedLink;
 					NuN_ShowSavedGNote();
 					StackSplitFrame:Hide();
 					return true;
 				else
-					-- print("NuNQuickNote: " .. sanitizedLink .. " not found in notes");
+
+					print("NuNQuickNote: " .. sanitizedLink .. " not found in notes");
 					NuNF.NuN_GNoteFromItem(sanitizedLink, "GameTooltip");
 					StackSplitFrame:Hide();
 					return true;
@@ -6456,7 +6489,8 @@ function NuNNew_SetItemRef(self, link, text, btn)
 			end
 
 		elseif (IsNuNModifierKeyDown(btn)) then -- 5.60
-			text = SimplifyHyperlink(text);
+			text, linkName = SimplifyHyperlink(text);
+			print(linkName)
 
 			if ((NuNGNoteFrame:IsVisible()) or (NuNFrame:IsVisible())) then
 				if (NuNGNoteFrame:IsVisible()) then
@@ -6472,11 +6506,13 @@ function NuNNew_SetItemRef(self, link, text, btn)
 				NuNGNoteFrame.fromQuest = nil;
 				if (NuNData[locals.itmIndex_dbKey][text]) then
 					text = (NuNData[locals.itmIndex_dbKey][text]);
+					print("branch1: " .. text);
 				end
 				if ((NuNDataRNotes[text]) or (NuNDataANotes[text])) then
 					local_player.currentNote.general = text;
 					NuN_ShowSavedGNote();
 					processed = true;
+					print("branch2: " .. text);
 					--HideUIPanel(ItemRefTooltip);
 				else
 					ItemRefTooltip:Show();
@@ -6486,6 +6522,7 @@ function NuNNew_SetItemRef(self, link, text, btn)
 					ItemRefTooltip:SetHyperlink(link);
 					delayedItemTooltip = text;
 					processed = true;
+					print("branch3: " .. text);
 				end
 				return processed;
 			end
@@ -8389,9 +8426,9 @@ function NuN_ShowSavedGNote(nN)
 		NuN_GTypeDependant_Setup();
 
 		if (NuNDataRNotes[local_player.currentNote.general]) then
-			NuN_GLevel_CheckBox:SetChecked(0);
+			NuN_GLevel_CheckBox:SetChecked(false);
 		elseif (NuNDataANotes[local_player.currentNote.general]) then
-			NuN_GLevel_CheckBox:SetChecked(1);
+			NuN_GLevel_CheckBox:SetChecked(true);
 		end
 		locals.NuN_GNote_OriTitle = local_player.currentNote.general;
 		locals.prevNote = local_player.currentNote.general;
@@ -8449,9 +8486,9 @@ function NuN_ShowTitledGNote(GNoteText)
 		NuNGNoteFrame:Hide();
 	else
 		if (NuNSettings[local_player.realmName].dLevel) then
-			NuN_GLevel_CheckBox:SetChecked(1);
+			NuN_GLevel_CheckBox:SetChecked(true);
 		else
-			NuN_GLevel_CheckBox:SetChecked(0);
+			NuN_GLevel_CheckBox:SetChecked(false);
 		end
 		locals.prevNote = local_player.currentNote.general;
 		NuNGNoteFrame.type = contact.type;
@@ -8495,6 +8532,13 @@ function NuN_ShowTitledGNote(GNoteText)
 		NuN_GTTCheckBox:Hide();
 
 		FauxScrollFrame_SetOffset(NuNGNoteScrollFrame, 0);
+	end
+	-- IDEA: if the manual item note exists for this link, automatically save the new item note based on it and delete the manual note info.
+	if (local_player.currentNote.manualItemNote) then
+		NuNGNote_WriteNote(local_player.currentNote.manualItemNote);
+		NuNDataRNotes[local_player.currentNote.manualItemNote] = nil;
+		NuNDataANotes[local_player.currentNote.manualItemNote] = nil;
+		local_player.currentNote.manualItemNote = nil;
 	end
 end
 
@@ -11135,7 +11179,7 @@ function NuNMapFontScaleSlider_OnValueChanged(self, value)
 		NuNSettings[local_player.realmName].mScale = mScale;
 		NuNMapFontScaleSliderCurrent:SetText(strformat("%d", (mScale * 100)) .. "%");
 		mScale = UIParent:GetScale() * NuNSettings[local_player.realmName].mScale;
-		WorldMapTooltip:SetScale(NuNSettings[local_player.realmName].mScale);
+		-- WorldMapTooltip:SetScale(NuNSettings[local_player.realmName].mScale);
 		NuN_MapTooltip:SetScale(NuNSettings[local_player.realmName].mScale);
 		NuNPopup:SetScale(NuNSettings[local_player.realmName].mScale);
 	end
@@ -13559,6 +13603,8 @@ function NuN_MainUpdate(self, elapsed)
 
 	-- accounts for the delay between tooltip SetLink and display of the actual ItemRef tooltip.....
 	if ((delayedItemTooltip) and (ItemRefTooltip:IsVisible())) then
+		-- IDEA: check this is called when alt+left-click on an item in the chat window
+		print("NuN_MainUpdate: delayedItemTooltip");
 		NuNF.NuN_GNoteFromItem(delayedItemTooltip, "ItemRefTooltip");
 		delayedItemTooltip = nil;
 		ItemRefTooltip:Hide();

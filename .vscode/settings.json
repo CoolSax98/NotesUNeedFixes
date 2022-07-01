@@ -61,8 +61,6 @@
     "UIDropDownMenu_Initialize",
     "UIDropDownMenu_Refresh",
     "FauxScrollFrame_GetOffset",
-    "FriendsFrameIgnoreScrollFrame",
-    "FriendsFrameIgnoredHeader",
     "FriendsFrameBlockedInviteHeader",
     "FriendsFrameMutedHeader",
     "StackSplitFrame",
@@ -136,7 +134,11 @@
     "UnitPopupButtons",
     "UIDROPDOWN_MENU_VALUE",
     "DropDownList1",
-    "SocialNotes"
+    "SocialNotes",
+    "NuNGNoteTextBox",
+    "NuNGNoteTextScroll",
+    "NuNGNoteTitleButtonText",
+    "NuNGNoteTitleButton"
   ],
   "Lua.diagnostics.disable": ["lowercase-global"]
 }
