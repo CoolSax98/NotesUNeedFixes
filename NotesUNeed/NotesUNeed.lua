@@ -6011,27 +6011,94 @@ local function DecodeHyperlink(hyperlink)
 	return tostring(hyperlink);
 end
 
+---Simplifies the item/spell link format in order to be used as the key for the notes table.
+-- returns the simplified link and the link name text.
+---@param link string @The item, spell, etc. link.
+---@return string
+---@return string
 local function SimplifyHyperlink(link)
 	-- TODO: Need to handle more than just item links.
 	local preamble, itemId, rest = strsplit(":", link)
-	local sanitizedLink = strgsub(link, ":%-*%d*", "")
+	-- TODO: This needs to be more generalized
+	-- IDEA: What link types do we want to simplify?
+	--[[ Link Types:
+		item:<itemId>
+		spell:<spellId>
+		achievement:<achievementId>
+		battlepet:<speciesId>
+		currency:<currencyId>
+		talent:<talentId>
+		enchant:<enchantId>
+	]]
+	local sanitizedLink = "";
+	local suffix = strmatch(link, "|h%[.*%]|h|r");
+	-- items
+	if (strmatch(preamble, "item")) then
+		-- |cfffffff|Hitem:<itemId>|h[<itemName>]|h|r
+		sanitizedLink = preamble .. ":" .. itemId .. suffix;
+		print('found item: ' .. DecodeHyperlink(sanitizedLink))
+	elseif (strmatch(preamble, "spell")) then
+		-- |cfffffff|Hspell:<spellId>|h[<spellName>]|h|r
+		sanitizedLink = preamble .. ":" .. itemId .. suffix;
+		print('found spell: ' .. DecodeHyperlink(sanitizedLink))
+	elseif (strmatch(preamble, "achievement")) then
+		-- |cfffffff|Hachievement:<achievementId>|h[<achievementName>]|h|r
+		sanitizedLink = preamble .. ":" .. itemId .. suffix;
+		print('found achievement: ' .. DecodeHyperlink(sanitizedLink))
+	elseif (strmatch(preamble, "battlepet")) then
+		-- |cfffffff|Hbattlepet:<speciesId>|h[<battlePetName>]|h|r
+		-- TODO: seems this format is not valid for the GameTooltip:SetHyperlink() function. Will need to pass the full link to that function.
+		sanitizedLink = link
+		print('link: ' .. DecodeHyperlink(link))
+		print('found battlepet: ' .. DecodeHyperlink(sanitizedLink))
+	elseif (strmatch(preamble, "currency")) then
+		-- |cfffffff|Hcurrency:<currencyId>|h[<currencyName>]|h|r
+		sanitizedLink = preamble .. ":" .. itemId .. suffix;
+		print('found currency: ' .. DecodeHyperlink(sanitizedLink))
+	elseif (strmatch(preamble, "talent")) then
+		-- |cfffffff|Htalent:<talentId>|h[<talentName>]|h|r
+		sanitizedLink = preamble .. ":" .. itemId .. suffix;
+		print('found talent: ' .. DecodeHyperlink(sanitizedLink))
+	elseif (strmatch(preamble, "enchant")) then
+		-- |cfffffff|Henchant:<enchantId>|h[<enchantName>]|h|r
+		-- NOTE: seems nothing special is needed for enchants
+		sanitizedLink = link;
+		print('found enchant: ' .. DecodeHyperlink(sanitizedLink))
+	else
+		-- just pass it on
+		sanitizedLink = link;
+		print('some other link type')
+	end
 	local linkName = strgsub(sanitizedLink, "^.*%[(.*)%].*$", "%1")
 
-	sanitizedLink = strgsub(sanitizedLink, preamble, preamble .. ":" .. itemId)
-	-- print('simplify hyperlink: ' .. DecodeHyperlink(sanitizedLink));
 	return sanitizedLink, linkName;
+end
+
+---Converts a manual note to a note to a proper link based item note.
+---@param sanitizedLink string
+---@param linkName string
+local function ConvertManualNoteToLinkNote(sanitizedLink, linkName)
+	if (
+			(NuNDataRNotes[linkName] or NuNDataANotes[linkName])
+					and not ((NuNDataRNotes[sanitizedLink]) or (NuNDataANotes[sanitizedLink]))) then
+		print("A manual note already exists; converting it to an linked note");
+		NuNData[locals.itmIndex_dbKey][linkName] = sanitizedLink;
+		if (NuNDataRNotes[linkName]) then
+			NuNDataANotes[sanitizedLink] = NuNDataRNotes[linkName];
+			NuNDataRNotes[linkName] = nil;
+		end
+		if (NuNDataANotes[linkName]) then
+			NuNDataANotes[sanitizedLink] = NuNDataANotes[linkName];
+			NuNDataANotes[linkName] = nil;
+		end
+		NuNDataANotes[sanitizedLink].type = 2;
+	end
 end
 
 function NuNQuickNote.ProcessHyperlink(itemLink)
 	-- REVIEW:  CHECKING LINKS
 	if itemLink and type(itemLink) == "string" then
 		local sanitizedLink, linkName = SimplifyHyperlink(itemLink)
-		print('ProcessHyperlink: ')
-		print(linkName)
-		-- IDEA :  CHECK IF ITEM IS ALREADY A MANUAL NOTE
-		-- Extract the name from the link
-		-- use the check if a note already exists
-		-- if it exists, copy the contents into a new now with the link as key and delete the old one.
 
 		if ((itemLink ~= nil) and (itemLink ~= "")) then
 			if ((NuNGNoteFrame:IsVisible()) or (NuNFrame:IsVisible())) then
@@ -6051,18 +6118,10 @@ function NuNQuickNote.ProcessHyperlink(itemLink)
 					sanitizedLink = (NuNData[locals.itmIndex_dbKey][sanitizedLink]);
 				end
 
-				-- If a note exists with the linkName as the key in the NuNDataRNotes or NunDataANotes table,
-				-- save the note to the currentNote
-				print('ProcessHyperlink: ')
-				print(NuNDataRNotes[linkName])
-				print(NuNDataANotes[linkName])
-				if ((NuNDataRNotes[linkName]) or (NuNDataANotes[linkName])) then
-					print("NuNQuickNote.ProcessHyperlink: " .. linkName .. " already exists");
-					local_player.currentNote.manualItemNote = linkName;
-				end
+				-- ENHANCEMENT: Convert manual item note to item link note if a link note does not already exist.
+				ConvertManualNoteToLinkNote(sanitizedLink, linkName);
 
 				if ((NuNDataRNotes[sanitizedLink]) or (NuNDataANotes[sanitizedLink])) then
-					-- TODO: handle merging the manual note if there is one
 					local_player.currentNote.general = sanitizedLink;
 					NuN_ShowSavedGNote();
 					StackSplitFrame:Hide();
@@ -6495,7 +6554,7 @@ function NuNNew_SetItemRef(self, link, text, btn)
 
 		elseif (IsNuNModifierKeyDown(btn)) then -- 5.60
 			text, linkName = SimplifyHyperlink(text);
-			print(linkName)
+
 
 			if ((NuNGNoteFrame:IsVisible()) or (NuNFrame:IsVisible())) then
 				if (NuNGNoteFrame:IsVisible()) then
@@ -6508,6 +6567,7 @@ function NuNNew_SetItemRef(self, link, text, btn)
 				--HideUIPanel(ItemRefTooltip);
 				--return true;
 			else
+				ConvertManualNoteToLinkNote(text, linkName);
 				NuNGNoteFrame.fromQuest = nil;
 				if (NuNData[locals.itmIndex_dbKey][text]) then
 					text = (NuNData[locals.itmIndex_dbKey][text]);
@@ -6551,10 +6611,13 @@ function NuNNew_PaperDollItemSlotButton_OnModifiedClick(btn, mBttn)
 			else
 				itmLink = GetInventoryItemLink("player", btn:GetID());
 			end
+			print("itmLink: " .. itmLink);
 			if ((itmLink ~= nil) and (itmLink ~= "")) then
+				print("itmLink: " .. DecodeHyperlink(itmLink));
 				-- NOTE: item links no longer match these patterns:
 				itmLink = strgsub(itmLink, ":%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+|", ":0:0:0:0:0:0:0|");
 				itmLink = strgsub(itmLink, ":%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+\124", ":0:0:0:0:0:0:0\124");
+				print("itmLink: " .. DecodeHyperlink(itmLink));
 				if ((NuNGNoteFrame:IsVisible()) or (NuNFrame:IsVisible())) then
 					if (NuNGNoteFrame:IsVisible()) then
 						NuNGNoteTextScroll:Insert(itmLink); -- + v5.00.11200
@@ -6572,6 +6635,7 @@ function NuNNew_PaperDollItemSlotButton_OnModifiedClick(btn, mBttn)
 						local_player.currentNote.general = itmLink;
 						NuN_ShowSavedGNote();
 					else
+						print("NuNNew_PaperDollItemSlotButton_OnModifiedClick: " .. itmLink);
 						NuNF.NuN_GNoteFromItem(itmLink, "GameTooltip");
 					end
 					return;
@@ -8657,6 +8721,10 @@ function GeneralNote_OnEscapePressed(editBox)
 	--NuNGNoteFrame:Hide();
 end
 
+function GeneralNote_OnKeyDown(editBox, key)
+	-- print("GeneralNote_OnKeyDown - key: " .. key);
+end
+
 ---------------------------------------------
 -- Options Control Click Processing --
 ---------------------------------------------
@@ -9253,6 +9321,7 @@ function NuN_NoteButton_OnInteract(nBttnID, uAction)
 	local qText = "";
 
 	local pBttn = nil;
+	print('NuN_NoteButton_OnInteract');
 	if (NuN_IsFrameInteractive(FriendsListFrame)) then
 		pBttnTxt, pBttn = NuN_GetName_FrameButton(nBttnID, NuNC.UPDATETAG_FRIEND);
 		if (uAction == "Click") then
@@ -10008,7 +10077,8 @@ function NuN_WorldMapTooltip_OnHide()
 end
 
 function NuN_ItemRefTooltip_OnShow()
-	locals.currentTooltipTitleString = ItemRefTooltipTextLeft1:GetText(); -- REVIEW: ItemRefTooltipTextLeft1 may not be available
+	print("NuN_ItemRefTooltip_OnShow");
+	locals.currentTooltipTitleString = ItemRefTooltipTextLeft1:GetText();  -- REVIEW: ItemRefTooltipTextLeft1 may not be available
 	locals.ttName = locals.currentTooltipTitleString;
 
 	if (NuNData[locals.itmIndex_dbKey][locals.ttName]) then
@@ -14042,6 +14112,7 @@ function NuNOptions_SetModifierText()
 end
 
 function IsNuNModifierKeyDown(mBttn)
+	print(NuNSettings[local_player.realmName].mouseBttn);
 	if ((IsModifierKeyDown()) and (NuNSettings[local_player.realmName])) then
 		if (
 				((not NuNSettings[local_player.realmName].mouseBttn) and (mBttn == "LeftButton")) or
