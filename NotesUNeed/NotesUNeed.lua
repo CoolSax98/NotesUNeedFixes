@@ -3507,12 +3507,12 @@ function NuN_Options()
 		if ((MapNotes_OnLoad) or (MetaMap_Quicknote)) then
 			NuN_AutoMapCheckBox:Enable();
 			if (NuNSettings[local_player.realmName].autoMapNotes) then
-				NuN_AutoMapCheckBox:SetChecked(1);
+				NuN_AutoMapCheckBox:SetChecked(true);
 			else
-				NuN_AutoMapCheckBox:SetChecked(0);
+				NuN_AutoMapCheckBox:SetChecked(false);
 			end
 		else
-			NuN_AutoMapCheckBox:SetChecked(0);
+			NuN_AutoMapCheckBox:SetChecked(false);
 			NuN_AutoMapCheckBoxLabel:SetText(NUN_NOMAPNOTES);
 			NuN_AutoMapCheckBox:Disable();
 		end
@@ -3530,105 +3530,105 @@ function NuN_Options()
 		UIDropDownMenu_SetText(NuNDropDown_SearchOptions, NUN_SEARCHFOR[1].Display);
 		locals.dropdownFrames.ddSearch = NuNGet_CommandID(NUN_SEARCHFOR, "All");
 		if (NuNSettings[local_player.realmName].autoG) then
-			NuNOptionsGuildCheckButton:SetChecked(1);
+			NuNOptionsGuildCheckButton:SetChecked(true);
 		else
-			NuNOptionsGuildCheckButton:SetChecked(0);
+			NuNOptionsGuildCheckButton:SetChecked(false);
 		end
 		if (NuNSettings[local_player.realmName].hignores) then
-			NuN_HignoresCheckBox:SetChecked(1);
+			NuN_HignoresCheckBox:SetChecked(true);
 		else
-			NuN_HignoresCheckBox:SetChecked(0);
+			NuN_HignoresCheckBox:SetChecked(false);
 		end
 		if (NuNSettings[local_player.realmName].autoA) then
-			NuNOptionsAddCheckButton:SetChecked(1);
+			NuNOptionsAddCheckButton:SetChecked(true);
 		else
-			NuNOptionsAddCheckButton:SetChecked(0);
+			NuNOptionsAddCheckButton:SetChecked(false);
 		end
 		if (NuNSettings[local_player.realmName].autoFI) then
-			NuNOptionsAACheckButton:SetChecked(1);
+			NuNOptionsAACheckButton:SetChecked(true);
 		else
-			NuNOptionsAACheckButton:SetChecked(0);
+			NuNOptionsAACheckButton:SetChecked(false);
 		end
 		if (NuNSettings[local_player.realmName].autoS) then
-			NuNOptionsVerboseCheckButton:SetChecked(1);
+			NuNOptionsVerboseCheckButton:SetChecked(true);
 		else
-			NuNOptionsVerboseCheckButton:SetChecked(0);
+			NuNOptionsVerboseCheckButton:SetChecked(false);
 		end
 		if (NuNSettings[local_player.realmName].autoD) then
-			NuNOptionsDeleteCheckButton:SetChecked(1);
+			NuNOptionsDeleteCheckButton:SetChecked(true);
 		else
-			NuNOptionsDeleteCheckButton:SetChecked(0);
+			NuNOptionsDeleteCheckButton:SetChecked(false);
 		end
 		if (NuNSettings[local_player.realmName].autoQ) then
-			NuN_AutoQuestCheckBox:SetChecked(1);
+			NuN_AutoQuestCheckBox:SetChecked(true);
 		else
-			NuN_AutoQuestCheckBox:SetChecked(0);
+			NuN_AutoQuestCheckBox:SetChecked(false);
 		end
 		if (NuNSettings[local_player.realmName].autoN) then
-			NuN_AutoNoteCheckBox:SetChecked(1);
+			NuN_AutoNoteCheckBox:SetChecked(true);
 		else
-			NuN_AutoNoteCheckBox:SetChecked(0);
+			NuN_AutoNoteCheckBox:SetChecked(false);
 		end
 		if (NuNSettings[local_player.realmName].dLevel) then
-			NuN_DefaultLevelCheckBox:SetChecked(1);
+			NuN_DefaultLevelCheckBox:SetChecked(true);
 		else
-			NuN_DefaultLevelCheckBox:SetChecked(0);
+			NuN_DefaultLevelCheckBox:SetChecked(false);
 		end
 		if (NuNSettings[local_player.realmName].toolTips) then
-			NuN_HelpTTCheckBox:SetChecked(1);
+			NuN_HelpTTCheckBox:SetChecked(true);
 		else
-			NuN_HelpTTCheckBox:SetChecked(0);
+			NuN_HelpTTCheckBox:SetChecked(false);
 		end
 		if (NuNSettings[local_player.realmName].autoP) then
-			NuN_AutoPartyCheckBox:SetChecked(1);
+			NuN_AutoPartyCheckBox:SetChecked(true);
 		else
-			NuN_AutoPartyCheckBox:SetChecked(0);
+			NuN_AutoPartyCheckBox:SetChecked(false);
 		end
 		-- 5.60 Options	-- 5.60 Options	-- 5.60 Options	-- 5.60 Options	-- 5.60 Options	-- 5.60 Options	-- 5.60 Options
 		if (NuNSettings[local_player.realmName].autoGuildNotes) then
-			NuN_GuildRefreshCheckBox:SetChecked(1);
+			NuN_GuildRefreshCheckBox:SetChecked(true);
 		else
-			NuN_GuildRefreshCheckBox:SetChecked(0);
+			NuN_GuildRefreshCheckBox:SetChecked(false);
 		end
 		if (NuNSettings[local_player.realmName].autoGRVerbose) then
-			NuN_GRVerboseCheckBox:SetChecked(1);
+			NuN_GRVerboseCheckBox:SetChecked(true);
 		else
-			NuN_GRVerboseCheckBox:SetChecked(0);
+			NuN_GRVerboseCheckBox:SetChecked(false);
 		end
 		if (NuNSettings[local_player.realmName].nunFont) then
-			NuN_CustomFontCheckBox:SetChecked(1);
+			NuN_CustomFontCheckBox:SetChecked(true);
 		else
-			NuN_CustomFontCheckBox:SetChecked(0);
+			NuN_CustomFontCheckBox:SetChecked(false);
 		end
 		if (NuNSettings[local_player.realmName].modifier == "on") then
-			NuN_ModifierMasterCheckBox:SetChecked(1);
+			NuN_ModifierMasterCheckBox:SetChecked(true);
 			NuNOptionsModifier:Enable();
 			NuNOptions_SetModifierText();
 		else
-			NuN_ModifierMasterCheckBox:SetChecked(0);
+			NuN_ModifierMasterCheckBox:SetChecked(false);
 			NuNOptionsModifier:SetText("n/a");
 			NuNOptionsModifier:Disable();
 		end
 		-- 5.60 Options 	-- 5.60 Options	-- 5.60 Options	-- 5.60 Options	-- 5.60 Options	-- 5.60 Options	-- 5.60 Options	-- 5.60 Options
 		if (NuNSettings[local_player.realmName].hideMicro) then
-			NuN_MicroCheckBox:SetChecked(0);
+			NuN_MicroCheckBox:SetChecked(false);
 		else
-			NuN_MicroCheckBox:SetChecked(1);
+			NuN_MicroCheckBox:SetChecked(true);
 		end
 		if (NuNSettings[local_player.realmName].minOver) then
-			NuN_OverTTCheckBox:SetChecked(1);
+			NuN_OverTTCheckBox:SetChecked(true);
 		else
-			NuN_OverTTCheckBox:SetChecked(0);
+			NuN_OverTTCheckBox:SetChecked(false);
 		end
 		if (NuNSettings[local_player.realmName].chatty) then
-			NuN_ChatTagCheckBox:SetChecked(1);
+			NuN_ChatTagCheckBox:SetChecked(true);
 		else
-			NuN_ChatTagCheckBox:SetChecked(0);
+			NuN_ChatTagCheckBox:SetChecked(false);
 		end
 		if (NuNSettings[local_player.realmName].bHave) then
-			NuN_BehaveCheckBox:SetChecked(1);
+			NuN_BehaveCheckBox:SetChecked(true);
 		else
-			NuN_BehaveCheckBox:SetChecked(0);
+			NuN_BehaveCheckBox:SetChecked(false);
 		end
 
 		NuNOptionsTTLengthTextBox:SetText(NuNSettings[local_player.realmName].ttLen);
@@ -3748,7 +3748,7 @@ function NuN_ShowNote()
 			NuNCOpenChatButton:Enable();
 			NuNCTTCheckBoxLabel:Show();
 			NuN_CTTCheckBox:Show();
-			NuN_CTTCheckBox:SetChecked(0);
+			NuN_CTTCheckBox:SetChecked(false);
 			if (NuN_PinnedTooltip.type == "Contact") then
 				NuN_CTTCheckBox:SetChecked(NuN_CheckPinnedBox(local_player.currentNote.unit));
 			end
@@ -4586,7 +4586,7 @@ function NuNGNote_WriteNote(noteName)
 		end
 		NuNGOpenChatButton:Enable();
 		NuN_GTTCheckBox:Show();
-		NuN_GTTCheckBox:SetChecked(0);
+		NuN_GTTCheckBox:SetChecked(false);
 		if (NuN_PinnedTooltip.type == "General") then
 			NuN_GTTCheckBox:SetChecked(NuN_CheckPinnedBox(local_player.currentNote.general));
 		end
@@ -4733,7 +4733,7 @@ local function OnNotesUNeedFullyLoaded(self, ...)
 	-- alternative mono-spaced font for use in Note edit boxes
 	if (NuNSettings[local_player.realmName].nunFont) then
 		NuN_UpdateFont(NuNC.NUN_FONT1, 12);
-		NuN_CustomFontCheckBox:SetChecked(1);
+		NuN_CustomFontCheckBox:SetChecked(true);
 	end
 
 	-- MapNotes related functions linking NuN to Map Notes
@@ -5727,7 +5727,7 @@ function NuNEditDetails_ShowFrame(_isTitle)
 		local isTooltip = NuNEditDetail_GetStoredValue_Tooltip(locals.bttnNumb);
 
 		NuNEditDetail_TooltipCheck:SetChecked(isTooltip);
-		NuNEditDetail_SaveDefaultCheck:SetChecked(0);
+		NuNEditDetail_SaveDefaultCheck:SetChecked(false);
 
 		NuNEditDetail_SaveDefaultCheckText:SetText(NUN_SAVE_AS_DEFAULT);
 		NuNEditDetail_TooltipCheckText:SetText(NUN_INCLUDE_IN_TOOLTIP);
@@ -8543,7 +8543,7 @@ function NuN_ShowSavedGNote(nN)
 		NuNGOpenChatButton:Enable();
 		NuNGTTCheckBoxLabel:Show();
 		NuN_GTTCheckBox:Show();
-		NuN_GTTCheckBox:SetChecked(0);
+		NuN_GTTCheckBox:SetChecked(false);
 		if (NuN_PinnedTooltip.type == "General") then
 			NuN_GTTCheckBox:SetChecked(NuN_CheckPinnedBox(local_player.currentNote.general));
 		end
@@ -8626,9 +8626,9 @@ function NuN_ShowNewGNote()
 		end
 
 		if (NuNSettings[local_player.realmName].dLevel) then
-			NuN_GLevel_CheckBox:SetChecked(1);
+			NuN_GLevel_CheckBox:SetChecked(true);
 		else
-			NuN_GLevel_CheckBox:SetChecked(0);
+			NuN_GLevel_CheckBox:SetChecked(false);
 		end
 		contact.type = NuNGet_CommandID(NUN_NOTETYPES, "   ");
 		NuNGNoteFrame.type = contact.type;
@@ -8744,7 +8744,7 @@ function NuN_OptionsAddCheckBox_OnClick()
 		friendsPendingUpdate = friendsPendingUpdate or NuN_Update_Friends();
 		ignoresPendingUpdate = ignoresPendingUpdate or NuN_Update_Ignored();
 		NuNSettings[local_player.realmName].autoFI = "1";
-		NuNOptionsAACheckButton:SetChecked(1);
+		NuNOptionsAACheckButton:SetChecked(true);
 	else
 		NuNSettings[local_player.realmName].autoA = nil;
 	end
@@ -8752,7 +8752,7 @@ end
 
 function NuN_OptionsAACheckBox_OnClick()
 	if (NuNOptionsAddCheckButton:GetChecked()) then
-		NuNOptionsAACheckButton:SetChecked(1);
+		NuNOptionsAACheckButton:SetChecked(true);
 		NuNSettings[local_player.realmName].autoFI = "1";
 	else
 		if (NuNOptionsAACheckButton:GetChecked()) then
@@ -10231,15 +10231,15 @@ function NuN_PinnedTooltipToggle(self, ttType, noteName, setTTOwner)
 
 	if ((ttType == "Contact") and (NuNFrame:IsVisible())) then
 		if ((NuN_PinnedTooltip:IsVisible()) and (NuN_PinnedTooltip.noteName == local_player.currentNote.unit)) then
-			NuN_CTTCheckBox:SetChecked(1);
+			NuN_CTTCheckBox:SetChecked(true);
 		else
-			NuN_CTTCheckBox:SetChecked(0);
+			NuN_CTTCheckBox:SetChecked(false);
 		end
 	elseif ((ttType == "General") and (NuNGNoteFrame:IsVisible())) then
 		if ((NuN_PinnedTooltip:IsVisible()) and (NuN_PinnedTooltip.noteName == local_player.currentNote.general)) then
-			NuN_GTTCheckBox:SetChecked(1);
+			NuN_GTTCheckBox:SetChecked(true);
 		else
-			NuN_GTTCheckBox:SetChecked(0);
+			NuN_GTTCheckBox:SetChecked(false);
 		end
 	end
 end
@@ -10286,12 +10286,12 @@ function NuN_PinnedTT_OnHide()
 	NuNSettings[local_player.realmName].pT = nil;
 	if (NuN_PinnedTooltip.type == "Contact") then
 		if ((NuNFrame:IsVisible()) and (NuN_CTTCheckBox:GetChecked())) then
-			NuN_CTTCheckBox:SetChecked(0);
+			NuN_CTTCheckBox:SetChecked(false);
 		end
 
 	elseif (NuN_PinnedTooltip.type == "General") then
 		if ((NuNGNoteFrame:IsVisible()) and (NuN_GTTCheckBox:GetChecked())) then
-			NuN_GTTCheckBox:SetChecked(0);
+			NuN_GTTCheckBox:SetChecked(false);
 		end
 	end
 end
@@ -10326,9 +10326,9 @@ end
 -- -sendC, -sendG, -sendCF, -sendGF
 function NuN_ManualTransmit(formatted, tType, parms)
 	if (formatted) then
-		NuN_ChatFormatCheckBox:SetChecked(1);
+		NuN_ChatFormatCheckBox:SetChecked(true);
 	else
-		NuN_ChatFormatCheckBox:SetChecked(0);
+		NuN_ChatFormatCheckBox:SetChecked(false);
 	end
 
 	local __;
