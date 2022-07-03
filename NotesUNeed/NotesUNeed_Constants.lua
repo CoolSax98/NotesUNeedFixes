@@ -28,7 +28,7 @@ NuNC.NUN_TT_LINES_TRIGGER = 6;
 NuNC.NUN_TT_Y_SHIFT = 12;
 NuNC.NUN_TT_KEYPHRASE_LEN = string.len(NuNC.NUN_TT_KEYPHRASE);
 NuNC.NUN_TT_ETC = " .....";
-NuNC.NUN_TXT_LABEL = "0 / "..NuNC.NUN_MAX_TXT_LIM;
+NuNC.NUN_TXT_LABEL = "0 / " .. NuNC.NUN_MAX_TXT_LIM;
 NuNC.NUN_SPEED = "Speed";
 NuNC.NUN_GOLD = "|cffffB300|h";
 NuNC.NUN_GREEN = "|cff00ee00|h";
@@ -44,66 +44,90 @@ NuNC.NUN_TT_FONTSCALE_MIN = 0.90;
 NuNC.NUN_TT_FONTSCALE_MAX = 2.00;
 NuNC.NUN_TT_MAPFONTSCALE_MIN = 0.25;
 NuNC.NUN_TT_MAPFONTSCALE_MAX = 1.75;
-NuNC.NUN_FRAMESCALE_MIN_TXT = tostring( NuNC.NUN_FRAMESCALE_MIN * 100 ) .. "%";
-NuNC.NUN_FRAMESCALE_MAX_TXT = tostring( NuNC.NUN_FRAMESCALE_MAX * 100 ) .. "%";
-NuNC.NUN_TT_FONTSCALE_MIN_TXT = tostring ( NuNC.NUN_TT_FONTSCALE_MIN * 100 ) .. "%";
-NuNC.NUN_TT_FONTSCALE_MAX_TXT = tostring ( NuNC.NUN_TT_FONTSCALE_MAX * 100 ) .. "%";
-NuNC.NUN_TT_MAPFONTSCALE_MIN_TXT = tostring ( NuNC.NUN_TT_MAPFONTSCALE_MIN * 100 ) .. "%";
-NuNC.NUN_TT_MAPFONTSCALE_MAX_TXT = tostring ( NuNC.NUN_TT_MAPFONTSCALE_MAX * 100 ) .. "%";
+NuNC.NUN_FRAMESCALE_MIN_TXT = tostring(NuNC.NUN_FRAMESCALE_MIN * 100) .. "%";
+NuNC.NUN_FRAMESCALE_MAX_TXT = tostring(NuNC.NUN_FRAMESCALE_MAX * 100) .. "%";
+NuNC.NUN_TT_FONTSCALE_MIN_TXT = tostring(NuNC.NUN_TT_FONTSCALE_MIN * 100) .. "%";
+NuNC.NUN_TT_FONTSCALE_MAX_TXT = tostring(NuNC.NUN_TT_FONTSCALE_MAX * 100) .. "%";
+NuNC.NUN_TT_MAPFONTSCALE_MIN_TXT = tostring(NuNC.NUN_TT_MAPFONTSCALE_MIN * 100) .. "%";
+NuNC.NUN_TT_MAPFONTSCALE_MAX_TXT = tostring(NuNC.NUN_TT_MAPFONTSCALE_MAX * 100) .. "%";
 NuNC.NUN_SOURCE = "NotesUNeed Source:";
 NuNC.NUN_SOURCE_LEN = string.len(NuNC.NUN_SOURCE);
-NuNC.NUN_WHO_TIMELIMIT = 3;						-- 5.60 Three seconds, and try again
-NuNC.NUN_QUESTLOG_BUTTONS = 6;					-- 6 is the default value. Can be changed if Extended Quest Log AddOn is loaded
+NuNC.NUN_WHO_TIMELIMIT = 3;  -- 5.60 Three seconds, and try again
+NuNC.NUN_QUESTLOG_BUTTONS = 6;  -- 6 is the default value. Can be changed if Extended Quest Log AddOn is loaded
 NuNC.NUN_NOTE_HEIGHT = 16;
 NuNC.NUN_SHOWN = 23;
 NuNC.NUN_TT_LEN = 80;
 NuNC.NUN_PARTIES = "parties~";
-NuNC.hArray = { 	["0"] = 0,
-					["1"] = 1,
-					["2"] = 2,
-					["3"] = 3,
-					["4"] = 4,
-					["5"] = 5,
-					["6"] = 6,
-					["7"] = 7,
-					["8"] = 8,
-					["9"] = 9,
-					["a"] = 10,
-					["b"] = 11,
-					["c"] = 12,
-					["d"] = 13,
-					["e"] = 14,
-					["f"] = 15,
-				};
-NuNC.NUN_CPRESETS = {	"|c0000ff00",
-						"|c000000ff",
-						"|c00a335ed",
-						"|c00ff7f3f",
-						"|c00ff0000",
-					};
+NuNC.hArray = { ["0"] = 0,
+	["1"] = 1,
+	["2"] = 2,
+	["3"] = 3,
+	["4"] = 4,
+	["5"] = 5,
+	["6"] = 6,
+	["7"] = 7,
+	["8"] = 8,
+	["9"] = 9,
+	["a"] = 10,
+	["b"] = 11,
+	["c"] = 12,
+	["d"] = 13,
+	["e"] = 14,
+	["f"] = 15,
+};
+NuNC.NUN_CPRESETS = { "|c0000ff00",
+	"|c000000ff",
+	"|c00a335ed",
+	"|c00ff7f3f",
+	"|c00ff0000",
+};
 NuNC.NUN_FONT1 = "Interface\\AddOns\\NotesUNeed\\Artwork\\NuN.ttf";
 
-NuNC.GUILDFRAME_NAME		= "GuildFrame";
-NuNC.GUILDFRAME_SUMMARY		= "GuildMain";
-NuNC.GUILDFRAME_ROSTER		= "GuildRoster";
-NuNC.GUILDFRAME_NEWS		= "GuildNews";
-NuNC.GUILDFRAME_REWARDS		= "GuildRewards"
-NuNC.GUILDFRAME_INFO_EVENTS	= "GuildInfoEvents";
+NuNC.GUILDFRAME_NAME        = "GuildFrame";
+NuNC.GUILDFRAME_SUMMARY     = "GuildMain";
+NuNC.GUILDFRAME_ROSTER      = "GuildRoster";
+NuNC.GUILDFRAME_NEWS        = "GuildNews";
+NuNC.GUILDFRAME_REWARDS     = "GuildRewards"
+NuNC.GUILDFRAME_INFO_EVENTS = "GuildInfoEvents";
 
-NuNC.GUILDFRAME_BUTTONNAME	= "ContainerButton";
+NuNC.GUILDFRAME_BUTTONNAME = "ContainerButton";
 
 NuNC.MAX_GUILDROSTER_ROWS = 16;
 NuNC.DEFAULT_GUILDROSTERVIEW = "playerStatus";
 
-NuNC.UPDATETAG_ANY			= "A";
-NuNC.UPDATETAG_FRIEND		= "F";
-NuNC.UPDATETAG_IGNORE		= "I";
-NuNC.UPDATETAG_GUILD_SUMMARY= "G";			-- Guild Tab
-NuNC.UPDATETAG_GUILD_ROSTER	= "GROSTER";	-- Guild Roster Tab (Has 4 different views)		(used to be "GS")
-NuNC.UPDATETAG_GUILD_NEWS	= "GNEWS";		-- Guild News Tab
-NuNC.UPDATETAB_GUILD_PERKS	= "GPERKS";		-- Guild Perks/Rewards
-NuNC.UPDATETAG_GUILD_INFO	= "GINFO";		-- Guild Info
-NuNC.UPDATETAG_WHO			= "W";
-NuNC.UPDATETAG_QUEST		= "Q";
-NuNC.UPDATETAG_LOOK_DUNG	= "LFD";
-NuNC.UPDATETAG_LOOK_RAID	= "LFR";
+NuNC.UPDATETAG_ANY           = "A";
+NuNC.UPDATETAG_FRIEND        = "F";
+NuNC.UPDATETAG_IGNORE        = "I";
+NuNC.UPDATETAG_GUILD_SUMMARY = "G";  -- Guild Tab
+NuNC.UPDATETAG_GUILD_ROSTER  = "GROSTER";  -- Guild Roster Tab (Has 4 different views)		(used to be "GS")
+NuNC.UPDATETAG_GUILD_NEWS    = "GNEWS";  -- Guild News Tab
+NuNC.UPDATETAB_GUILD_PERKS   = "GPERKS";  -- Guild Perks/Rewards
+NuNC.UPDATETAG_GUILD_INFO    = "GINFO";  -- Guild Info
+NuNC.UPDATETAG_WHO           = "W";
+NuNC.UPDATETAG_QUEST         = "Q";
+NuNC.UPDATETAG_LOOK_DUNG     = "LFD";
+NuNC.UPDATETAG_LOOK_RAID     = "LFR";
+
+
+-----------------------------------------
+-- some backdrop stuff -- TESTING
+-----------------------------------------
+
+OPTIONS_BACKDROP = {
+	bgFile = "Interface\\AddOns\\NotesUNeed\\Artwork\\Texture1",
+	edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+	tile = true,
+	tileSize = 32,
+	edgeSize = 32,
+	insets = { left = 11, right = 12, top = 12, bottom = 11 },
+};
+
+NUN_BACKDROP_TOOLTIP_DEFAULT = {
+	bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+	tile = true,
+	tileEdge = true,
+	tileSize = 32,
+	edgeSize = 32,
+	insets = { left = 3, right = 5, top = 3, bottom = 5 },
+};

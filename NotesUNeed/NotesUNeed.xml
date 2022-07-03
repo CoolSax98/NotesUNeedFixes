@@ -456,11 +456,13 @@
 		</ButtonText>
 	</Button>
 	<Frame name="NuN_UpdateFrame" parent="UIParent" toplevel="true" frameStrata="LOW">
-		<Anchor point="TOPLEFT">
-			<Offset>
-				<AbsDimension x="0" y="0" />
-			</Offset>
-		</Anchor>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset>
+					<AbsDimension x="0" y="0" />
+				</Offset>
+			</Anchor>
+		</Anchors>
 		<Size>
 			<AbsDimension x="1" y="1" />
 		</Size>
@@ -489,7 +491,7 @@
 		</Scripts>-->
 	<!-- </Frame> -->
 	<!-- Main NuN Frame for displaying and editing note details -->
-	<Frame clampToScreen="true" name="NuNFrame" hidden="true" parent="UIParent" toplevel="true" movable="true" enableMouse="true">
+	<Frame clampedToScreen="true" name="NuNFrame" hidden="true" parent="UIParent" toplevel="true" movable="true" enableMouse="true">
 		<Size>
 			<AbsDimension x="640" y="512" />
 		</Size>
@@ -1445,7 +1447,7 @@
 				</Frames>
 			</Frame>
 			<!-- Drop Down Menus Frame -->
-			<Frame name="NuNDropDownFrame" parent="NuNInnerFrame" enableMouse="true">
+			<Frame name="NuNDropDownFrame" parent="NuNInnerFrame" enableMouse="true" inherits="BackdropTemplate">
 				<Size>
 					<AbsDimension x="420" y="157" />
 				</Size>
@@ -1456,17 +1458,9 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Backdrop bgFile="Interface\AddOns\NotesUNeed\Artwork\Texture1" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="11" right="12" top="12" bottom="11" />
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="32" />
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="32" />
-					</EdgeSize>
-				</Backdrop>
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_PARTY_32_32" type="global"/>
+				</KeyValues>
 				<Frames>
 					<Frame name="NuNDropDown_RaceA" inherits="UIDropDownMenuTemplate">
 						<Anchors>
@@ -2091,9 +2085,16 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
+				self:RegisterForDrag("LeftButton");
 				tinsert(UISpecialFrames,"NuNFrame");
 				NuN_OnLoad(self);
 			</OnLoad>
+			<OnDragStart>
+				self:StartMoving();
+			</OnDragStart>
+			<OnDragStop>
+				self:StopMovingOrSizing();
+			</OnDragStop>
 			<OnKeyUp>
 				NuN_ShortCut(NuNButtonSaveNote, key);
 			</OnKeyUp>
@@ -2122,11 +2123,11 @@
 		</Scripts>
 	</Frame>
 	<!-- NuN control menu, options, and search function -->
-	<Frame name="NuNOptionsFrame" hidden="true" parent="UIParent" toplevel="true" movable="true" enableMouse="true" clampedToScreen="true">
-		<Size>
-			<AbsDimension x="410" y="670" />
-			<!-- 648 -->
-		</Size>
+	<Frame name="NuNOptionsFrame" hidden="true" parent="UIParent" toplevel="true" movable="true" enableMouse="true" inherits="BackdropTemplate">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="OPTIONS_BACKDROP" type="global" />
+		</KeyValues>
+		<Size x="410" y="670" />
 		<Anchors>
 			<Anchor point="TOPLEFT">
 				<Offset>
@@ -2135,17 +2136,6 @@
 			</Anchor>
 		</Anchors>
 		<TitleRegion setAllPoints="true" />
-		<Backdrop bgFile="Interface\AddOns\NotesUNeed\Artwork\Texture1" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11" />
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32" />
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32" />
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString name="NuNOptionsGuildCheckBoxLabel" inherits="GameFontHighlightSmall" text="NUN_AUTO_GUILD">
@@ -3468,7 +3458,8 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
+			<OnLoad inherit="prepend">
+				self:RegisterForDrag("LeftButton");
 				tinsert(UISpecialFrames,"NuNOptionsFrame");
 			</OnLoad>
 			<OnHide>
@@ -4637,10 +4628,11 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Frame name="NuNExtraOptions">
-				<Size>
-					<AbsDimension x="349" y="56"/>
-				</Size>
+			<Frame name="NuNExtraOptions" inherits="BackdropTemplate">
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global" />
+				</KeyValues>
+				<Size x="349" y="56" />
 				<Anchors>
 					<Anchor point="TOP" relativeTo="NuNSearchListScrollFrame" relativePoint="BOTTOM">
 						<Offset>
@@ -4648,17 +4640,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="11" right="12" top="12" bottom="11"/>
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="32"/>
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="32"/>
-					</EdgeSize>
-				</Backdrop>
 				<Scripts>
 					<OnShow>
 						self:SetFrameLevel( NuNSearchFrame:GetFrameLevel() - 1 );
@@ -4783,7 +4764,14 @@
 			@end-debug@-->
 		</Frames>
 		<Scripts>
+			<OnDragStart>
+				self:StartMoving();
+			</OnDragStart>
+			<OnDragStop>
+				self:StopMovingOrSizing();
+			</OnDragStop>
 			<OnLoad>
+				self:RegisterForDrag("LeftButton");
 				tinsert(UISpecialFrames,"NuNSearchFrame");
 			</OnLoad>
 			<OnHide>
@@ -5593,6 +5581,7 @@
 									</OnTextChanged>
 									<OnCursorChanged>
 										ScrollingEdit_OnCursorChanged(self, x, y, w, h);
+										<!-- BUG: This is getting called extra times when selecting from the end of the content, causing the start position of the selecting being off by one. This is causing the color picker to delete characters -->
 										if ( NuNGNoteTextScroll.cPosStart == "RecordNext" ) then
 											NuNGNoteTextScroll.cPosStart = NuNGNoteTextScroll:GetCursorPosition();
 										end
@@ -5742,12 +5731,19 @@
 		</Frames>
 		<Scripts>
 			<OnLoad>
+				self:RegisterForDrag("LeftButton");
 				tinsert(UISpecialFrames,"NuNGNoteFrame");
 				self.type = 1;
 				self.confirmed = false;
 				self.fromQuest = nil;
 				self.qText = nil;
 			</OnLoad>
+			<OnDragStart>
+				self:StartMoving();
+			</OnDragStart>
+			<OnDragStop>
+				self:StopMovingOrSizing();
+			</OnDragStop>
 			<OnKeyUp>
 				NuN_ShortCut(NuNGNoteButtonSaveNote, key);
 			</OnKeyUp>
@@ -5995,6 +5991,15 @@
 			</Button>
 		</Frames>
 		<Scripts>
+			<OnLoad>
+				self:RegisterForDrag("LeftButton");
+			</OnLoad>
+			<OnDragStart>
+				self:StartMoving();
+			</OnDragStart>
+			<OnDragStop>
+				self:StopMovingOrSizing();
+			</OnDragStop>
 			<OnUpdate>
 				NuN_UpdateMicroFrameBorder(self,elapsed);
 			</OnUpdate>
@@ -6040,7 +6045,8 @@
 				<!-- self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b); -->
 			</OnLoad>
 			<OnShow>
-				if ( WorldMapFrame:IsVisible() ) then
+				<!-- HACK: Need to replace WorldMapTooltip -->
+				if ( WorldMapTooltip and WorldMapFrame:IsVisible() ) then
 					NuN_Tooltip:SetAlpha( WorldMapTooltip:GetAlpha() );
 				else
 					NuN_Tooltip:SetAlpha( GameTooltip:GetAlpha() );

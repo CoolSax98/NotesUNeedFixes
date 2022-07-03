@@ -1151,11 +1151,9 @@ end
 function NuNF.NuN_GNoteFromItem(link, theTT)
 	local catTxt = "";
 	-- IDEA: following the flow of the alt+left click on item in chat
-	print("NuNF.NuN_GNoteFromItem: " .. link);
 	-- REVIEW: if a manual note for this item link has been detected, fetch the noteand use that instead of the tooltip text
 	if (local_player.currentNote.manualItemNote) then
 		catTxt = NuNF.ConvertManualItemNote(local_player.currentNote.manualItemNote);
-		print("NuNF.NuN_GNoteFromItem: manualItemNote: " .. catTxt);
 	else
 		catTxt = NuNF.NuN_ExtractTooltipInfo(catTxt, theTT);
 	end
@@ -6036,38 +6034,29 @@ local function SimplifyHyperlink(link)
 	if (strmatch(preamble, "item")) then
 		-- |cfffffff|Hitem:<itemId>|h[<itemName>]|h|r
 		sanitizedLink = preamble .. ":" .. itemId .. suffix;
-		print('found item: ' .. DecodeHyperlink(sanitizedLink))
 	elseif (strmatch(preamble, "spell")) then
 		-- |cfffffff|Hspell:<spellId>|h[<spellName>]|h|r
 		sanitizedLink = preamble .. ":" .. itemId .. suffix;
-		print('found spell: ' .. DecodeHyperlink(sanitizedLink))
 	elseif (strmatch(preamble, "achievement")) then
 		-- |cfffffff|Hachievement:<achievementId>|h[<achievementName>]|h|r
 		sanitizedLink = preamble .. ":" .. itemId .. suffix;
-		print('found achievement: ' .. DecodeHyperlink(sanitizedLink))
 	elseif (strmatch(preamble, "battlepet")) then
 		-- |cfffffff|Hbattlepet:<speciesId>|h[<battlePetName>]|h|r
 		-- TODO: seems this format is not valid for the GameTooltip:SetHyperlink() function. Will need to pass the full link to that function.
 		sanitizedLink = link
-		print('link: ' .. DecodeHyperlink(link))
-		print('found battlepet: ' .. DecodeHyperlink(sanitizedLink))
 	elseif (strmatch(preamble, "currency")) then
 		-- |cfffffff|Hcurrency:<currencyId>|h[<currencyName>]|h|r
 		sanitizedLink = preamble .. ":" .. itemId .. suffix;
-		print('found currency: ' .. DecodeHyperlink(sanitizedLink))
 	elseif (strmatch(preamble, "talent")) then
 		-- |cfffffff|Htalent:<talentId>|h[<talentName>]|h|r
 		sanitizedLink = preamble .. ":" .. itemId .. suffix;
-		print('found talent: ' .. DecodeHyperlink(sanitizedLink))
 	elseif (strmatch(preamble, "enchant")) then
 		-- |cfffffff|Henchant:<enchantId>|h[<enchantName>]|h|r
 		-- NOTE: seems nothing special is needed for enchants
 		sanitizedLink = link;
-		print('found enchant: ' .. DecodeHyperlink(sanitizedLink))
 	else
 		-- just pass it on
 		sanitizedLink = link;
-		print('some other link type')
 	end
 	local linkName = strgsub(sanitizedLink, "^.*%[(.*)%].*$", "%1")
 
@@ -6128,7 +6117,6 @@ function NuNQuickNote.ProcessHyperlink(itemLink)
 					return true;
 				else
 
-					print("NuNQuickNote: " .. sanitizedLink .. " not found in notes");
 					NuNF.NuN_GNoteFromItem(sanitizedLink, "GameTooltip");
 					StackSplitFrame:Hide();
 					return true;
@@ -6571,13 +6559,11 @@ function NuNNew_SetItemRef(self, link, text, btn)
 				NuNGNoteFrame.fromQuest = nil;
 				if (NuNData[locals.itmIndex_dbKey][text]) then
 					text = (NuNData[locals.itmIndex_dbKey][text]);
-					print("branch1: " .. text);
 				end
 				if ((NuNDataRNotes[text]) or (NuNDataANotes[text])) then
 					local_player.currentNote.general = text;
 					NuN_ShowSavedGNote();
 					processed = true;
-					print("branch2: " .. text);
 					--HideUIPanel(ItemRefTooltip);
 				else
 					ItemRefTooltip:Show();
@@ -6587,7 +6573,6 @@ function NuNNew_SetItemRef(self, link, text, btn)
 					ItemRefTooltip:SetHyperlink(link);
 					delayedItemTooltip = text;
 					processed = true;
-					print("branch3: " .. text);
 				end
 				return processed;
 			end
@@ -6611,13 +6596,10 @@ function NuNNew_PaperDollItemSlotButton_OnModifiedClick(btn, mBttn)
 			else
 				itmLink = GetInventoryItemLink("player", btn:GetID());
 			end
-			print("itmLink: " .. itmLink);
 			if ((itmLink ~= nil) and (itmLink ~= "")) then
-				print("itmLink: " .. DecodeHyperlink(itmLink));
 				-- NOTE: item links no longer match these patterns:
 				itmLink = strgsub(itmLink, ":%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+|", ":0:0:0:0:0:0:0|");
 				itmLink = strgsub(itmLink, ":%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+:%-*%d+\124", ":0:0:0:0:0:0:0\124");
-				print("itmLink: " .. DecodeHyperlink(itmLink));
 				if ((NuNGNoteFrame:IsVisible()) or (NuNFrame:IsVisible())) then
 					if (NuNGNoteFrame:IsVisible()) then
 						NuNGNoteTextScroll:Insert(itmLink); -- + v5.00.11200
@@ -6635,7 +6617,6 @@ function NuNNew_PaperDollItemSlotButton_OnModifiedClick(btn, mBttn)
 						local_player.currentNote.general = itmLink;
 						NuN_ShowSavedGNote();
 					else
-						print("NuNNew_PaperDollItemSlotButton_OnModifiedClick: " .. itmLink);
 						NuNF.NuN_GNoteFromItem(itmLink, "GameTooltip");
 					end
 					return;
@@ -8721,10 +8702,6 @@ function GeneralNote_OnEscapePressed(editBox)
 	--NuNGNoteFrame:Hide();
 end
 
-function GeneralNote_OnKeyDown(editBox, key)
-	-- print("GeneralNote_OnKeyDown - key: " .. key);
-end
-
 ---------------------------------------------
 -- Options Control Click Processing --
 ---------------------------------------------
@@ -9321,7 +9298,6 @@ function NuN_NoteButton_OnInteract(nBttnID, uAction)
 	local qText = "";
 
 	local pBttn = nil;
-	print('NuN_NoteButton_OnInteract');
 	if (NuN_IsFrameInteractive(FriendsListFrame)) then
 		pBttnTxt, pBttn = NuN_GetName_FrameButton(nBttnID, NuNC.UPDATETAG_FRIEND);
 		if (uAction == "Click") then
@@ -10077,8 +10053,7 @@ function NuN_WorldMapTooltip_OnHide()
 end
 
 function NuN_ItemRefTooltip_OnShow()
-	print("NuN_ItemRefTooltip_OnShow");
-	locals.currentTooltipTitleString = ItemRefTooltipTextLeft1:GetText();  -- REVIEW: ItemRefTooltipTextLeft1 may not be available
+	locals.currentTooltipTitleString = ItemRefTooltipTextLeft1:GetText();
 	locals.ttName = locals.currentTooltipTitleString;
 
 	if (NuNData[locals.itmIndex_dbKey][locals.ttName]) then
@@ -13681,7 +13656,6 @@ function NuN_MainUpdate(self, elapsed)
 	-- accounts for the delay between tooltip SetLink and display of the actual ItemRef tooltip.....
 	if ((delayedItemTooltip) and (ItemRefTooltip:IsVisible())) then
 		-- IDEA: check this is called when alt+left-click on an item in the chat window
-		print("NuN_MainUpdate: delayedItemTooltip");
 		NuNF.NuN_GNoteFromItem(delayedItemTooltip, "ItemRefTooltip");
 		delayedItemTooltip = nil;
 		ItemRefTooltip:Hide();
@@ -14112,7 +14086,6 @@ function NuNOptions_SetModifierText()
 end
 
 function IsNuNModifierKeyDown(mBttn)
-	print(NuNSettings[local_player.realmName].mouseBttn);
 	if ((IsModifierKeyDown()) and (NuNSettings[local_player.realmName])) then
 		if (
 				((not NuNSettings[local_player.realmName].mouseBttn) and (mBttn == "LeftButton")) or
