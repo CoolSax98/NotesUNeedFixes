@@ -37,28 +37,22 @@
 	 -->
 	<!-- Templates -->
 	<Button name="NuNButtonTemplate" virtual="true" inherits="UIPanelButtonTemplate">
-		<NormalText inherits="GameFontNormal" />
-		<DisabledText inherits="GameFontDisable" />
-		<HighlightText inherits="GameFontNormal" />
-		<Size>
-			<AbsDimension x="88" y="21" />
-		</Size>
+		<Size x="88" y="21" />
+		<NormalFont style="GameFontNormal" />
+		<DisabledFont style="GameFontDisable" />
+		<HighlightFont style="GameFontNormal" />
 	</Button>
 	<Button name="NuNRatingTemplate" virtual="true" inherits="UIPanelButtonTemplate">
-		<NormalText inherits="GameFontNormal" />
-		<DisabledText inherits="GameFontDisable" />
-		<HighlightText inherits="GameFontNormal" />
-		<Size>
-			<AbsDimension x="88" y="21" />
-		</Size>
+		<Size x="88" y="21" />
+		<NormalFont style="GameFontNormal" />
+		<DisabledFont style="GameFontDisable" />
+		<HighlightFont style="GameFontNormal" />
 	</Button>
 	<Button name="NuNOptionsButtonTemplate" virtual="true" inherits="UIPanelButtonTemplate">
-		<NormalText inherits="GameFontNormal" />
-		<DisabledText inherits="GameFontDisable" />
-		<HighlightText inherits="GameFontNormal" />
-		<Size>
-			<AbsDimension x="180" y="21" />
-		</Size>
+		<Size x="180" y="21" />
+		<NormalFont style="GameFontNormal" />
+		<DisabledFont style="GameFontDisable" />
+		<HighlightFont style="GameFontNormal" />
 	</Button>
 	<Frame name="NuNDividerTemplate" virtual="true">
 		<Size>
@@ -481,7 +475,7 @@
 		<Size>
 			<AbsDimension x="1" y="1" />
 		</Size> -->
-		<!--<Scripts>
+	<!--<Scripts>
 			<OnShow>
 				NuN_ForceUpdateQuestNotes("QUEST_LOG_UPDATE");
 			</OnShow>
@@ -933,7 +927,7 @@
 							</Layer>
 						</Layers>
 						<ScrollChild>
-							<EditBox autofocus="false" text="NUN_BOILERPLATE" name="NuNText" letters="10010" multiLine="true" setAllPoints="true">
+							<EditBox autoFocus="false" name="NuNText" letters="10010" multiLine="true" setAllPoints="true">
 								<Size>
 									<AbsDimension x="541" y="234" />
 								</Size>
@@ -1851,7 +1845,10 @@
 				</Frames>
 			</Frame>
 			<!-- Frame for Detail Entry edit box -->
-			<Frame name="NuNEditDetailsFrame" hidden="true" parent="NuNFrame" toplevel="true" movable="true" enableMouse="true">
+			<Frame name="NuNEditDetailsFrame" inherits="BackdropTemplate" hidden="true" parent="NuNFrame" toplevel="true" movable="true" enableMouse="true">
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="OPTIONS_BACKDROP" type="global" />
+				</KeyValues>
 				<Size>
 					<AbsDimension x="400" y="105" />
 				</Size>
@@ -1862,17 +1859,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Backdrop bgFile="Interface\AddOns\NotesUNeed\Artwork\Texture1" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="11" right="12" top="12" bottom="11" />
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="32" />
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="32" />
-					</EdgeSize>
-				</Backdrop>
 				<Layers>
 					<Layer>
 						<Texture name="NuNEditDetailsHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
@@ -1900,12 +1886,10 @@
 				</Layers>
 				<Frames>
 					<Button name="NuNEditDetailsCancelButton" inherits="UIPanelButtonTemplate" text="NUN_CANCEL_DETAIL">
-						<NormalText inherits="GameFontHighlight" />
-						<DisabledText inherits="GameFontDisable" />
-						<HighlightText inherits="GameFontHighlight" />
-						<Size>
-							<AbsDimension x="60" y="21" />
-						</Size>
+						<Size x="60" y="21" />
+						<NormalFont style="GameFontHighlight" />
+						<DisabledFont style="GameFontDisable" />
+						<HighlightFont style="GameFontHighlight" />
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeTo="NuNEditDetailsFrame" relativePoint="RIGHT">
 								<Offset>
@@ -1922,9 +1906,9 @@
 						</Scripts>
 					</Button>
 					<Button name="NuNEditDetailsSaveButton" inherits="UIPanelButtonTemplate" text="NUN_SAVE_DETAIL">
-						<NormalText inherits="GameFontHighlight" />
-						<DisabledText inherits="GameFontDisable" />
-						<HighlightText inherits="GameFontHighlight" />
+						<NormalFont style="GameFontHighlight" />
+						<DisabledFont style="GameFontDisable" />
+						<HighlightFont style="GameFontHighlight" />
 						<Size>
 							<AbsDimension x="60" y="21" />
 						</Size>
@@ -1942,9 +1926,9 @@
 						</Scripts>
 					</Button>
 					<Button name="NuNEditDetailsRestoreButton" inherits="UIPanelButtonTemplate" text="NUN_RESTORE_DETAIL">
-						<NormalText inherits="GameFontHighlight" />
-						<DisabledText inherits="GameFontDisable" />
-						<HighlightText inherits="GameFontHighlight" />
+						<NormalFont style="GameFontHighlight" />
+						<DisabledFont style="GameFontDisable" />
+						<HighlightFont style="GameFontHighlight" />
 						<Size>
 							<AbsDimension x="120" y="21" />
 						</Size>
@@ -1967,7 +1951,7 @@
 							</OnLeave>
 						</Scripts>
 					</Button>
-					<EditBox autofocus="false" name="NuNEditDetailsBox" letters="32">
+					<EditBox autoFocus="false" name="NuNEditDetailsBox" letters="32">
 						<Size>
 							<AbsDimension x="350" y="64" />
 						</Size>
@@ -3475,7 +3459,10 @@
 			</OnDragStop>
 		</Scripts>
 	</Frame>
-	<Frame name="NuN_ChatFrame" hidden="true" parent="UIParent" toplevel="true" movable="true" frameStrata="HIGH" enableMouse="true">
+	<Frame name="NuN_ChatFrame" inherits="BackdropTemplate" hidden="true" parent="UIParent" toplevel="true" movable="true" frameStrata="HIGH" enableMouse="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="OPTIONS_BACKDROP" type="global" />
+		</KeyValues>
 		<Size>
 			<AbsDimension x="440" y="180" />
 		</Size>
@@ -3483,17 +3470,6 @@
 			<Anchor point="CENTER" />
 		</Anchors>
 		<TitleRegion setAllPoints="true" />
-		<Backdrop bgFile="Interface\AddOns\NotesUNeed\Artwork\Texture1" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11" />
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32" />
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32" />
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString name="NuNChatNoteTitleLabel" inherits="GameFontHighlight" text="NUN_CHAT_NOTETITLE_LABEL">
@@ -3889,7 +3865,10 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	<Frame name="NuN_ConfirmFrame" hidden="true" parent="UIParent" toplevel="true" movable="true" frameStrata="HIGH" enableMouse="true">
+	<Frame name="NuN_ConfirmFrame" inherits="BackdropTemplate" hidden="true" parent="UIParent" toplevel="true" movable="true" frameStrata="HIGH" enableMouse="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="OPTIONS_BACKDROP" type="global" />
+		</KeyValues>
 		<Size>
 			<AbsDimension x="440" y="180" />
 		</Size>
@@ -3897,17 +3876,6 @@
 			<Anchor point="CENTER" />
 		</Anchors>
 		<TitleRegion setAllPoints="true" />
-		<Backdrop bgFile="Interface\AddOns\NotesUNeed\Artwork\Texture1" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11" />
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32" />
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32" />
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString name="NuNConflictLabel1" inherits="GameFontNormal" text="NUN_CONFLICT_LABEL1">
@@ -4218,7 +4186,7 @@
 					</OnLoad>
 				</Scripts>
 			</Button>
-			<EditBox autofocus="false" name="NuNSearchTextBox" hidden="true" letters="50">
+			<EditBox autoFocus="false" name="NuNSearchTextBox" hidden="true" letters="50">
 				<Size>
 					<AbsDimension x="200" y="54" />
 				</Size>
@@ -4672,9 +4640,9 @@
 				</Backdrop>
 				<Frames>
           @end-debug@-->
-					<!-- this dropdown appears just below the list of notes.  It displays the list of
+			<!-- this dropdown appears just below the list of notes.  It displays the list of
 						note categories for users to restrict their search queries to (WIP) .-->
-          <!--@debug@
+			<!--@debug@
 					<Button name="NuNDropDown_SearchFilter" inherits="UIDropDownMenuTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="TOPLEFT">
@@ -4708,59 +4676,59 @@
 										
 										self:RegisterForClicks("LeftButtonDown", "RightButtonDown");
 									]]>
-							</OnLoad>
-							<OnClick>
+</OnLoad>
+<OnClick>
 
-							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="NuNSearchFrame_MassDelete" inherits="UIPanelButtonTemplate" text="NUN_MASS_DELETE">
-						<Size>
-							<AbsDimension x="140" y="28" />
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="NuNDropDown_SearchFilter" relativePoint="BOTTOMLEFT">
-								<Offset>
-									<AbsDimension x="12" y="-2" />
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
+</OnClick>
+</Scripts>
+</Button>
+<Button name="NuNSearchFrame_MassDelete" inherits="UIPanelButtonTemplate" text="NUN_MASS_DELETE">
+<Size>
+<AbsDimension x="140" y="28" />
+</Size>
+<Anchors>
+<Anchor point="TOPLEFT" relativeTo="NuNDropDown_SearchFilter" relativePoint="BOTTOMLEFT">
+<Offset>
+<AbsDimension x="12" y="-2" />
+</Offset>
+</Anchor>
+</Anchors>
+<Scripts>
+<OnLoad>
 								self:RegisterForClicks("LeftButtonDown", "RightButtonDown");
 							</OnLoad>
-							<OnClick>
+<OnClick>
 								NuN_MassDelete();
 							</OnClick>
-						</Scripts>
-					</Button>
-					<Button name="NuNSearchFrame_Export" inherits="UIPanelButtonTemplate" text="NUN_DB_EXPORT">
-						<Size>
-							<AbsDimension x="140" y="28" />
-						</Size>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="NuNSearchFrame_MassDelete" relativePoint="TOPLEFT">
-								<Offset>
-									<AbsDimension x="160" y="0" />
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnLoad>
+</Scripts>
+</Button>
+<Button name="NuNSearchFrame_Export" inherits="UIPanelButtonTemplate" text="NUN_DB_EXPORT">
+<Size>
+<AbsDimension x="140" y="28" />
+</Size>
+<Anchors>
+<Anchor point="TOPLEFT" relativeTo="NuNSearchFrame_MassDelete" relativePoint="TOPLEFT">
+<Offset>
+<AbsDimension x="160" y="0" />
+</Offset>
+</Anchor>
+</Anchors>
+<Scripts>
+<OnLoad>
 								self:RegisterForClicks("LeftButtonDown", "RightButtonDown");
 							</OnLoad>
-							<OnClick>
+<OnClick>
 								NuNOptions_DBExport();
 							</OnClick>
-						</Scripts>
-					</Button>
-				</Frames>
-				<Scripts>
-					<OnShow>
+</Scripts>
+</Button>
+</Frames>
+<Scripts>
+<OnShow>
 						self:SetFrameLevel( self:GetParent():GetFrameLevel() - 1 );
 					</OnShow>
-				</Scripts>
-			</Frame>
+</Scripts>
+</Frame>
 			@end-debug@-->
 		</Frames>
 		<Scripts>
@@ -5581,7 +5549,7 @@
 									</OnTextChanged>
 									<OnCursorChanged>
 										ScrollingEdit_OnCursorChanged(self, x, y, w, h);
-										<!-- BUG: This is getting called extra times when selecting from the end of the content, causing the start position of the selecting being off by one. This is causing the color picker to delete characters -->
+																				<!-- BUG: This is getting called extra times when selecting from the end of the content, causing the start position of the selecting being off by one. This is causing the color picker to delete characters -->
 										if ( NuNGNoteTextScroll.cPosStart == "RecordNext" ) then
 											NuNGNoteTextScroll.cPosStart = NuNGNoteTextScroll:GetCursorPosition();
 										end
@@ -5790,20 +5758,12 @@
 		</Anchors>
 		<TitleRegion setAllPoints="true" />
 		<Frames>
-		<!-- RESEARCH - How to properly build frames -->
-		<!-- FIXME -->
-			<Frame name="NuNMicroBorder" setAllPoints="true" hidden="true" frameStrata="BACKGROUND">
-				<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="6" right="6" top="6" bottom="6" />
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="8" />
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="6" />
-					</EdgeSize>
-				</Backdrop>
+			<!-- RESEARCH - How to properly build frames -->
+			<!-- FIXME -->
+			<Frame name="NuNMicroBorder" inherits="BackdropTemplate" setAllPoints="true" hidden="true" frameStrata="BACKGROUND">
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="NUN_BACKDROP_TOOLTIP_MICROBUTTONS" type="global" />
+				</KeyValues>
 				<Scripts>
 					<OnLoad>
 						<!-- self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b); -->
@@ -6019,7 +5979,7 @@
 		<Scripts>
 			<OnShow>
         NuN_GameTooltip_OnShow(self);
-      </OnShow>
+			</OnShow>
 			<OnHide>
 				NuN_GameTooltip_OnHide();
 			</OnHide>
@@ -6041,7 +6001,7 @@
 				self.fadeStartTime = 0.0;
 				self.fadeHoldTime = 1.0;
 				self.fadeOutTime = 1.0;
-				<!-- self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b); -->
+								<!-- self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b); -->
 				<!-- self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b); -->
 			</OnLoad>
 			<OnShow>
@@ -6349,7 +6309,10 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
-	<Frame name="NuN_ScaleFrame" hidden="true" parent="UIParent" toplevel="true" frameStrata="FULLSCREEN">
+	<Frame name="NuN_ScaleFrame" inherits="BackdropTemplate" hidden="true" parent="UIParent" toplevel="true" frameStrata="FULLSCREEN">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="NUN_BACKDROP_TOOLTIP_16_16" type="global" />
+		</KeyValues>
 		<Size>
 			<AbsDimension x="240" y="170" />
 		</Size>
@@ -6360,17 +6323,6 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5" />
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="16" />
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="16" />
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer>
 				<FontString name="FrameScaleLabel" inherits="GameFontNormalSmall" text="NUN_FRAME_SCALE_TXT">
@@ -6403,7 +6355,10 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Slider name="NuNFrameScaleSlider" enableMouse="true">
+			<Slider name="NuNFrameScaleSlider" inherits="BackdropTemplate" enableMouse="true">
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="NUN_BACKDROP_SLIDER_8_8" type="global" />
+				</KeyValues>
 				<Size>
 					<AbsDimension x="10" y="100" />
 				</Size>
@@ -6414,17 +6369,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="6" right="6" top="3" bottom="3" />
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="8" />
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="8" />
-					</EdgeSize>
-				</Backdrop>
 				<HitRectInsets>
 					<AbsInset left="-10" right="-10" top="0" bottom="0" />
 				</HitRectInsets>
@@ -6473,7 +6417,10 @@
 					</Size>
 				</ThumbTexture>
 			</Slider>
-			<Slider name="NuNFontScaleSlider" enableMouse="true">
+			<Slider inherits="BackdropTemplate" name="NuNFontScaleSlider" enableMouse="true">
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="NUN_BACKDROP_SLIDER_8_8" type="global" />
+				</KeyValues>
 				<Size>
 					<AbsDimension x="10" y="100" />
 				</Size>
@@ -6484,17 +6431,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="6" right="6" top="3" bottom="3" />
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="8" />
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="8" />
-					</EdgeSize>
-				</Backdrop>
 				<HitRectInsets>
 					<AbsInset left="-10" right="-10" top="0" bottom="0" />
 				</HitRectInsets>
@@ -6543,7 +6479,10 @@
 					</Size>
 				</ThumbTexture>
 			</Slider>
-			<Slider name="NuNMapFontScaleSlider" enableMouse="true">
+			<Slider inherits="BackdropTemplate" name="NuNMapFontScaleSlider" enableMouse="true">
+				<KeyValues>
+					<KeyValue key="backdropInfo" value="NUN_BACKDROP_SLIDER_8_8" type="global" />
+				</KeyValues>
 				<Size>
 					<AbsDimension x="10" y="100" />
 				</Size>
@@ -6554,17 +6493,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Backdrop bgFile="Interface\Buttons\UI-SliderBar-Background" edgeFile="Interface\Buttons\UI-SliderBar-Border" tile="true">
-					<BackgroundInsets>
-						<AbsInset left="6" right="6" top="3" bottom="3" />
-					</BackgroundInsets>
-					<TileSize>
-						<AbsValue val="8" />
-					</TileSize>
-					<EdgeSize>
-						<AbsValue val="8" />
-					</EdgeSize>
-				</Backdrop>
 				<HitRectInsets>
 					<AbsInset left="-10" right="-10" top="0" bottom="0" />
 				</HitRectInsets>
@@ -6621,24 +6549,16 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	<Frame name="NuNcDeleteFrame" hidden="true" parent="UIParent" toplevel="true" frameStrata="FULLSCREEN" enableMouse="true">
+	<Frame name="NuNcDeleteFrame" inherits="BackdropTemplate" hidden="true" parent="UIParent" toplevel="true" frameStrata="FULLSCREEN" enableMouse="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="OPTIONS_BACKDROP" type="global" />
+		</KeyValues>
 		<Size>
 			<AbsDimension x="400" y="125" />
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER" />
 		</Anchors>
-		<Backdrop bgFile="Interface\AddOns\NotesUNeed\Artwork\Texture1" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11" />
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="32" />
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="32" />
-			</EdgeSize>
-		</Backdrop>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString name="NuNcDeleteLabel" inherits="GameFontHighlight" text="(PLACE HOLDER)">
@@ -6735,18 +6655,10 @@
 			</Button>
 		</Frames>
 	</Frame>
-	<Frame name="NuNPopup" hidden="true" parent="UIParent" frameStrata="TOOLTIP">
-		<Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="5" right="5" top="5" bottom="5" />
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="16" />
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="16" />
-			</EdgeSize>
-		</Backdrop>
+	<Frame name="NuNPopup" inherits="BackdropTemplate" hidden="true" parent="UIParent" frameStrata="TOOLTIP">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="NUN_BACKDROP_TOOLTIP_16_16" type="global" />
+		</KeyValues>
 		<Layers>
 			<Layer>
 				<FontString name="NuNPopupTitle" inherits="GameFontHighlight" text="NUN_POPUP_TITLE">

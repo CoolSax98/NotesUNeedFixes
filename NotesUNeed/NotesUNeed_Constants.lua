@@ -131,3 +131,33 @@ NUN_BACKDROP_TOOLTIP_DEFAULT = {
 	edgeSize = 32,
 	insets = { left = 3, right = 5, top = 3, bottom = 5 },
 };
+
+NUN_BACKDROP_TOOLTIP_MICROBUTTONS = {
+	bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+	tile = true,
+	tileEdge = true,
+	tileSize = 8,
+	edgeSize = 6,
+	insets = { left = 6, right = 6, top = 6, bottom = 6 },
+}
+
+NUN_BACKDROP_TOOLTIP_16_16 = {
+	bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+	tile = true,
+	tileEdge = true,
+	tileSize = 16,
+	edgeSize = 16,
+	insets = { left = 5, right = 5, top = 5, bottom = 5 },
+}
+
+NUN_BACKDROP_SLIDER_8_8 = {
+	bgFile = "Interface\\Buttons\\UI-SliderBar-Background",
+	edgeFile = "Interface\\Buttons\\UI-SlideBar-Border",
+	tile = true,
+	tileEdge = true,
+	tileSize = 8,
+	edgeSize = 8,
+	insets = { left = 6, right = 6, top = 3, bottom = 3 },
+}
