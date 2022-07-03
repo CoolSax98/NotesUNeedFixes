@@ -9568,29 +9568,31 @@ function NuN_StaticTT()
 	NuN_Tooltip:Show();
 end
 
+-- bug: This was causing issues. The elapsed time wasn't updating properly. disabling for now.
 -- the NuN Tooltip should fade with the Game Tooltip, or WorldMap tooltip
-function NuN_Tooltip_OnUpdate(self, elapsed)
-	if ((NuN_State.NuN_Fade) and (not UnitExists("mouseover"))) then
-		local gt = GameTooltipTextLeft1:GetText();
-		if (gt ~= locals.currentTooltipTitleString) then
-			self:Hide();
-			return;
-		end
-		if (self.fadeStartTime == 0) then
-			self.fadeStartTime = GetTime();
-		end
-		local elapsed = GetTime() - self.fadeStartTime;
-		local fadeHoldTime = self.fadeHoldTime;
-		local fadeOutTime = self.fadeOutTime;
-		if (elapsed >= (fadeHoldTime + fadeOutTime)) then
-			self:ClearLines();
-			self:Hide();
-		elseif (elapsed > fadeHoldTime) then
-			local alpha = 1 - ((elapsed - fadeHoldTime) / fadeOutTime);
-			self:SetAlpha(alpha);
-		end
-	end
-end
+-- function NuN_Tooltip_OnUpdate(self, elapsed)
+-- 	print("NuN_Tooltip_OnUpdate: " .. tostring(elapsed));
+-- 	if ((NuN_State.NuN_Fade) and (not UnitExists("mouseover"))) then
+-- 		local gt = GameTooltipTextLeft1:GetText();
+-- 		if (gt ~= locals.currentTooltipTitleString) then
+-- 			self:Hide();
+-- 			return;
+-- 		end
+-- 		if (self.fadeStartTime == 0) then
+-- 			self.fadeStartTime = GetTime();
+-- 		end
+-- 		local elapsed = GetTime() - self.fadeStartTime;
+-- 		local fadeHoldTime = self.fadeHoldTime;
+-- 		local fadeOutTime = self.fadeOutTime;
+-- 		if (elapsed >= (fadeHoldTime + fadeOutTime)) then
+-- 			self:ClearLines();
+-- 			self:Hide();
+-- 		elseif (elapsed > fadeHoldTime) then
+-- 			local alpha = 1 - ((elapsed - fadeHoldTime) / fadeOutTime);
+-- 			self:SetAlpha(alpha);
+-- 		end
+-- 	end
+-- end
 
 function NuN_FFButton_OnShow()
 	NuN_FFButton_Up();

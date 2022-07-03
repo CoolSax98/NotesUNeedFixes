@@ -5995,27 +5995,27 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
-	<GameTooltip name="NuN_Tooltip" inherits="GameTooltipTemplate" parent="UIParent">
+	<GameTooltip name="NuN_Tooltip" inherits="GameTooltipTemplate, BackdropTemplate" parent="UIParent">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="NUN_BACKDROP_TOOLTIP_16_16" type="global" />
+		</KeyValues>
 		<Scripts>
-			<OnLoad>
+			<OnLoad inherit="prepend">
 				self.fadeStartTime = 0.0;
 				self.fadeHoldTime = 1.0;
 				self.fadeOutTime = 1.0;
-								<!-- self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b); -->
-				<!-- self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b); -->
+				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 			</OnLoad>
 			<OnShow>
 				<!-- HACK: Need to replace WorldMapTooltip -->
 				if ( WorldMapTooltip and WorldMapFrame:IsVisible() ) then
 					NuN_Tooltip:SetAlpha( WorldMapTooltip:GetAlpha() );
 				else
-					NuN_Tooltip:SetAlpha( GameTooltip:GetAlpha() );
+				  NuN_Tooltip:SetAlpha( GameTooltip:GetAlpha() );
 				end
 				self.fadeStartTime = 0;
 			</OnShow>
-			<OnUpdate>
-				NuN_Tooltip_OnUpdate(self,delta);
-			</OnUpdate>
 			<OnHide>
 				NuN_Tooltip_OnHide();
 			</OnHide>
@@ -6031,7 +6031,10 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
-	<GameTooltip name="NuN_PinnedTooltip" inherits="GameTooltipTemplate" parent="UIParent" toplevel="true" movable="true" frameStrata="HIGH" enableMouse="true">
+	<GameTooltip name="NuN_PinnedTooltip" inherits="GameTooltipTemplate, BackdropTemplate" parent="UIParent" toplevel="true" movable="true" frameStrata="HIGH" enableMouse="true">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="NUN_BACKDROP_TOOLTIP_16_16" type="global" />
+		</KeyValues>
 		<Size>
 			<AbsDimension x="128" y="64" />
 		</Size>
@@ -6106,9 +6109,9 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				<!-- self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b); -->
-				<!-- self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b); -->
+			<OnLoad inherit="prepend">
+				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 				self:RegisterForDrag("LeftButton");
 				self.type = "Empty";
 				self.subType = "Empty";
