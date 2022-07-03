@@ -23,22 +23,22 @@ Main Features of NuN
 
 1.) Create Player Notes (aka Contact Notes) :
 	- Create Contact notes :
-		a) using NuN buttons in the Friends Frame
-		b) using NuN buttons in the Looking For Group Frame
+		a) using NuN buttons in the Friends Frame -- REVIEW:
+		b) using NuN buttons in the Looking For Group Frame -- REVIEW:
 		c) using the NuN Micro Buttons described in point 3
 		d) use the NuN Modifier when clicking on Player Hyperlinks
 			(Default "<Alt>-Left Mouse Click" but can be changed in Options)
-		e) using slash commands
-		f) via NuN options in the player context menu
-		g) Or via any of the automated methods mentioned below
-	- auto maintain Friend / Ignore Lists across different Alts
-	- auto-note people you Party with
-	- auto-note Guild members
-	- auto maintain notes on your own Characters plus Levelling notes
+		e) using slash commands -- REVIEW:
+		f) via NuN options in the player context menu -- REVIEW:
+		g) Or via any of the automated methods mentioned below -- REVIEW:
+	- auto maintain Friend / Ignore Lists across different Alts -- REVIEW:
+	- auto-note people you Party with -- REVIEW:
+	- auto-note Guild members -- REVIEW:
+	- auto maintain notes on your own Characters plus Levelling notes -- REVIEW:
 	- NuN can auto-populate many details about race, class, guild, etc.
 	- Also add your own free Text notes
 	- Rate Players via Right click menu and see that Rating in Tooltips
-		or tagged to Player Names in Chat
+		or tagged to Player Names in Chat -- REVIEW:
 
 2.) Create General text notes on anything you like :
 	- Create General notes :
@@ -46,15 +46,15 @@ Main Features of NuN
 		b) via slash commands;
 		c) use the NuN Modifier when clicking on Container Items or Hyperlinks
 			(Default "<Alt>-Left Mouse Click" but can be changed in Options)
-		d) importing from a Plugin database
-		e) receiving notes in-game from other NuN users
+		d) importing from a Plugin database -- REVIEW:
+		e) receiving notes in-game from other NuN users -- REVIEW:
 		f) Or via any of the automated methods below
 	- Options to auto maintain Quest Notes which will save a few kinds of notes
-		a) Quest notes that record quest details plus Quest Giver name and location
-		b) Quest progress notes which record location when completing quest objectives
-		c) Quest History detailing when a given Toon Accepted, and Completed quests 
+		a) Quest notes that record quest details plus Quest Giver name and location -- REVIEW:
+		b) Quest progress notes which record location when completing quest objectives -- REVIEW:
+		c) Quest History detailing when a given Toon Accepted, and Completed quests -- REVIEW: 
 	- General notes can be saved at Account or Realm level
-	- Scripting - LUA scripts can be executed from General notes by :
+	- Scripting - LUA scripts can be executed from General notes by : -- REVIEW: -- TODO:
 		a) Using the Run Script button in the frame
 		b) Slash command "/nun -x <NOTE_NAME>"
 		c) Execute one NuN Note from another NuN Note with the following command :
@@ -72,7 +72,7 @@ This frame can be moved by dragging the small border surrounding the buttons, an
 	- Options		: 	toggle the NuN Options frame
 	- Note Browser	: 	toggle the NuN Note Browser frame
 						<Alt> Left Click to browse General notes only
-						Right Click to browse Quest History
+						Right Click to browse Quest History -- REVIEW:
 	- Contact Note	: 	create a note for the current target
 						will create a General type NPC note if current target is an NPC
 						<Alt> Click to re-open the last opened Contact Note
@@ -86,15 +86,15 @@ This is where you can view the list of notes you have :
 	- search for notes containing text you specify in the edit box
 		a) Left  click : Case insensitive search
 		b) Right click : Case sensitive search
-	- filter visible notes from the Options Frame
+	- filter visible notes from the Options Frame -- REVIEW:
 		e.g. to only show Quest Notes, or NPC Notes
 	- a tick indicates a General note is saved at Account level
 	- hover over a note to see its contents in a Tooltip
-	- Right-Click to open the sticky NuN PinUp Tooltip
+	- Right-Click to open the sticky NuN PinUp Tooltip -- REVIEW:
 	- <Shift>Left-Click to paste the note name in to open chat box
 	- After filtering and searching to narrow down the visible set of Notes, you can :
 		a) Mass delete those listed in the browser frame
-		b) Export listed notes for other players to install and Import
+		b) Export listed notes for other players to install and Import -- REVIEW:
 
 5.) Options frame - open via the Microbuttons or slash command "/nun"
 Configure NotesUNeed here, or filter the notes to appear in the Note
@@ -103,11 +103,11 @@ Quest History for one of your Toons
 	
 6.) Backup and Restore functionality to save your database
 This functionality is kept in separate LoadOnDemand AddOns to save memory.
-Both the Backup and Restore processes will execute a ReloadUI()
+Both the Backup and Restore processes will execute a ReloadUI() -- REVIEW:
 
 7.) Import and Export of notes Databases
 Share sets of notes with friends, or publish notes databases as a Plugin
-for others to Import
+for others to Import -- REVIEW:
 
 8.) Broadcasting & Sending of NotesUNeed Notes
 Broadcast Raid Instructions for Boss enchounters or PvP strategy, or
@@ -451,7 +451,7 @@ Un-Formatted note sending simply broadcasts the text of the chosen note via the 
 
 You can fine-tune the look and style of note broadcasts by test sending them to your SELF.
 
-Formatted note sending is provided so that other NotesUNeed users will receive the note and add it to their own database. Users of NotesUNeed will not see the individual lines of Formatted notes in the chat, they should simply see status messages, and the note should open automatically for the recipient.
+Formatted note sending is provided so that other NotesUNeed users will receive the note and add it to their own database. Users of NotesUNeed will not see the individual lines of Formatted notes in the chat, they should simply see status messages, and the note should open automatically for the recipient. -- REVIEW: Not sure this works.
 HOWEVER : the individual lines of Formatted notes may still be visible to players who do NOT have NotesUNeed installed if you are trying to send the note over public channels, so be careful where you spam. I would recommend that in-game note sharing via formatted notes should be achieved via individual Whisper, or sending in carefully controlled environments such as Guild or Custom channels.
 
 If you send a note to someone who already has a note with the same name, then the recipient will be shown a Warning Dialog box allowing them to choose whether they want to Replace their existing note, or cancel receipt of the note and keep their original version instead.
@@ -468,7 +468,7 @@ The value of the delay is also displayed in an edit box on the Transmission fram
 NOTE that you have to press <Enter> or click on Transmit for the value in this edit box to be saved.
 
 For the Player notes, the information displayed in the drop down boxes and user definable buttons comes from the SAVED details of the note. If you show a note, change their Profession without Saving, then send the note, the profession actually sent will not be the one you just specified, but the one still saved.
-However, during development I found that it was much more useful to be able to change the free text of both the Contact and General style notes, and send it without having to save the note first. I believe this could be more useful in the live version also, as you may wish to edit or censor certain details of a notes free text before you send it, without actually saving your changes.
+However, during development I found that it was much more useful to be able to change the free text of both the Contact and General style notes, and send it without having to save the note first. I believe this could be more useful in the live version also, as you may wish to edit or censor certain details of a notes free text before you send it, without actually saving your changes. -- REVIEW:
 
 See also the Hyperlinks in NotesUNeed Notes section of the Readme file.
 
@@ -707,7 +707,7 @@ c.) insert the text "<ALT:Fred>" anywhere in the note text
 
 Likewise, if you then want to see the alt names of Bob and Alice in Fred's note, you have to go through a similar procedure
 
-There is a shortcut for inserting ALT text from the Guild frame, where you can open Alice's note for example, and then <ALT>-click on the NuN Note symbols for Bob and Fred to auto-insert them in to Alice's note. So all the Alt setup for Guild members can be done via mouse clicks.
+There is a shortcut for inserting ALT text from the Guild frame, where you can open Alice's note for example, and then <ALT>-click on the NuN Note symbols for Bob and Fred to auto-insert them in to Alice's note. So all the Alt setup for Guild members can be done via mouse clicks. -- REVIEW: Need to get guild roster buttons working again.
 
 
 
