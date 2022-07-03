@@ -6001,20 +6001,20 @@
 		</KeyValues>
 		<Scripts>
 			<OnLoad inherit="prepend">
-				self.fadeStartTime = 0.0;
-				self.fadeHoldTime = 1.0;
-				self.fadeOutTime = 1.0;
 				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
 				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
+				self.type = "Empty";
+				self.subType = "Empty";
 			</OnLoad>
 			<OnShow>
+				NuN_Tooltip:SetAlpha(1);
 				<!-- HACK: Need to replace WorldMapTooltip -->
-				if ( WorldMapTooltip and WorldMapFrame:IsVisible() ) then
+				<!-- if ( WorldMapTooltip and WorldMapFrame:IsVisible() ) then
 					NuN_Tooltip:SetAlpha( WorldMapTooltip:GetAlpha() );
 				else
 				  NuN_Tooltip:SetAlpha( GameTooltip:GetAlpha() );
 				end
-				self.fadeStartTime = 0;
+				self.fadeStartTime = 0; -->
 			</OnShow>
 			<OnHide>
 				NuN_Tooltip_OnHide();
@@ -6032,9 +6032,9 @@
 		</Scripts>
 	</Frame>
 	<GameTooltip name="NuN_PinnedTooltip" inherits="GameTooltipTemplate, BackdropTemplate" parent="UIParent" toplevel="true" movable="true" frameStrata="HIGH" enableMouse="true">
-		<KeyValues>
+		<!-- <KeyValues>
 			<KeyValue key="backdropInfo" value="NUN_BACKDROP_TOOLTIP_16_16" type="global" />
-		</KeyValues>
+		</KeyValues> -->
 		<Size>
 			<AbsDimension x="128" y="64" />
 		</Size>
