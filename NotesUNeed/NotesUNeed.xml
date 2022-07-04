@@ -3859,7 +3859,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad>
+			<OnLoad inherit="prepend">
 				tinsert(UISpecialFrames,"NuN_ChatFrame");
 				self.type = "Empty";
 			</OnLoad>
@@ -6003,8 +6003,6 @@
 			<OnLoad inherit="prepend">
 				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
 				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-				self.type = "Empty";
-				self.subType = "Empty";
 			</OnLoad>
 			<OnShow>
 				NuN_Tooltip:SetAlpha(1);
@@ -6407,7 +6405,7 @@
 					</Layer>
 				</Layers>
 				<Scripts>
-					<OnShow>
+					<OnShow inherit="prepend">
 						NuNFrameScaleSlider_OnShow(self);
 					</OnShow>
 					<OnValueChanged>
@@ -6546,9 +6544,9 @@
 			</Slider>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				<!-- self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b); -->
-				<!-- self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b); -->
+			<OnLoad inherit="prepend">
+				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 			</OnLoad>
 		</Scripts>
 	</Frame>
