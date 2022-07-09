@@ -1,5 +1,6 @@
 <Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd" xmlns="http://www.blizzard.com/wow/ui/">
 	<Script file="NotesUNeed_Constants.lua" />
+	<Script file="NotesUNeed_Frames.lua" />
 	<Script file="Localisation.lua" />
 	<Script file="Localisation.de.lua" />
 	<Script file="Localisation.fr.lua" />
@@ -5995,30 +5996,6 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
-	<GameTooltip name="NuN_Tooltip" inherits="GameTooltipTemplate, BackdropTemplate" parent="UIParent">
-		<KeyValues>
-			<KeyValue key="backdropInfo" value="NUN_BACKDROP_TOOLTIP_16_16" type="global" />
-		</KeyValues>
-		<Scripts>
-			<OnLoad inherit="prepend">
-				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-			</OnLoad>
-			<OnShow>
-				NuN_Tooltip:SetAlpha(1);
-				<!-- HACK: Need to replace WorldMapTooltip -->
-				<!-- if ( WorldMapTooltip and WorldMapFrame:IsVisible() ) then
-					NuN_Tooltip:SetAlpha( WorldMapTooltip:GetAlpha() );
-				else
-				  NuN_Tooltip:SetAlpha( GameTooltip:GetAlpha() );
-				end
-				self.fadeStartTime = 0; -->
-			</OnShow>
-			<OnHide>
-				NuN_Tooltip_OnHide();
-			</OnHide>
-		</Scripts>
-	</GameTooltip>
 	<Frame name="NuN_PinnedTooltipControl" parent="ItemRefTooltip" toplevel="true" frameStrata="HIGH">
 		<Scripts>
 			<OnShow>
@@ -6029,101 +6006,6 @@
 			</OnHide>
 		</Scripts>
 	</Frame>
-	<GameTooltip name="NuN_PinnedTooltip" inherits="GameTooltipTemplate, BackdropTemplate" parent="UIParent" toplevel="true" movable="true" frameStrata="HIGH" enableMouse="true">
-		<!-- <KeyValues>
-			<KeyValue key="backdropInfo" value="NUN_BACKDROP_TOOLTIP_16_16" type="global" />
-		</KeyValues> -->
-		<Size>
-			<AbsDimension x="128" y="64" />
-		</Size>
-		<Anchors>
-			<Anchor point="TOP">
-				<Offset>
-					<AbsDimension x="0" y="-90" />
-				</Offset>
-			</Anchor>
-		</Anchors>
-		<Frames>
-			<Button name="NuN_PinnedCloseButton">
-				<Size>
-					<AbsDimension x="32" y="32" />
-				</Size>
-				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="1" y="0" />
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						HideUIPanel(NuN_PinnedTooltip);
-					</OnClick>
-				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up" />
-				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down" />
-				<HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD" />
-			</Button>
-			<Button name="NuN_PinnedEditButton" inherits="UIPanelButtonTemplate">
-				<Size>
-					<AbsDimension x="24" y="24" />
-				</Size>
-				<Anchors>
-					<Anchor point="RIGHT" relativeTo="NuN_PinnedCloseButton" relativePoint="LEFT">
-						<Offset>
-							<AbsDimension x="6" y="0" />
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Layers>
-					<Layer>
-						<Texture name="NuN_PinnedTTEditIcon" file="Interface\Buttons\UI-GuildButton-PublicNote-Up">
-							<Size>
-								<AbsDimension x="10" y="10" />
-							</Size>
-							<Anchors>
-								<Anchor point="CENTER" />
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnClick>
-						NuN_PinnedTT_OnClick();
-					</OnClick>
-					<OnEnter>
-						NuN_DisplayTooltip(self,"NUN_TT_PIN_EDIT_TXT");
-					</OnEnter>
-					<OnLeave>
-						NuN_Tooltip:Hide();
-					</OnLeave>
-					<OnShow>
-						NuN_PinnedTooltip:SetAlpha( GameTooltip:GetAlpha() );
-					</OnShow>
-					<OnHide>
-						NuN_PinnedTT_OnHide();
-					</OnHide>
-				</Scripts>
-			</Button>
-		</Frames>
-		<Scripts>
-			<OnLoad inherit="prepend">
-				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
-				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
-				self:RegisterForDrag("LeftButton");
-				self.type = "Empty";
-				self.subType = "Empty";
-			</OnLoad>
-			<OnDragStart>
-				self:StartMoving();
-			</OnDragStart>
-			<OnDragStop>
-				self:StopMovingOrSizing();
-				ValidateFramePosition(self);
-				NuN_FlagMoved();
-			</OnDragStop>
-		</Scripts>
-	</GameTooltip>
 	<!-- <Frame name="NuN_MapTooltipControl" parent="WorldMapTooltip">
 		<Scripts>
 			<OnShow>
@@ -6154,6 +6036,7 @@
 		</Scripts>
 	</Frame> -->
 	<!-- Buttons integrated in to the Original Friends/Ignores/Guild Panels -->
+	<!-- TODO: Figure out an updated way to handle button on the friends/guild lists. -->
 	<!-- <Button name="NuN_FriendNotesButton1" inherits="NuN_NoteButtonTemplate" parent="FriendsFrameFriendsScrollFrameButton1" id="1" />
 	<Button name="NuN_FriendNotesButton2" inherits="NuN_NoteButtonTemplate" parent="FriendsFrameFriendsScrollFrameButton2" id="2" />
 	<Button name="NuN_FriendNotesButton3" inherits="NuN_NoteButtonTemplate" parent="FriendsFrameFriendsScrollFrameButton3" id="3" />

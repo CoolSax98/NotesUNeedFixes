@@ -1,4 +1,3 @@
--- Testing
 --[[
 
 Some General Developer Notes
@@ -70,14 +69,11 @@ MapNotes integration			NotesUNeed allows creation of MapNotes at the Player's cu
 						
 ]] --
 
--- NOTE - Seems to be fixed-- FIXME: Save after editing an existing is broken (FIND THIS)
--- FIXME: item and link would create a note with some keybinds, and the item would be saved in the note
--- it would create a new note with the color of the item (FIND THIS)
--- FIXME: Map Notes integration not working (FIND THIS)
+-- ENHANCEMENT: For Map notes
+-- IDEA: connect 2 notes with a line, with a directional arrow
+-- IDEA: Custom map icons, variety of shapes and colors. (module for handynotes)
 -- FIXME: Sometimes in a raid and can't target a player, it targets someone else instead (may not be our problem)
 -- FIXME: World boss, click find group, and no group listed, click start group, it creates a group for SoD raid
---TODO: Learn how about saving and loading of notes.
--- BUG: When you alt click a link of an item that already has a note (old note), it creates an new note for the item instead of opening the old note. Saving the new note breaks the link to the old note.
 
 NotesUNeed = {
 	locals = { player = {} },
@@ -308,7 +304,7 @@ locals.nameLastAttemptedIgnoreUpdate = "";
 locals.linkRefInjectionMutex = nil;
 
 locals.NuNDebug = false;
-locals.debugging_msg_hooks = true;
+locals.debugging_msg_hooks = false;
 locals.processAddMessage = true;
 
 
@@ -497,8 +493,10 @@ function NuN_InitializeUpvalues()
 	NuNDropDown_ClassH = _G.NuNDropDown_ClassH;
 	NuNDropDown_PVPRankH = _G.NuNDropDown_PVPRankH;
 
-	NuN_Tooltip = _G.NuN_Tooltip;
-	NuN_PinnedTooltip = _G.NuN_PinnedTooltip;
+	NuN_Tooltip = NuN_TooltipNew;  -- NOTE: New non-XML tooltip object
+	-- NuN_Tooltip = _G.NuN_Tooltip;
+	NuN_PinnedTooltip = NuN_PinnedTooltipNew;  -- NOTE: New non-XML tooltip object
+	-- NuN_PinnedTooltip = _G.NuN_PinnedTooltip;
 	NuN_MapTooltip = _G.NuN_MapTooltip;
 end
 
@@ -3028,6 +3026,7 @@ function NuN_OnLoad(self)
 	-- with the guild notes buttons, when I'm trying to reparent them to the guild frame container buttons, so they don't show up.  gonna put this off till next
 	-- release, however.
 	locals.currentGuildRosterView = "playerStatus";
+	--[[ -- NOTE: Disabling GuildFrame hooks
 	if GuildFrame ~= nil then
 		hooksecurefunc("GuildRoster_Update", NuNNew_GuildStatus_Update);
 		hooksecurefunc("GuildRoster_UpdateTradeSkills", NuNNew_GuildStatus_Update);
@@ -3039,6 +3038,7 @@ function NuN_OnLoad(self)
 			GuildRoster_SetView(GetCVar("guildRosterView"));
 		end
 	end
+	]]
 	hooksecurefunc("FriendsList_Update", NuNNew_FriendsList_Update);
 	hooksecurefunc("IgnoreList_Update", NuNNew_IgnoreList_Update);
 	hooksecurefunc("WhoList_Update", NuNNew_WhoList_Update);
@@ -8292,7 +8292,8 @@ function NuN_DateStamp()
 end
 
 function NuNGNote_DateStamp()
-	NuNGNoteTextScroll:SetText(NuNGNoteTextScroll:GetText() .. "\n" .. NuNF.NuN_GetDateStamp());
+	NuNGNoteTextScroll:SetText(NuNGNoteTextScroll:GetText() .. "\n\n" .. NuNF.NuN_GetDateStamp() .. " ");
+	NuNGNoteTextScroll:SetFocus();
 end
 
 function NuN_Loc()
