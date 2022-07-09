@@ -3026,19 +3026,20 @@ function NuN_OnLoad(self)
 	-- with the guild notes buttons, when I'm trying to reparent them to the guild frame container buttons, so they don't show up.  gonna put this off till next
 	-- release, however.
 	locals.currentGuildRosterView = "playerStatus";
-	--[[ -- NOTE: Disabling GuildFrame hooks
 	if GuildFrame ~= nil then
 		hooksecurefunc("GuildRoster_Update", NuNNew_GuildStatus_Update);
 		hooksecurefunc("GuildRoster_UpdateTradeSkills", NuNNew_GuildStatus_Update);
 		hooksecurefunc("GuildRosterButton_OnClick", NuNNew_GuildRosterButton_OnClick);
 
+		--[[ -- BUG: Not sure why this is required. Seems to cause issues when you try to interact with the context menu for the guild roster buttons.
 		if NuNHooks.NuNOriginal_GuildRoster_SetView == nil then
 			NuNHooks.NuNOriginal_GuildRoster_SetView = GuildRoster_SetView;
 			GuildRoster_SetView = NuN_InterceptGuildRoster_SetView;
 			GuildRoster_SetView(GetCVar("guildRosterView"));
 		end
+		-- ]]
 	end
-	]]
+
 	hooksecurefunc("FriendsList_Update", NuNNew_FriendsList_Update);
 	hooksecurefunc("IgnoreList_Update", NuNNew_IgnoreList_Update);
 	hooksecurefunc("WhoList_Update", NuNNew_WhoList_Update);
@@ -4958,11 +4959,11 @@ function NuN_OnEvent(self, event, ...)
 			hooksecurefunc("GuildRoster_Update", NuNNew_GuildStatus_Update);
 			hooksecurefunc("GuildRoster_UpdateTradeSkills", NuNNew_GuildStatus_Update);
 			hooksecurefunc("GuildRosterButton_OnClick", NuNNew_GuildRosterButton_OnClick);
-			if NuNHooks.NuNOriginal_GuildRoster_SetView == nil then
-				NuNHooks.NuNOriginal_GuildRoster_SetView = GuildRoster_SetView;
-				GuildRoster_SetView = NuN_InterceptGuildRoster_SetView;
-				GuildRoster_SetView(GetCVar("guildRosterView"));
-			end
+			-- if NuNHooks.NuNOriginal_GuildRoster_SetView == nil then
+			-- 	NuNHooks.NuNOriginal_GuildRoster_SetView = GuildRoster_SetView;
+			-- 	GuildRoster_SetView = NuN_InterceptGuildRoster_SetView;
+			-- 	GuildRoster_SetView(GetCVar("guildRosterView"));
+			-- end
 		elseif (arg1 == "Prat-3.0") then
 			nun_msgf(" .. registering prat chat filters.");
 			NuN_RegisterChatFilter();
@@ -5945,6 +5946,7 @@ function NuNNew_IgnoreList_Update()
 	]]
 end
 
+-- REVIEW: Seems to be causing bugs in the guild roster.
 function NuN_InterceptGuildRoster_SetView(newView)
 	locals.currentGuildRosterView = newView or NuNC.DEFAULT_GUILDROSTERVIEW;
 
@@ -9114,7 +9116,7 @@ function NuN_ShowGuildNote()
 	if (numGuildMembers ~= nil) and (numGuildMembers > 0) then
 		contact.class = nil;
 		contact.race = nil;
-		local_player.currentNote.unit, gRank, gRankIndex, locals.discard, contact.class, locals.discard, locals.discard, gNote
+		local_player.currentNote.unit, gRank, gRankIndex, locals.discard, contact.class, locals.discard, gNote
 				, gOfficerNote, locals.discard = GetGuildRosterInfo(GetGuildRosterSelection());
 		if (local_player.currentNote.unit ~= nil) then
 			contact.guild = GetGuildInfo("player");
@@ -9175,9 +9177,11 @@ NuN_UpdateNoteButton = function(nBttn, nBttnID, refreshType)
 		end
 	end
 	local isGuildRefresh = (
-			refreshType == NuNC.UPDATETAG_GUILD_SUMMARY or refreshType == NuNC.UPDATETAG_GUILD_ROSTER or
-					refreshType == NuNC.GUILDFRAME_NEWS
-					or refreshType == NuNC.GUILDFRAME_REWARDS or refreshType == NuNC.GUILDFRAME_INFO_EVENTS);
+			refreshType == NuNC.UPDATETAG_GUILD_SUMMARY
+					or refreshType == NuNC.UPDATETAG_GUILD_ROSTER
+					or refreshType == NuNC.GUILDFRAME_NEWS
+					or refreshType == NuNC.GUILDFRAME_REWARDS
+					or refreshType == NuNC.GUILDFRAME_INFO_EVENTS);
 
 	--nun_msgf("refreshType:%s  isGuildRefresh:%s  FriendsFrameVisible:%s", tostring(refreshType), tostring(isGuildRefresh), tostring(FriendsFrame:IsVisible()));
 	if (bttnNoteAFlag and bttnNoteHFlag and bttnNoteNFlag and
@@ -9415,7 +9419,8 @@ function NuN_NoteButton_OnInteract(nBttnID, uAction)
 				SetGuildRosterSelection(memberGuildIndex);
 				GuildFrame.selectedGuildMember = memberGuildIndex;
 
-				GuildRoster_Update();
+				-- BUG: calling this here seems to cause an error if you the user tries to do something to a member of the roster list (i.e. right click and copy name to clipboard, or remove from guild)
+				-- GuildRoster_Update();
 				if (locals.NuNDataPlayers[pBttnTxt]) then
 					if ((IsAltKeyDown()) and (NuNFrame:IsVisible()) and (pBttnTxt ~= local_player.currentNote.unit)) then
 						local insrt = "<ALT:" .. pBttnTxt .. ">";
@@ -9494,7 +9499,7 @@ function NuN_GetName_FrameButton(lBttnID, refreshType)
 			local scrollOffset = HybridScrollFrame_GetOffset(GuildRosterContainer);
 			guildIndex = lBttnID + scrollOffset;
 		end
-		--[-[
+		--[[
 		if locals.NuNDebug then
 			if lBttn and lBttn.string2 then
 				nun_msgf("NuN_GetName_FrameButton >>>> mode:%s   guildIndex:%s   lBttnID:%s   lBttn:%s",
