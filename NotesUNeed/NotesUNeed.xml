@@ -6,7 +6,7 @@
 	<Script file="Localisation.fr.lua" />
 	<Script file="NotesUNeed_Export.lua" />
 	<Script file="NotesUNeed.lua" />
-	<!-- <Script file="Modules\NUN_PratIntegration.lua" /> -->
+	<Script file="Modules\NUN_PratIntegration.lua" />
 
 	<!-- @debug@
 	<Button name="ReloadButton" parent="UIParent">
@@ -992,7 +992,7 @@
 						</ScrollChild>
 					</ScrollFrame>
 					<!-- Buttons for Saving and Cancelling -->
-					<Button enabled="false" name="NuNButtonSaveNote" inherits="NuNButtonTemplate" text="NUN_SAVE">
+					<Button name="NuNButtonSaveNote" inherits="NuNButtonTemplate" text="NUN_SAVE">
 						<Anchors>
 							<Anchor point="CENTER" relativePoint="BOTTOMRIGHT">
 								<Offset>
@@ -1055,7 +1055,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button enabled="false" name="NuNButtonTarget" inherits="NuNButtonTemplate" text="NUN_TARGET">
+					<Button name="NuNButtonTarget" inherits="NuNButtonTemplate" text="NUN_TARGET">
 						<Anchors>
 							<Anchor point="CENTER" relativePoint="BOTTOMLEFT">
 								<Offset>
@@ -1085,6 +1085,9 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
+							<OnLoad>
+								self:Disable();
+							</OnLoad>
 							<OnClick>
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 								NuN_Who();
@@ -1121,6 +1124,9 @@
 							</Anchor>
 						</Anchors>
 						<Scripts>
+							<OnLoad>
+								self:Disable();
+							</OnLoad>
 							<OnClick>
 								PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 								NuN_Loc();
@@ -5199,7 +5205,7 @@
 							</OnLeave>
 						</Scripts>
 					</Button>
-					<Button name="NuNMapNoteButton" inherits="NuNButtonTemplate" text="NUN_MAPNOTES_TXT">
+					<!-- <Button name="NuNMapNoteButton" inherits="NuNButtonTemplate" text="NUN_MAPNOTES_TXT">
 						<Size>
 							<AbsDimension x="122" y="21" />
 						</Size>
@@ -5222,15 +5228,15 @@
 								NuN_Tooltip:Hide();
 							</OnLeave>
 						</Scripts>
-					</Button>
+					</Button> -->
 					<Button name="NuNGColourButton" inherits="UIPanelButtonTemplate">
 						<Size>
 							<AbsDimension x="21" y="21" />
 						</Size>
 						<Anchors>
-							<Anchor point="RIGHT" relativeTo="NuNMapNoteButton" relativePoint="LEFT">
+							<Anchor point="RIGHT" relativeTo="NuNGOpenChatButton" relativePoint="LEFT">
 								<Offset>
-									<AbsDimension x="1" y="1" />
+									<AbsDimension x="-10" y="1" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -6016,14 +6022,14 @@
 			</OnHide>
 		</Scripts>
 	</Frame> -->
-	<GameTooltip name="NuN_MapTooltip" inherits="GameTooltipTemplate" parent="UIParent">
+	<!-- <GameTooltip name="NuN_MapTooltip" inherits="GameTooltipTemplate" parent="UIParent">
 		<Scripts>
 			<OnLoad>
-				<!-- self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b); -->
-				<!-- self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b); -->
+				self:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b);
+				self:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b);
 			</OnLoad>
 		</Scripts>
-	</GameTooltip>
+	</GameTooltip> -->
 	<!-- VERY BIZARRE THAT THE PARENT BELOW IS "NuN_MapTooltipControl" !!! -->
 	<!-- <Frame name="NuN_TipBuddyTooltipControl" parent="NuN_MapTooltipControl">
 		<Scripts>
@@ -6083,7 +6089,7 @@
 	<Button name="NuN_WhoNotesButton15" inherits="NuN_NoteButtonTemplate2" parent="WhoFrameButton15" id="15" />
 	<Button name="NuN_WhoNotesButton16" inherits="NuN_NoteButtonTemplate2" parent="WhoFrameButton16" id="16" />
 	<Button name="NuN_WhoNotesButton17" inherits="NuN_NoteButtonTemplate2" parent="WhoFrameButton17" id="17" /> -->
-	<Button name="NuN_GuildRosterButton1" inherits="NuN_NoteButtonTemplate2" hidden="true" parent="GuildRosterContainerButton1" id="1" />
+	<!-- <Button name="NuN_GuildRosterButton1" inherits="NuN_NoteButtonTemplate2" hidden="true" parent="GuildRosterContainerButton1" id="1" />
 	<Button name="NuN_GuildRosterButton2" inherits="NuN_NoteButtonTemplate2" hidden="true" parent="GuildRosterContainerButton2" id="2" />
 	<Button name="NuN_GuildRosterButton3" inherits="NuN_NoteButtonTemplate2" hidden="true" parent="GuildRosterContainerButton3" id="3" />
 	<Button name="NuN_GuildRosterButton4" inherits="NuN_NoteButtonTemplate2" hidden="true" parent="GuildRosterContainerButton4" id="4" />
@@ -6098,7 +6104,7 @@
 	<Button name="NuN_GuildRosterButton13" inherits="NuN_NoteButtonTemplate2" hidden="true" parent="GuildRosterContainerButton13" id="13" />
 	<Button name="NuN_GuildRosterButton14" inherits="NuN_NoteButtonTemplate2" hidden="true" parent="GuildRosterContainerButton14" id="14" />
 	<Button name="NuN_GuildRosterButton15" inherits="NuN_NoteButtonTemplate2" hidden="true" parent="GuildRosterContainerButton15" id="15" />
-	<Button name="NuN_GuildRosterButton16" inherits="NuN_NoteButtonTemplate2" hidden="true" parent="GuildRosterContainerButton16" id="16" />
+	<Button name="NuN_GuildRosterButton16" inherits="NuN_NoteButtonTemplate2" hidden="true" parent="GuildRosterContainerButton16" id="16" /> -->
 
 	<!--<Button name="NuN_QuestNotesButton1" inherits="NuN_NoteButtonTemplate4" parent="QuestLogTitle1" id="1" hidden="false"/>
 	<Button name="NuN_QuestNotesButton2" inherits="NuN_NoteButtonTemplate4" parent="QuestLogTitle2" id="2" hidden="false"/>

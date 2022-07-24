@@ -75,6 +75,8 @@ MapNotes integration			NotesUNeed allows creation of MapNotes at the Player's cu
 -- FIXME: Sometimes in a raid and can't target a player, it targets someone else instead (may not be our problem)
 -- FIXME: World boss, click find group, and no group listed, click start group, it creates a group for SoD raid
 
+
+-- NotesUNeedAlso = LibStub("AceAddon-3.0"):NewAddon("NotesUNeedAlso", "AceEvent-3.0", "AceConsole-3.0")
 NotesUNeed = {
 	locals = { player = {} },
 	Strings = {},
@@ -497,7 +499,7 @@ function NuN_InitializeUpvalues()
 	-- NuN_Tooltip = _G.NuN_Tooltip;
 	NuN_PinnedTooltip = NuN_PinnedTooltipNew;  -- NOTE: New non-XML tooltip object
 	-- NuN_PinnedTooltip = _G.NuN_PinnedTooltip;
-	NuN_MapTooltip = _G.NuN_MapTooltip;
+	-- NuN_MapTooltip = _G.NuN_MapTooltip;
 end
 
 -- NuN States
@@ -598,7 +600,7 @@ end
 local function nun_msgf(str, ...)
 	--[===[@debug@
 	NuN_Message(strformat(str, ...));
---@end-debug@]===]
+	-- @end-debug@]===]
 end
 
 -- simple wrapper for hiding the main notes frame, in cases where injecting some debugging is needed.
@@ -882,9 +884,9 @@ StaticPopupDialogs["NUN_MASS_DELETE_CONFIRM"] = {
 		elseif (WhoFrame:IsVisible()) then
 			NuNNew_WhoList_Update();
 		end
-		if (GuildFrame and GuildFrame:IsVisible()) then
-			NuNNew_GuildStatus_Update();
-		end
+		-- if (GuildFrame and GuildFrame:IsVisible()) then
+		-- NuNNew_GuildStatus_Update();
+		-- end
 		NuN_Message(NUN_FINISHED_PROCESSING .. " - " .. NUN_MASS_DELETE .. " : " .. numDeleted .. " " .. notesTxt);
 		if (NuNSearchFrame:IsVisible()) then
 			NuNSearchFrame:Hide();
@@ -1562,7 +1564,8 @@ function NuNF.NuN_GetLoc()
 	local myCID, myC, mySubZ, myZID, myZ, px, py, coords;
 	local loc = false;
 
-	-- nooping this call for now -- TODO: coolsax: replace with map api updates
+	-- nooping this call for now
+	-- TODO: coolsax: replace with map api updates
 	-- TODO: discuss what information we actually want to store in the notes
 	return "";
 
@@ -3017,44 +3020,46 @@ function NuN_OnLoad(self)
 	self:RegisterEvent("QUEST_LOG_UPDATE");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 	self:RegisterEvent("VARIABLES_LOADED");
-	self:RegisterEvent("GUILD_ROSTER_UPDATE"); -- 5.60
+	-- self:RegisterEvent("GUILD_ROSTER_UPDATE"); -- 5.60
 	self:RegisterEvent("ADDON_LOADED");
+
+	hooksecurefunc("PaperDollItemSlotButton_OnModifiedClick", NuNNew_PaperDollItemSlotButton_OnModifiedClick);
 
 	-- TODO: hmmmm, should we move all these functions into a seperate "hook" method so that we can also be really nice and neat and use an unhook method?
 	-- now we can load the GuildUI, so that we can hook the guild status update functions
 	-- TODO: orgevo: I really don't like force-loading the GuildUI here, so early in the loading process.  It could be loaded later, but I'm doing something wrong
 	-- with the guild notes buttons, when I'm trying to reparent them to the guild frame container buttons, so they don't show up.  gonna put this off till next
 	-- release, however.
-	locals.currentGuildRosterView = "playerStatus";
-	if GuildFrame ~= nil then
-		hooksecurefunc("GuildRoster_Update", NuNNew_GuildStatus_Update);
-		hooksecurefunc("GuildRoster_UpdateTradeSkills", NuNNew_GuildStatus_Update);
-		hooksecurefunc("GuildRosterButton_OnClick", NuNNew_GuildRosterButton_OnClick);
+	-- REMOVE: removing all the guild, wholist, quest, world map, friend, and ignore hooks as they are required at this time. May revisit this in the future.
+	-- locals.currentGuildRosterView = "playerStatus";
+	-- if GuildFrame ~= nil then
+	-- hooksecurefunc("GuildRoster_Update", NuNNew_GuildStatus_Update);
+	-- hooksecurefunc("GuildRoster_UpdateTradeSkills", NuNNew_GuildStatus_Update);
+	-- hooksecurefunc("GuildRosterButton_OnClick", NuNNew_GuildRosterButton_OnClick);
 
-		--[[ -- BUG: Not sure why this is required. Seems to cause issues when you try to interact with the context menu for the guild roster buttons.
+	--[[ -- BUG: Not sure why this is required. Seems to cause issues when you try to interact with the context menu for the guild roster buttons.
 		if NuNHooks.NuNOriginal_GuildRoster_SetView == nil then
 			NuNHooks.NuNOriginal_GuildRoster_SetView = GuildRoster_SetView;
 			GuildRoster_SetView = NuN_InterceptGuildRoster_SetView;
 			GuildRoster_SetView(GetCVar("guildRosterView"));
 		end
 		-- ]]
-	end
+	-- end
 
-	hooksecurefunc("FriendsList_Update", NuNNew_FriendsList_Update);
-	hooksecurefunc("IgnoreList_Update", NuNNew_IgnoreList_Update);
-	hooksecurefunc("WhoList_Update", NuNNew_WhoList_Update);
+	-- hooksecurefunc("FriendsList_Update", NuNNew_FriendsList_Update);
+	-- hooksecurefunc("IgnoreList_Update", NuNNew_IgnoreList_Update);
+	-- hooksecurefunc("WhoList_Update", NuNNew_WhoList_Update);
 	-- hooksecurefunc("QuestLog_Update", NuNNew_QuestLog_Update); -- This is throwing errors 8.0.1
 	-- hooksecurefunc("AbandonQuest", NuNNew_AbandonQuest);
-	hooksecurefunc("QuestDetailAcceptButton_OnClick", NuNNew_QuestDetailAcceptButton_OnClick);
-	hooksecurefunc("QuestRewardCompleteButton_OnClick", NuNNew_QuestRewardCompleteButton_OnClick);
+	-- hooksecurefunc("QuestDetailAcceptButton_OnClick", NuNNew_QuestDetailAcceptButton_OnClick);
+	-- hooksecurefunc("QuestRewardCompleteButton_OnClick", NuNNew_QuestRewardCompleteButton_OnClick);
 	-- hooksecurefunc("FriendsFrameFriendButton_OnClick", NuNNew_FriendsFrameFriendButton_OnClick);
 	-- hooksecurefunc("FriendsFrameIgnoreButton_OnClick", NuNNew_FriendsFrameIgnoreButton_OnClick);
 	-- hooksecurefunc("FriendsFrameWhoButton_OnClick", NuNNew_FriendsFrameWhoButton_OnClick);
-	hooksecurefunc("PaperDollItemSlotButton_OnModifiedClick", NuNNew_PaperDollItemSlotButton_OnModifiedClick);
-	--	hooksecurefunc("ToggleWorldMap", NuNNew_ToggleWorldMap);		-- TODO: orgevo: hmm, thinking about deprecating support for these two map addons (alpha map, and map notes)
-	hooksecurefunc("ToggleFrame", NuNNew_ToggleWorldMap);
+	-- hooksecurefunc("ToggleWorldMap", NuNNew_ToggleWorldMap);		-- TODO: orgevo: hmm, thinking about deprecating support for these two map addons (alpha map, and map notes)
+	-- hooksecurefunc("ToggleFrame", NuNNew_ToggleWorldMap);
 
-	--	hooksecurefunc("QuestWatch_Update", NuN_QuestWatch_Update);		-- TODO: orgevo: update and restore this code
+	-- hooksecurefunc("QuestWatch_Update", NuN_QuestWatch_Update);		-- TODO: orgevo: update and restore this code
 	-- hooksecurefunc("SetAbandonQuest", NuNNew_SetAbandonQuest);
 	-- hooksecurefunc("AddFriend", NuNNew_AddFriend);
 	-- hooksecurefunc("RemoveFriend", NuNNew_RemoveFriend);
@@ -4181,17 +4186,18 @@ function NuN_WriteNote()
 		end
 	end
 
+	-- REMOVE: friend, ignore, guild, wholist
 	-- update the note status in visible Blizzard frames to show note now exists
-	if (FriendsListFrame:IsVisible()) then
-		NuNNew_FriendsList_Update();
-	elseif (IgnoreListFrame:IsVisible()) then
-		NuNNew_IgnoreList_Update();
-	elseif (WhoFrame:IsVisible()) then
-		NuNNew_WhoList_Update();
-	end
-	if (GuildFrame and GuildFrame:IsVisible()) then
-		NuNNew_GuildStatus_Update();
-	end
+	-- if (FriendsListFrame:IsVisible()) then
+	-- 	NuNNew_FriendsList_Update();
+	-- elseif (IgnoreListFrame:IsVisible()) then
+	-- 	NuNNew_IgnoreList_Update();
+	-- elseif (WhoFrame:IsVisible()) then
+	-- 	NuNNew_WhoList_Update();
+	-- end
+	-- if (GuildFrame and GuildFrame:IsVisible()) then
+	-- 	NuNNew_GuildStatus_Update();
+	-- end
 	if (contact.guild ~= nil) then
 		locals.NuNDataPlayers[local_player.currentNote.unit].guild = contact.guild;
 	end
@@ -4580,9 +4586,9 @@ function NuNGNote_WriteNote(noteName)
 		-- Update Note Buttons to reflect the fact it has been saved e.g. can now delete
 
 		NuNGNoteButtonDelete:Enable();
-		if ((MapNotes_OnLoad) or (MetaMap_Quicknote)) then
-			NuNMapNoteButton:Enable();
-		end
+		-- if ((MapNotes_OnLoad) or (MetaMap_Quicknote)) then
+		-- 	NuNMapNoteButton:Enable();
+		-- end
 		NuNGOpenChatButton:Enable();
 		NuN_GTTCheckBox:Show();
 		NuN_GTTCheckBox:SetChecked(false);
@@ -4694,7 +4700,7 @@ local function OnNotesUNeedFullyLoaded(self, ...)
 	NuN_PinnedTooltip:SetScale(NuNSettings[local_player.realmName].tScale);
 	NuN_Tooltip:SetScale(NuNSettings[local_player.realmName].tScale);
 	-- WorldMapTooltip:SetScale(NuNSettings[local_player.realmName].mScale); -- REMOVE: WorldMapTooltip is not valid anymore
-	NuN_MapTooltip:SetScale(NuNSettings[local_player.realmName].mScale);
+	-- NuN_MapTooltip:SetScale(NuNSettings[local_player.realmName].mScale);
 	NuNPopup:SetScale(NuNSettings[local_player.realmName].mScale);
 
 	if (MapNotes_OnLoad) then
@@ -4942,23 +4948,24 @@ function NuN_OnEvent(self, event, ...)
 					OnNotesUNeedFullyLoaded(self, ...);
 				end
 			end
-		elseif (arg1 == "Blizzard_AuctionUI" or arg1 == "Blizzard_TalentUI" or arg1 == "Blizzard_TrainerUI") then
-			NuNF.NotesUNeed_RegisterFramesForClicks(1000);
-		elseif (arg1 == "Blizzard_GuildUI") then
-			-- these buttons didn't exist when we were first loaded, so the "parent" binding in our xml file couldn't be resolved; therefore, we need to set the
-			-- correct parent now that they've been loaded.
-			for btnIndex = 1, NuNC.MAX_GUILDROSTER_ROWS do
-				nunGuildRosterItemButton = _G["NuN_GuildRosterButton" .. btnIndex];
-				guildRosterItemButton = _G["GuildRosterContainerButton" .. btnIndex];
-				if (nunGuildRosterItemButton and guildRosterItemButton) then
-					nunGuildRosterItemButton:SetParent(guildRosterItemButton);
-				end
-			end
+			-- REMOVE for now
+			-- elseif (arg1 == "Blizzard_AuctionUI" or arg1 == "Blizzard_TalentUI" or arg1 == "Blizzard_TrainerUI") then
+			-- 	NuNF.NotesUNeed_RegisterFramesForClicks(1000);
+			-- elseif (arg1 == "Blizzard_GuildUI") then
+			-- 	-- these buttons didn't exist when we were first loaded, so the "parent" binding in our xml file couldn't be resolved; therefore, we need to set the
+			-- 	-- correct parent now that they've been loaded.
+			-- 	for btnIndex = 1, NuNC.MAX_GUILDROSTER_ROWS do
+			-- 		nunGuildRosterItemButton = _G["NuN_GuildRosterButton" .. btnIndex];
+			-- 		guildRosterItemButton = _G["GuildRosterContainerButton" .. btnIndex];
+			-- 		if (nunGuildRosterItemButton and guildRosterItemButton) then
+			-- 			nunGuildRosterItemButton:SetParent(guildRosterItemButton);
+			-- 		end
+			-- 	end
 
-			GuildFrame = _G.GuildFrame;
-			hooksecurefunc("GuildRoster_Update", NuNNew_GuildStatus_Update);
-			hooksecurefunc("GuildRoster_UpdateTradeSkills", NuNNew_GuildStatus_Update);
-			hooksecurefunc("GuildRosterButton_OnClick", NuNNew_GuildRosterButton_OnClick);
+			-- 	GuildFrame = _G.GuildFrame;
+			-- 	hooksecurefunc("GuildRoster_Update", NuNNew_GuildStatus_Update);
+			-- 	hooksecurefunc("GuildRoster_UpdateTradeSkills", NuNNew_GuildStatus_Update);
+			-- 	hooksecurefunc("GuildRosterButton_OnClick", NuNNew_GuildRosterButton_OnClick);
 			-- if NuNHooks.NuNOriginal_GuildRoster_SetView == nil then
 			-- 	NuNHooks.NuNOriginal_GuildRoster_SetView = GuildRoster_SetView;
 			-- 	GuildRoster_SetView = NuN_InterceptGuildRoster_SetView;
@@ -4968,18 +4975,19 @@ function NuN_OnEvent(self, event, ...)
 			nun_msgf(" .. registering prat chat filters.");
 			NuN_RegisterChatFilter();
 		end
+		-- REMOVE: This is no longer needed
 		-- Get Delayed Who Event information on players
-	elseif ((event == "WHO_LIST_UPDATE") and (NuN_WhoReturnStruct.func)) then -- 5.60
-		NuN_WhoReturnStruct.func(); -- 5.60
-		NuN_WhoReturnStruct.func = nil;  -- 5.60
-		NuN_WhoReturnStruct.name = nil;  -- 5.60
-		NuN_WhoReturnStruct.timeLimit = nil;  -- 5.60
-		NuN_WhoReturnStruct.secondTry = nil;
-		NuN_suppressExtraWho = nil;
-		if ((NuNSettings[local_player.realmName]) and (NuNSettings[local_player.realmName].alternativewho)) then
-			C_FriendList.SetWhoToUi(0); -- 5.60
-			FriendsFrame:RegisterEvent("WHO_LIST_UPDATE"); -- 5.60
-		end
+		-- elseif ((event == "WHO_LIST_UPDATE") and (NuN_WhoReturnStruct.func)) then -- 5.60
+		-- 	NuN_WhoReturnStruct.func(); -- 5.60
+		-- 	NuN_WhoReturnStruct.func = nil;  -- 5.60
+		-- 	NuN_WhoReturnStruct.name = nil;  -- 5.60
+		-- 	NuN_WhoReturnStruct.timeLimit = nil;  -- 5.60
+		-- 	NuN_WhoReturnStruct.secondTry = nil;
+		-- 	NuN_suppressExtraWho = nil;
+		-- 	if ((NuNSettings[local_player.realmName]) and (NuNSettings[local_player.realmName].alternativewho)) then
+		-- 		C_FriendList.SetWhoToUi(0); -- 5.60
+		-- 		FriendsFrame:RegisterEvent("WHO_LIST_UPDATE"); -- 5.60
+		-- 	end
 
 		-- Update Ignores
 	elseif (event == "IGNORELIST_UPDATE") then
@@ -5010,6 +5018,7 @@ function NuN_OnEvent(self, event, ...)
 		--		NuN_RegisterChatFilter();
 	elseif (event == "UPDATE_CHAT_WINDOWS") then
 		NuN_RegisterChatFilter();
+
 		-- update Friend notes
 	elseif (event == "FRIENDLIST_UPDATE") then
 		if (locals.NuN_FriendUpdate.func) then
@@ -5025,6 +5034,7 @@ function NuN_OnEvent(self, event, ...)
 			end
 		end
 
+		-- REMOVE: Not sure why this is needed.
 		-- player levelling up notes
 	elseif ((event == "PLAYER_LEVEL_UP") and (NuNSettings[local_player.realmName].autoN)) then
 		local newLevel, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 = ...;
@@ -5034,6 +5044,7 @@ function NuN_OnEvent(self, event, ...)
 			NuNF.NuN_CreateLevelUpNote(levelUpName, newLevel, arg2, arg3, arg5, arg6, arg7, arg8, arg9);
 		end
 
+		--REMOVE: This is no longer needed, revisit this later
 		-- Mainly for auto noting people you Party with, and counting the number of times you have partied with them
 	elseif (event == "GROUP_MEMBERS_CHANGED") then
 		if (NuNSettings[local_player.realmName].autoP) then
@@ -5067,25 +5078,26 @@ function NuN_OnEvent(self, event, ...)
 		NuN_QuestWatch_Update();
 --]]
 		-- This could be a problem if it gets triggered for every member in the Guild.... but if it gets triggered once when the Guild Roster is updated as a whole, then OK....
-	elseif (event == "GUILD_ROSTER_UPDATE") then
-		if (
-				(local_player.realmName) and (NuNSettings[local_player.realmName]) and
-						(NuNSettings[local_player.realmName].autoGuildNotes)) then
-			if (locals.NuNDebug) then
-				nun_msgf("GUILD_ROSTER_UPDATE  syncGuildNotes:%s", tostring(NuN_State.NuN_syncGuildMemberNotes));
-			end
-			if (NuN_State.NuN_syncGuildMemberNotes) then
-				NuN_State.NuN_syncGuildMemberNotes = false;
-				if (NuNSettings[local_player.realmName].autoGRVerbose) then
-					NuN_SyncGuildMemberNotes("Startup");
-				else
-					NuN_SyncGuildMemberNotes();
-				end
+		--REMOVE: This is no longer needed
+		-- elseif (event == "GUILD_ROSTER_UPDATE") then
+		-- 	if (
+		-- 			(local_player.realmName) and (NuNSettings[local_player.realmName]) and
+		-- 					(NuNSettings[local_player.realmName].autoGuildNotes)) then
+		-- 		if (locals.NuNDebug) then
+		-- 			nun_msgf("GUILD_ROSTER_UPDATE  syncGuildNotes:%s", tostring(NuN_State.NuN_syncGuildMemberNotes));
+		-- 		end
+		-- 		if (NuN_State.NuN_syncGuildMemberNotes) then
+		-- 			NuN_State.NuN_syncGuildMemberNotes = false;
+		-- 			if (NuNSettings[local_player.realmName].autoGRVerbose) then
+		-- 				NuN_SyncGuildMemberNotes("Startup");
+		-- 			else
+		-- 				NuN_SyncGuildMemberNotes();
+		-- 			end
 
-			else
-				NuN_SyncGuildMemberNotes(NuNSettings[local_player.realmName].autoGRVerbose);
-			end
-		end
+		-- 		else
+		-- 			NuN_SyncGuildMemberNotes(NuNSettings[local_player.realmName].autoGRVerbose);
+		-- 		end
+		-- 	end
 
 		-- REMOVE: This is no longer needed. Will revist talent information in Dragonflight
 		-- elseif (event == "INSPECT_READY") then
@@ -5947,62 +5959,66 @@ function NuNNew_IgnoreList_Update()
 end
 
 -- REVIEW: Seems to be causing bugs in the guild roster.
-function NuN_InterceptGuildRoster_SetView(newView)
-	locals.currentGuildRosterView = newView or NuNC.DEFAULT_GUILDROSTERVIEW;
+-- REMOVE: disable this for now, removing guild roster stuff for now.
+-- function NuN_InterceptGuildRoster_SetView(newView)
+-- 	locals.currentGuildRosterView = newView or NuNC.DEFAULT_GUILDROSTERVIEW;
 
-	NuNHooks.NuNOriginal_GuildRoster_SetView(newView);
-	NuNNew_GuildStatus_Update();
-end
+-- 	NuNHooks.NuNOriginal_GuildRoster_SetView(newView);
+-- 	NuNNew_GuildStatus_Update();
+-- end
 
-function NuNNew_GuildStatus_Update()
-	local nunItemButton;
+-- REMOVE: disable this for now, removing guild roster stuff for now.
+-- function NuNNew_GuildStatus_Update()
+-- 	local nunItemButton;
 
-	if locals.currentGuildRosterView == nil then
-		locals.currentGuildRosterView = GetCVar("guildRosterView");
-		if locals.currentGuildRosterView == nil then
-			locals.currentGuildRosterView = NuNC.DEFAULT_GUILDROSTERVIEW;
-		end
-	end
-	--	nun_msgf("NuNNew_GuildStatus_Update.........%s...........", locals.currentGuildRosterView);
+-- 	if locals.currentGuildRosterView == nil then
+-- 		locals.currentGuildRosterView = GetCVar("guildRosterView");
+-- 		if locals.currentGuildRosterView == nil then
+-- 			locals.currentGuildRosterView = NuNC.DEFAULT_GUILDROSTERVIEW;
+-- 		end
+-- 	end
+-- 	--	nun_msgf("NuNNew_GuildStatus_Update.........%s...........", locals.currentGuildRosterView);
 
-	if GuildFrame then
-		for i = 1, NuNC.MAX_GUILDROSTER_ROWS, 1 do
-			nunItemButton = _G["NuN_GuildRosterButton" .. i];
-			if nunItemButton then
-				NuN_UpdateNoteButton(nunItemButton, i, NuNC.UPDATETAG_GUILD_ROSTER);
-			end
-		end
-	end
-end
+-- 	if GuildFrame then
+-- 		for i = 1, NuNC.MAX_GUILDROSTER_ROWS, 1 do
+-- 			nunItemButton = _G["NuN_GuildRosterButton" .. i];
+-- 			if nunItemButton then
+-- 				NuN_UpdateNoteButton(nunItemButton, i, NuNC.UPDATETAG_GUILD_ROSTER);
+-- 			end
+-- 		end
+-- 	end
+-- end
 
-function NuNNew_WhoList_Update()
-	local bttnIndx;
+-- REMOVE: disable this for now
+-- function NuNNew_WhoList_Update()
+-- 	local bttnIndx;
 
-	for i = 1, 17, 1 do
-		bttnIndx = _G["NuN_WhoNotesButton" .. i];
-		if bttnIndx then
-			NuN_UpdateNoteButton(bttnIndx, i, NuNC.UPDATETAG_WHO);
-		end
-	end
-end
+-- 	for i = 1, 17, 1 do
+-- 		bttnIndx = _G["NuN_WhoNotesButton" .. i];
+-- 		if bttnIndx then
+-- 			NuN_UpdateNoteButton(bttnIndx, i, NuNC.UPDATETAG_WHO);
+-- 		end
+-- 	end
+-- end
 
-function NuNNew_QuestLog_Update()
-	if ron_disabled then
+-- REMOVE: disable this for now. Removing quest stuff for now.
+-- function NuNNew_QuestLog_Update()
+-- 	if ron_disabled then
 
-		local bttnIndx;
+-- 		local bttnIndx;
 
-		NuNF.NuN_QuestLogButtons();
+-- 		NuNF.NuN_QuestLogButtons();
 
-		for i = 1, NuNC.NUN_QUESTLOG_BUTTONS, 1 do
-			bttnIndx = _G["NuN_QuestNotesButton" .. i];
-			if (bttnIndx) then
-				NuN_UpdateNoteButton(bttnIndx, i, NuNC.NUN_QUEST_C);
-			else
-				--			NuN_Message(NuNC.NUN_QUESTLOG_BUTTONS .. " | " .. i);
-			end
-		end
-	end
-end
+-- 		for i = 1, NuNC.NUN_QUESTLOG_BUTTONS, 1 do
+-- 			bttnIndx = _G["NuN_QuestNotesButton" .. i];
+-- 			if (bttnIndx) then
+-- 				NuN_UpdateNoteButton(bttnIndx, i, NuNC.NUN_QUEST_C);
+-- 			else
+-- 				--			NuN_Message(NuNC.NUN_QUESTLOG_BUTTONS .. " | " .. i);
+-- 			end
+-- 		end
+-- 	end
+-- end
 
 local function DecodeHyperlink(hyperlink)
 	if hyperlink and type(hyperlink) == "string" then
@@ -6014,8 +6030,8 @@ end
 ---Simplifies the item/spell link format in order to be used as the key for the notes table.
 -- returns the simplified link and the link name text.
 ---@param link string @The item, spell, etc. link.
----@return string
----@return string
+---@return string @Sanitized link.
+---@return string @Link name text.
 local function SimplifyHyperlink(link)
 	-- TODO: Need to handle more than just item links.
 	local preamble, itemId, rest = strsplit(":", link)
@@ -6289,6 +6305,7 @@ local function questInfoItem_Click(frame, mouseButton, isMouseButtonDown)
 	return NuNHooks.originalOnClick[frame:GetID()](frame, mouseButton, isMouseButtonDown);
 end
 
+--[[ -- REMOVE: 
 -- function NuNF.RegisterModifier_QuestLogFrame(buttonName)
 -- 	local button;
 
@@ -6306,6 +6323,8 @@ end
 -- 		NuNF.HookButtonClick(button, buttonName, questInfoItem_Click);
 -- 	end
 -- end
+-- ]]
+
 function NuNF.RegisterModifier_Main(buttonName)
 	-- Quest Reward buttons
 	-- NuNF.RegisterModifier_QuestLogFrame(buttonName);
@@ -6568,6 +6587,7 @@ function NuNNew_SetItemRef(self, link, text, btn)
 					processed = true;
 					--HideUIPanel(ItemRefTooltip);
 				else
+					print(DecodeHyperlink(link))
 					ItemRefTooltip:Show();
 					if (not ItemRefTooltip:IsVisible()) then
 						ItemRefTooltip:SetOwner(UIParent, "ANCHOR_PRESERVE");
@@ -7388,24 +7408,26 @@ function NuN_Delete(noRefresh)
 		locals.deletedE = true;
 		NuNSearch_Search();
 	end
-	if (FriendsListFrame:IsVisible()) then
-		NuNNew_FriendsList_Update();
-	elseif (IgnoreListFrame:IsVisible()) then
-		NuNNew_IgnoreList_Update();
-	elseif (WhoFrame:IsVisible()) then
-		NuNNew_WhoList_Update();
-	end
+
+	-- REMOVE: friend, ignore, guild, wholist
+	-- if (FriendsListFrame:IsVisible()) then
+	-- 	NuNNew_FriendsList_Update();
+	-- elseif (IgnoreListFrame:IsVisible()) then
+	-- 	NuNNew_IgnoreList_Update();
+	-- elseif (WhoFrame:IsVisible()) then
+	-- 	NuNNew_WhoList_Update();
+	-- end
 
 
 	-- must do this seperately from the others, since it's now in its own frame
-	if (GuildFrame and GuildFrame:IsVisible()) then
-		if (GuildRosterFrame and GuildRosterFrame:IsVisible()) then
-			NuNNew_GuildStatus_Update();
+	-- if (GuildFrame and GuildFrame:IsVisible()) then
+	-- 	if (GuildRosterFrame and GuildRosterFrame:IsVisible()) then
+	-- 		NuNNew_GuildStatus_Update();
 
-			-- other guild frame tabs...
+	-- 		-- other guild frame tabs...
 
-		end
-	end
+	-- 	end
+	-- end
 end
 
 -- The Main General Note Deletion Routine
@@ -7464,8 +7486,8 @@ function NuNOptions_ResetDefaults()
 	NuNSettings[local_player.realmName].mScale = 1.00;
 	NuN_PinnedTooltip:SetScale(1);
 	NuN_Tooltip:SetScale(1);
-	WorldMapTooltip:SetScale(1);
-	NuN_MapTooltip:SetScale(1);
+	-- WorldMapTooltip:SetScale(1);
+	-- NuN_MapTooltip:SetScale(1);
 	NuNPopup:SetScale(1);
 	NuNSettings[local_player.realmName].dLevel = "1";
 	NuNSettings[local_player.realmName].autoQ = nil;
@@ -7803,7 +7825,8 @@ function NuNSearch_Search(mButton)
 		sortType = "Date";
 		locals.searchType = "All";
 	end
-	--nun_msgf("NuNSearch_Search - mButton:%s   searchText:%s   searchType:%s   searchID:%s", tostring(mButton), tostring(tstTxt), tostring(locals.searchType), tostring(locals.dropdownFrames.ddSearch));
+	-- nun_msgf("NuNSearch_Search - mButton:%s   searchText:%s   searchType:%s   searchID:%s", tostring(mButton),
+	-- tostring(tstTxt), tostring(locals.searchType), tostring(locals.dropdownFrames.ddSearch));
 	if (not mButton) then
 		mButton = "LeftButton";
 	end
@@ -8519,11 +8542,12 @@ function NuN_ShowSavedGNote(nN)
 			NuNGNoteButtonSaveNote:Enable();
 		end
 		NuNGNoteButtonDateStamp:Enable();
-		NuNGNoteButtonLoc:Enable();
+		-- NOTE: disable for now
+		NuNGNoteButtonLoc:Disable();
 		NuNGNoteButtonDelete:Enable();
-		if ((MapNotes_OnLoad) or (MetaMap_Quicknote)) then
-			NuNMapNoteButton:Enable();
-		end
+		-- if ((MapNotes_OnLoad) or (MetaMap_Quicknote)) then
+		-- 	NuNMapNoteButton:Enable();
+		-- end
 		NuNGOpenChatButton:Enable();
 		NuNGTTCheckBoxLabel:Show();
 		NuN_GTTCheckBox:Show();
@@ -8566,19 +8590,20 @@ function NuN_ShowTitledGNote(GNoteText)
 			NuNGNoteTextScroll:SetFocus();
 		end
 		NuNGNoteButtonDateStamp:Enable();
-		NuNGNoteButtonLoc:Enable();
+		-- NOTE: disable for now
+		NuNGNoteButtonLoc:Disable();
 		if (NuNGNoteFrame.fromQuest) then
 			NuNGNoteHeader:SetText(NuNC.NUN_QUEST_NOTE);
 			NuNGNoteButtonDelete:Enable();
-			if ((MapNotes_OnLoad) or (MetaMap_Quicknote)) then
-				NuNMapNoteButton:Enable();
-			end
+			-- if ((MapNotes_OnLoad) or (MetaMap_Quicknote)) then
+			-- 	NuNMapNoteButton:Enable();
+			-- end
 			NuNGNoteTitleButton:Disable();
 			NuNGNoteButtonSaveNote:Disable();
 		else
 			NuNGNoteHeader:SetText(NuNC.NUN_NEW_NOTE);
 			NuNGNoteButtonDelete:Disable();
-			NuNMapNoteButton:Disable();
+			-- NuNMapNoteButton:Disable();
 			NuNGNoteTitleButton:Enable();
 			NuNGNoteButtonSaveNote:Enable();
 		end
@@ -8640,7 +8665,7 @@ function NuN_ShowNewGNote()
 		NuNGNoteTextBox:Show();
 		NuNGNoteTextBox:SetFocus();
 		NuNGNoteButtonDelete:Disable();
-		NuNMapNoteButton:Disable();
+		-- NuNMapNoteButton:Disable();
 		NuNGOpenChatButton:Disable();
 		NuNGTTCheckBoxLabel:Hide();
 		NuN_GTTCheckBox:Hide();
@@ -8658,7 +8683,8 @@ function GeneralNote_OnTextChanged(self, isUserInput)
 	elseif (not NuNGNoteFrame.fromQuest) then
 		NuNGNoteButtonSaveNote:Enable();
 		NuNGNoteButtonDateStamp:Enable();
-		NuNGNoteButtonLoc:Enable();
+		-- NOTE: disable for now
+		NuNGNoteButtonLoc:Disable();
 	end
 end
 
@@ -9138,6 +9164,7 @@ end
 
 -- Update Note buttons on Social Frames
 ---- TODO: ronp - need to figure out how to make sure this is called when the player is scrolling through the guild list
+-- REMOVE: removing all the things that use this. this is no longer needed.
 NuN_UpdateNoteButton = function(nBttn, nBttnID, refreshType)
 	local bName = nBttn:GetName();
 	local pBttnTxt, qHeader;
@@ -9988,77 +10015,77 @@ function NuN_WorldMapTooltip_OnShow(id, lTooltip)
 				--				locals.popUpHide = nil;
 				NuNPopup:SetAlpha(1);
 				NuNPopup:Show();
-				NuN_MapTooltip:ClearAllPoints();
-				NuN_MapTooltipShow(NuNPopupButton1.note, "NuNPopup", NuNPopup.point, NuNPopup.relativePoint, lTooltip);
+				-- NuN_MapTooltip:ClearAllPoints();
+				-- NuN_MapTooltipShow(NuNPopupButton1.note, "NuNPopup", NuNPopup.point, NuNPopup.relativePoint, lTooltip);
 				NuNPopupButton1:LockHighlight();
 				noPopup = nil;
 			end
 		end
 	end
 
-	if (noPopup) then
-		if ((locals.NuNDataPlayers[nName]) or (NuNDataRNotes[nName]) or (NuNDataANotes[nName])) then
-			NuN_MapTooltipShow(nName, lTooltip, nil, nil, lTooltip);
-		end
-	end
+	-- if (noPopup) then
+	-- 	if ((locals.NuNDataPlayers[nName]) or (NuNDataRNotes[nName]) or (NuNDataANotes[nName])) then
+	-- 		NuN_MapTooltipShow(nName, lTooltip, nil, nil, lTooltip);
+	-- 	end
+	-- end
 end
 
-function NuN_MapTooltipShow(nName, relativeTo, point, relativePoint, tooltipOwner)
-	local storePinned = NuN_PinnedTooltip.type;
+-- function NuN_MapTooltipShow(nName, relativeTo, point, relativePoint, tooltipOwner)
+-- 	local storePinned = NuN_PinnedTooltip.type;
 
-	NuNPopupButton1:UnlockHighlight();
-	if (not nName) then
-		return;
-	end
-	locals.currentTooltipTitleString = nName;
-	locals.ttName = locals.currentTooltipTitleString;
-	if (
-			(locals.ttName ~= nil) and
-					((locals.NuNDataPlayers[locals.ttName]) or (NuNDataRNotes[locals.ttName]) or (NuNDataANotes[locals.ttName]))) then
-		NuN_State.NuN_Fade = false;
-		NuN_MapTooltip:ClearLines();
-		NuN_MapTooltip:Hide();
-		NuN_MapTooltip:SetOwner(tooltipOwner, "ANCHOR_NONE");
-		NuN_PinnedTooltip.type = "Nil";
-		NuNF.NuN_BuildTT(NuN_MapTooltip);
-		NuN_PinnedTooltip.type = storePinned;
-		if ((point) and (relativePoint)) then
-			NuN_MapTooltip:SetPoint(point, relativeTo, relativePoint, 0, 0);
-		else
-			local x, y = GetCursorPosition();
-			if (y > 300) then
-				if (x > 500) then
-					NuN_MapTooltip:SetPoint("TOPRIGHT", relativeTo, "BOTTOMRIGHT", 0, 0);
-				else
-					NuN_MapTooltip:SetPoint("TOPLEFT", relativeTo, "BOTTOMLEFT", 0, 0);
-				end
-			else
-				if (x > 500) then
-					NuN_MapTooltip:SetPoint("BOTTOMRIGHT", relativeTo, "TOPRIGHT", 0, 0);
-				else
-					NuN_MapTooltip:SetPoint("BOTTOMLEFT", relativeTo, "TOPLEFT", 0, 0);
-				end
-			end
-		end
-		if (type(relativeTo) == "string") then
-			relativeTo = _G[relativeTo];
-		end
-		NuN_MapTooltip:Show();
-	else
-		NuN_MapTooltip:ClearLines();
-		NuN_MapTooltip:Hide();
-	end
-end
+-- 	NuNPopupButton1:UnlockHighlight();
+-- 	if (not nName) then
+-- 		return;
+-- 	end
+-- 	locals.currentTooltipTitleString = nName;
+-- 	locals.ttName = locals.currentTooltipTitleString;
+-- 	if (
+-- 			(locals.ttName ~= nil) and
+-- 					((locals.NuNDataPlayers[locals.ttName]) or (NuNDataRNotes[locals.ttName]) or (NuNDataANotes[locals.ttName]))) then
+-- 		NuN_State.NuN_Fade = false;
+-- 		NuN_MapTooltip:ClearLines();
+-- 		NuN_MapTooltip:Hide();
+-- 		NuN_MapTooltip:SetOwner(tooltipOwner, "ANCHOR_NONE");
+-- 		NuN_PinnedTooltip.type = "Nil";
+-- 		NuNF.NuN_BuildTT(NuN_MapTooltip);
+-- 		NuN_PinnedTooltip.type = storePinned;
+-- 		if ((point) and (relativePoint)) then
+-- 			NuN_MapTooltip:SetPoint(point, relativeTo, relativePoint, 0, 0);
+-- 		else
+-- 			local x, y = GetCursorPosition();
+-- 			if (y > 300) then
+-- 				if (x > 500) then
+-- 					NuN_MapTooltip:SetPoint("TOPRIGHT", relativeTo, "BOTTOMRIGHT", 0, 0);
+-- 				else
+-- 					NuN_MapTooltip:SetPoint("TOPLEFT", relativeTo, "BOTTOMLEFT", 0, 0);
+-- 				end
+-- 			else
+-- 				if (x > 500) then
+-- 					NuN_MapTooltip:SetPoint("BOTTOMRIGHT", relativeTo, "TOPRIGHT", 0, 0);
+-- 				else
+-- 					NuN_MapTooltip:SetPoint("BOTTOMLEFT", relativeTo, "TOPLEFT", 0, 0);
+-- 				end
+-- 			end
+-- 		end
+-- 		if (type(relativeTo) == "string") then
+-- 			relativeTo = _G[relativeTo];
+-- 		end
+-- 		NuN_MapTooltip:Show();
+-- 	else
+-- 		NuN_MapTooltip:ClearLines();
+-- 		NuN_MapTooltip:Hide();
+-- 	end
+-- end
 
-function NuN_WorldMapTooltip_OnHide()
-	locals.popUpHide = true;
-	if (NuNPopup:IsVisible()) then
-		WorldMapTooltip:Show();
-	else
-		NuN_MapTooltip:ClearLines();
-		NuN_MapTooltip:Hide();
-	end
-end
+-- function NuN_WorldMapTooltip_OnHide()
+-- 	locals.popUpHide = true;
+-- 	if (NuNPopup:IsVisible()) then
+-- 		WorldMapTooltip:Show();
+-- 	else
+-- 		NuN_MapTooltip:ClearLines();
+-- 		NuN_MapTooltip:Hide();
+-- 	end
+-- end
 
 function NuN_ItemRefTooltip_OnShow()
 	locals.currentTooltipTitleString = ItemRefTooltipTextLeft1:GetText();
@@ -10112,10 +10139,10 @@ function NuN_GameTooltip_OnHide()
 		NuN_Tooltip:ClearLines();
 		NuN_Tooltip:Hide();
 	end
-	if (not NuNPopup:IsVisible()) then
-		NuN_MapTooltip:ClearLines();
-		NuN_MapTooltip:Hide();
-	end
+	-- if (not NuNPopup:IsVisible()) then
+	-- 	NuN_MapTooltip:ClearLines();
+	-- 	NuN_MapTooltip:Hide();
+	-- end
 end
 
 function NuN_TTCheckBox_OnClick(self, frameType)
@@ -11240,7 +11267,7 @@ function NuNMapFontScaleSlider_OnValueChanged(self, value)
 		NuNMapFontScaleSliderCurrent:SetText(strformat("%d", (mScale * 100)) .. "%");
 		mScale = UIParent:GetScale() * NuNSettings[local_player.realmName].mScale;
 		-- WorldMapTooltip:SetScale(NuNSettings[local_player.realmName].mScale);
-		NuN_MapTooltip:SetScale(NuNSettings[local_player.realmName].mScale);
+		-- NuN_MapTooltip:SetScale(NuNSettings[local_player.realmName].mScale);
 		NuNPopup:SetScale(NuNSettings[local_player.realmName].mScale);
 	end
 end
@@ -12181,9 +12208,9 @@ function NuN_DeleteMapIndexNote(id, noteN)
 			NuNData[locals.mrgIndex_dbKey][nKey] = nil;
 		end
 	end
-	WorldMapTooltip:Hide();
+	-- WorldMapTooltip:Hide();
 	NuNPopup:Hide();
-	NuN_MapTooltip:Hide();
+	-- NuN_MapTooltip:Hide();
 end
 
 function NuN_MapIndexHouseKeeping()
@@ -14082,9 +14109,9 @@ function NuNOptions_SetModifierText()
 		else
 			modKeys[1] = NuNSettings[local_player.realmName].modKeys;
 		end
-		local bttnText = "<" .. NUN_MODIFIERS[ modKeys[1] ] .. ">";
+		local bttnText = "<" .. NUN_MODIFIERS[modKeys[1]] .. ">";
 		for i = 2, getn(modKeys), 1 do
-			bttnText = bttnText .. "+<" .. NUN_MODIFIERS[ modKeys[i] ] .. ">";
+			bttnText = bttnText .. "+<" .. NUN_MODIFIERS[modKeys[i]] .. ">";
 		end
 		bttnText = bttnText .. " : " .. NuNSettings[local_player.realmName].mouseBttn;
 		NuNOptionsModifier:SetText(bttnText);
