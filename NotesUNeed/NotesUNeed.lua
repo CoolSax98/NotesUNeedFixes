@@ -8,7 +8,7 @@ But at the time I write this, (v6.BETA), I don't have a gaming account to test w
 I have added some comments throughout the code.
 And here are some general ramblings that might help someone who's puzzling over the code :
 
-local_player.currentNote.unit & local_player.currentNote.general			:	These variables are global to the AddOn and refer to the note names for the currently Open 
+local_player.currentNote.unit & local_player.currentNote.general			:	These variables are global to the AddOn and refer to the note names for the currently Open
 						Contact & General notes respectively. Some functions process notes in the background while
 						the user potentially has a note open, and the code will sometimes copy these values to temporary
 						variables, use them in processing, and then reset them to the saved temporary values.
@@ -16,7 +16,7 @@ local_player.currentNote.unit & local_player.currentNote.general			:	These varia
 						thumb "If it ain't broke, don't fix it" Oh, for a OO approach from the very beginning ;P
 
 Note Sizes (6006 characters)
-						This is controlled by the constants : 
+						This is controlled by the constants :
 							NuNC.NUN_MAX_ADD_TXT = 5;
 							NuNC.NUN_MAX_TXT_CHR = 1001;
 						WoW originally limited the size of the text fields that could be saved in SavedVariables, so my solution
@@ -55,7 +55,7 @@ receiptPending			:	NuN allows Players to send each other Notes - See the various
 						(Other players aren't informed that you are receiptPending - its just a local measure to try and prevent any data
 						corruption until you make your mind up)
 
-MapNotes integration			NotesUNeed allows creation of MapNotes at the Player's current location; And while standing in a single location, you can create multiple 
+MapNotes integration			NotesUNeed allows creation of MapNotes at the Player's current location; And while standing in a single location, you can create multiple
 						MapNotes that will be merged on the same Map note - NotesUNeed creates an index of the notes merged this way,
 						and shows a little sub-menu detailing the separate notes merged on that point when you mouse over the Map note - this sub-menu can itself be moused
 						over (when the <control> key is pressed to show tooltips for each individual note, or clicked to open the note (or clicked to delete the note and remove
@@ -67,7 +67,8 @@ MapNotes integration			NotesUNeed allows creation of MapNotes at the Player's cu
 						You should see a few MapNotes creation messages in the chat frame.
 						Open, the map and play with the MapNote thus created.
 						
-]] --
+]]
+--
 
 -- ENHANCEMENT: For Map notes
 -- IDEA: connect 2 notes with a line, with a directional arrow
@@ -180,11 +181,10 @@ local general.text;
 local general.text_len;
 local contact.type;
 --]]
-
 local local_player = locals.player;
 local_player.currentNote = {
-	unit = "", -- global variable name of Player whose Contact Note is open, or was last opened
-	general = "", -- global variable name of General Note that is open, or was last opened
+	unit = "",           -- global variable name of Player whose Contact Note is open, or was last opened
+	general = "",        -- global variable name of General Note that is open, or was last opened
 	manualItemNote = nil, -- global variable name of Manual Item Note that is open and needs to be converted to a link item index
 };
 --[[
@@ -193,7 +193,6 @@ Not great coding form, but these will always reference the Open Note
 The use of these variables is SO deeply ingrained, that it would take a re-write to make notes more OO
 - Telic
 --]]
-
 --[[
 :>	turned out to not be all that difficult, in the end.  moved the c_name and c_note vars into the contact
 	table (which will remain globally accessible, tho I don't really think it needs to be anymore), and
@@ -207,7 +206,7 @@ local_player.currentNote.general = "";
 locals.dropdownFrames = {};
 
 -- Misc
-locals.bttnChanges = {};  -- record changes to User Definable buttons BEFORE the Note is Saved
+locals.bttnChanges = {}; -- record changes to User Definable buttons BEFORE the Note is Saved
 locals.bttnChangesTT = {};
 locals.uBttns = getn(NUN_DFLTHEADINGS);
 locals.detlOffset = locals.uBttns;
@@ -232,13 +231,13 @@ local_player.factionName = nil;
 locals.headingID_dbKey = nil;
 locals.customHeadingTitle_dbKey = nil;
 locals.customHeadingValue_dbKey = nil;
-locals.originalText = nil;  -- generic cache variable used for storing original value of various controls
+locals.originalText = nil; -- generic cache variable used for storing original value of various controls
 locals.searchType = nil;
 locals.isTitle = nil;
 locals.bttnNumb = nil;
-locals.Notes_dbKey = "notes~";  -- database key
-locals.itmIndex_dbKey = "ItmIndex~";  -- database key (related to saving of Notes with Item Links as Names)
-locals.mrgIndex_dbKey = "merged~";  -- database key (related to merging of multiple MapNotes)
+locals.Notes_dbKey = "notes~";       -- database key
+locals.itmIndex_dbKey = "ItmIndex~"; -- database key (related to saving of Notes with Item Links as Names)
+locals.mrgIndex_dbKey = "merged~";   -- database key (related to merging of multiple MapNotes)
 locals.prevNote = nil;
 locals.lastBttn = nil;
 locals.lastBttnIndex = nil;
@@ -290,16 +289,16 @@ local ignoresPendingUpdate = nil;
 local NuN_ImportModule = nil;
 local NuN_ImportData = nil;
 local NPCInfo_Proceed = nil;
-local NuN_WhoReturnStruct = {};  -- 5.60
-local bttnTxtObj;  -- 5.60
-local ddProfSearch;  -- 5.60
-local ddClassSearch;  -- 5.60
-local ddQHSearch;  -- 5.60
+local NuN_WhoReturnStruct = {}; -- 5.60
+local bttnTxtObj;               -- 5.60
+local ddProfSearch;             -- 5.60
+local ddClassSearch;            -- 5.60
+local ddQHSearch;               -- 5.60
 local gRank;
 local gRankIndex;
 local gNote;
 local gOfficerNote;
-locals.lastDD = nil;  -- allows one DropDown box change to be undone on the Contact Note Edit frame
+locals.lastDD = nil; -- allows one DropDown box change to be undone on the Contact Note Edit frame
 locals.noteNameLabel = nil;
 locals.nameLastAttemptedFriendUpdate = nil;
 locals.nameLastAttemptedIgnoreUpdate = "";
@@ -356,7 +355,6 @@ NUN_RESET_OPTIONS = NUN_RESET .. NUN_OPTIONS;
 	UPVALUES
 	====================================================================
 	==================================================================== --]]
-
 -- local NuN_NoteDB = NuNData;
 -- local NuN_SettingDB = NuNSettings;
 
@@ -385,7 +383,8 @@ NUN_RESET_OPTIONS = NUN_RESET .. NUN_OPTIONS;
 	Library Functions
 	====================================================================]]
 local tsort, getn, tonumber, tostring = table.sort, getn, tonumber, tostring
-local strlen, strfind, strsub, strrep, strgsub, strlower, strformat, strbyte, strchar, strupper, strformat, strgmatch = string
+local strlen, strfind, strsub, strrep, strgsub, strlower, strformat, strbyte, strchar, strupper, strformat, strgmatch =
+		string
 		.len, string.find, string.sub, string.rep, string.gsub, string.lower, string.format, string.byte, string.char,
 		string.upper, string.format, string.gmatch
 local pairs, ipairs, next, type = pairs, ipairs, next, type
@@ -495,9 +494,9 @@ function NuN_InitializeUpvalues()
 	NuNDropDown_ClassH = _G.NuNDropDown_ClassH;
 	NuNDropDown_PVPRankH = _G.NuNDropDown_PVPRankH;
 
-	NuN_Tooltip = NuN_TooltipNew;  -- NOTE: New non-XML tooltip object
+	NuN_Tooltip = NuN_TooltipNew;            -- NOTE: New non-XML tooltip object
 	-- NuN_Tooltip = _G.NuN_Tooltip;
-	NuN_PinnedTooltip = NuN_PinnedTooltipNew;  -- NOTE: New non-XML tooltip object
+	NuN_PinnedTooltip = NuN_PinnedTooltipNew; -- NOTE: New non-XML tooltip object
 	-- NuN_PinnedTooltip = _G.NuN_PinnedTooltip;
 	-- NuN_MapTooltip = _G.NuN_MapTooltip;
 end
@@ -558,7 +557,7 @@ local NuN_DTrans = {};
 NuN_DTrans.Status = "Inactive";
 NuN_DTrans.Prefix = "";
 NuN_DTrans.pArray = {};
-NuN_DTrans.tDelay = 0.9;  -- 3 per second default -- Multiply by number of messages and add default Wait to calculate the amount of time to allow for the final message to arrive after the first was sent
+NuN_DTrans.tDelay = 0.9; -- 3 per second default -- Multiply by number of messages and add default Wait to calculate the amount of time to allow for the final message to arrive after the first was sent
 NuN_DTrans.tTrack = 0;
 NuN_DTrans.aIndex = 0;
 NuN_DTrans.Params = {};
@@ -575,7 +574,7 @@ function NuN_Message(msg, r, g, b)
 	end
 	msg = "NotesUNeed: " .. msg;
 	if (not r) then
-		r, g, b = 0.64, 0.21, 0.93;  --   |c00A335ED
+		r, g, b = 0.64, 0.21, 0.93; --   |c00A335ED
 	end
 
 
@@ -627,7 +626,6 @@ setfenv(1, setmetatable( {}, {
 	end
 }))
 --]]
-
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------
 -- Warning & Confirmation Dialog Boxes--
@@ -680,7 +678,6 @@ StaticPopupDialogs["NUN_CHANGE_RATING_ONE"] = {
 				end
 				NuN_BLCheckBox_Ignore:Show();
 				NuN_BLCheckBox_Warn:Show();
-
 			else
 				NuN_BLCheckBox_Ignore:Hide();
 				NuN_BLCheckBox_Warn:Hide();
@@ -828,7 +825,7 @@ StaticPopupDialogs["NUN_MASS_DELETE_CONFIRM"] = {
 		local n = NuNGet_CommandID(NUN_SEARCHFOR, "Notes");
 		local notesTxt = NUN_SEARCHFOR[n].Display;
 		local toDelete = locals.foundNuN;
-		local deletes = getn(toDelete);  -- #toDelete ?
+		local deletes = getn(toDelete); -- #toDelete ?
 
 		if (NuNFrame:IsVisible()) then
 			HideNUNFrame();
@@ -844,10 +841,10 @@ StaticPopupDialogs["NUN_MASS_DELETE_CONFIRM"] = {
 			if ((noteType == NuNC.NUN_HORD_C) or (noteType == NuNC.NUN_ALLI_C)) then
 				if (locals.NuNDataPlayers[noteName]) then
 					if ((NuNSettings[local_player.realmName].autoA) and ((locals.NuNDataPlayers[noteName].friendLst)
-							or (locals.NuNDataPlayers[noteName].ignoreLst))) then
+								or (locals.NuNDataPlayers[noteName].ignoreLst))) then
 						-- don't delete friends / ignores if auto maintaining lists
 					elseif (
-							(NuNSettings[local_player.realmName].autoN) and (locals.NuNDataPlayers[noteName].type == NuNC.NUN_SELF_C)) then
+								(NuNSettings[local_player.realmName].autoN) and (locals.NuNDataPlayers[noteName].type == NuNC.NUN_SELF_C)) then
 						-- don't delete self note if automated
 					else
 						locals.NuNDataPlayers[noteName] = nil;
@@ -864,12 +861,10 @@ StaticPopupDialogs["NUN_MASS_DELETE_CONFIRM"] = {
 						end
 					end
 				end
-
 			else
 				if (NuNDataANotes[noteName]) then
 					NuNDataANotes[noteName] = nil;
 					numDeleted = numDeleted + 1;
-
 				elseif (NuNDataRNotes[noteName]) then
 					NuNDataRNotes[noteName] = nil;
 					numDeleted = numDeleted + 1;
@@ -928,14 +923,13 @@ StaticPopupDialogs["NUN_DELETE_QUESTHISTORY"] = {
 -- Local Functions --
 --------------------------
 
-local NuNF = {};  -- NotesUNeed Frame
-local NuNQuickNote = {};  -- Utility class to group related functions together
+local NuNF = {};         -- NotesUNeed Frame
+local NuNQuickNote = {}; -- Utility class to group related functions together
 
 -- return true if Ignored
 function NuNF.NuN_IsPlayerIgnored(player)
 	if ((locals.NuNDataPlayers) and (locals.NuNDataPlayers[player]) and (locals.NuNDataPlayers[player].ignoreLst)) then
 		return true;
-
 	else
 		for i = 1, GetNumIgnores(), 1 do
 			local lName = GetIgnoreName(i);
@@ -983,18 +977,15 @@ function NuNF.UserButtons_Initialise()
 		locals.customHeadingTitle_dbKey = local_player.currentNote.unit .. locals.headingID_dbKey;
 		locals.customHeadingValue_dbKey = local_player.currentNote.unit .. locals.suffix_Details .. n;
 		if (
-				locals.NuNDataPlayers[locals.customHeadingTitle_dbKey] and
-						locals.NuNDataPlayers[locals.customHeadingTitle_dbKey].txt ~= "") then
+					locals.NuNDataPlayers[locals.customHeadingTitle_dbKey] and
+					locals.NuNDataPlayers[locals.customHeadingTitle_dbKey].txt ~= "") then
 			bttnHeadingText:SetText(locals.NuNDataPlayers[locals.customHeadingTitle_dbKey].txt);
-
 		elseif (
-				NuNSettings[local_player.realmName][locals.headingID_dbKey] and
-						NuNSettings[local_player.realmName][locals.headingID_dbKey].txt ~= "") then
+					NuNSettings[local_player.realmName][locals.headingID_dbKey] and
+					NuNSettings[local_player.realmName][locals.headingID_dbKey].txt ~= "") then
 			bttnHeadingText:SetText(NuNSettings[local_player.realmName][locals.headingID_dbKey].txt);
-
 		else
 			bttnHeadingText:SetText(NUN_DFLTHEADINGS[n]);
-
 		end
 		if ((bttnHeadingText:GetText() == nil) or (bttnHeadingText:GetText() == "")) then -- 5.60 Shouldn't this check for  "" rather than nil (or at least both "" or nil)
 			bttnDetailText:SetText("");
@@ -1140,7 +1131,6 @@ function NuNF.DropDowns_Initialise()
 	else
 		UIDropDownMenu_ClearAll(locals.NuNHRankDropDown);
 	end
-
 end
 
 function NuNF.ConvertManualItemNote(noteName)
@@ -1268,7 +1258,6 @@ function NuNF.NuN_CopyTable(fT, tT)
 		if (type(value) == "table") then
 			tT[idx] = {};
 			NuNF.NuN_CopyTable(value, tT[idx]);
-
 		else
 			tT[idx] = value;
 		end
@@ -1485,10 +1474,10 @@ function NuNF.NuN_UnitInfoDB(lMember, lUnit)
 		settingsKey = locals.suffix_Header .. "1";
 		compoundKey = lMember .. settingsKey;
 		if (
-				((locals.NuNDataPlayers[compoundKey]) and (locals.NuNDataPlayers[compoundKey].txt ~= NUN_DFLTHEADINGS[1])) or
-						(
+					((locals.NuNDataPlayers[compoundKey]) and (locals.NuNDataPlayers[compoundKey].txt ~= NUN_DFLTHEADINGS[1])) or
+					(
 						(NuNSettings[local_player.realmName][settingsKey]) and
-								(NuNSettings[local_player.realmName][settingsKey].txt ~= NUN_DFLTHEADINGS[1]))) then
+						(NuNSettings[local_player.realmName][settingsKey].txt ~= NUN_DFLTHEADINGS[1]))) then
 		else
 			compoundKey = lMember .. locals.suffix_Details .. "1";
 			locals.NuNDataPlayers[compoundKey] = {};
@@ -1498,10 +1487,10 @@ function NuNF.NuN_UnitInfoDB(lMember, lUnit)
 		settingsKey = locals.suffix_Header .. "2";
 		compoundKey = lMember .. settingsKey;
 		if (
-				((locals.NuNDataPlayers[compoundKey]) and (locals.NuNDataPlayers[compoundKey].txt ~= NUN_DFLTHEADINGS[2])) or
-						(
+					((locals.NuNDataPlayers[compoundKey]) and (locals.NuNDataPlayers[compoundKey].txt ~= NUN_DFLTHEADINGS[2])) or
+					(
 						(NuNSettings[local_player.realmName][settingsKey]) and
-								(NuNSettings[local_player.realmName][settingsKey].txt ~= NUN_DFLTHEADINGS[2]))) then
+						(NuNSettings[local_player.realmName][settingsKey].txt ~= NUN_DFLTHEADINGS[2]))) then
 		else
 			compoundKey = lMember .. locals.suffix_Details .. "2";
 			if (lGRankIndex == 0) then
@@ -1747,7 +1736,7 @@ function NuNF.NuN_SetGText(saveLvl)
 			end
 		end
 		NuNDataRNotes[local_player.currentNote.general].lastChanged = NuNF.NuN_GetComparitiveDate(NuNDataRNotes[
-			local_player.currentNote.general]);
+		local_player.currentNote.general]);
 	else
 		NuNDataANotes[local_player.currentNote.general][locals.txtTxt] = strsub(general.text, 1, NuNC.NUN_MAX_TXT_CHR);
 		for i = 1, NuNC.NUN_MAX_ADD_TXT, 1 do
@@ -1765,7 +1754,7 @@ function NuNF.NuN_SetGText(saveLvl)
 			end
 		end
 		NuNDataANotes[local_player.currentNote.general].lastChanged = NuNF.NuN_GetComparitiveDate(NuNDataANotes[
-			local_player.currentNote.general]);
+		local_player.currentNote.general]);
 	end
 
 	general.text = tmpText;
@@ -1861,14 +1850,14 @@ function NuNF.NuN_BuildTT(nunTT)
 				locals.customHeadingTitle_dbKey = locals.ttName .. locals.headingID_dbKey;
 				locals.customHeadingValue_dbKey = locals.ttName .. locals.suffix_Details .. n;
 				if (
-						((n == 1) and (not locals.NuNDataPlayers[locals.customHeadingTitle_dbKey])) or
-								((n == 1) and (locals.NuNDataPlayers[locals.customHeadingTitle_dbKey].txt == NUN_DFLTHEADINGS[n]))) then
+							((n == 1) and (not locals.NuNDataPlayers[locals.customHeadingTitle_dbKey])) or
+							((n == 1) and (locals.NuNDataPlayers[locals.customHeadingTitle_dbKey].txt == NUN_DFLTHEADINGS[n]))) then
 					if (locals.NuNDataPlayers[locals.customHeadingValue_dbKey]) then
 						lGuild = locals.NuNDataPlayers[locals.customHeadingValue_dbKey].txt;
 					end
 				elseif (
-						((n == 2) and (not locals.NuNDataPlayers[locals.customHeadingTitle_dbKey])) or
-								((n == 2) and (locals.NuNDataPlayers[locals.customHeadingTitle_dbKey].txt == NUN_DFLTHEADINGS[n]))) then
+							((n == 2) and (not locals.NuNDataPlayers[locals.customHeadingTitle_dbKey])) or
+							((n == 2) and (locals.NuNDataPlayers[locals.customHeadingTitle_dbKey].txt == NUN_DFLTHEADINGS[n]))) then
 					if (locals.NuNDataPlayers[locals.customHeadingValue_dbKey]) then
 						lGuildR = locals.NuNDataPlayers[locals.customHeadingValue_dbKey].txt;
 					end
@@ -1926,10 +1915,9 @@ function NuNF.NuN_BuildTT(nunTT)
 				nunTT:AddLine(lprof, 0.8, 0.2, 0.8);
 				lineCount = lineCount + 1;
 			end
-
 		elseif (
-				(NuN_PinnedTooltip.type ~= "Contact") and (NuN_PinnedTooltip.type ~= "QuestHistory") and
-						((NuNDataRNotes[locals.ttName]) or (NuNDataANotes[locals.ttName]))) then
+					(NuN_PinnedTooltip.type ~= "Contact") and (NuN_PinnedTooltip.type ~= "QuestHistory") and
+					((NuNDataRNotes[locals.ttName]) or (NuNDataANotes[locals.ttName]))) then
 			nunTT:AddLine(NuN_Strings.NUN_NOTESUNEED_INFO .. NuNC.NUN_PINNED_TT_PADDING, 1, 0.7, 0);
 			lineCount = lineCount + 1;
 
@@ -2031,7 +2019,8 @@ function NuNF.NuN_ParseTT(txtIn, fragLen)
 		p2 = strfind(txtIn, "\n", (p1 + 1));
 		if (p2 == nil) then
 			break
-			; end
+			;
+		end
 		txtTmp = strsub(txtIn, (p1 + 1), p2);
 		txtTmpL = strlen(txtTmp);
 		if (txtTmpL > (fragLen + 10)) then
@@ -2140,8 +2129,8 @@ function NuNF.NuN_BuildQuestText()
 	local questItem = "QuestLogItem";
 	local error = false;
 
-	numQuestRewards = GetNumQuestLogRewards();  --Number of quest rewards
-	numQuestChoices = GetNumQuestLogChoices();  --Number of quest choices
+	numQuestRewards = GetNumQuestLogRewards(); --Number of quest rewards
+	numQuestChoices = GetNumQuestLogChoices(); --Number of quest choices
 	-- REVIEW: Not sure what this is. It's not used anywhere.
 	-- if (GetQuestLogRewardSpell()) then
 	-- 	numQuestSpellRewards = 1;
@@ -2288,8 +2277,8 @@ function NuNF.NuN_CheckQuestList(findName)
 			if ((findName) and (findName == questInfo.title)) then
 				foundIndex = i;
 				rLevel = questInfo.level;
-				rTag = C_QuestLog.GetQuestTagInfo(i);  -- REVIEW: is this the right way to get the tag?
-				rComplete = C_QuestLog.IsComplete(i);  -- REVIEW: is this the right way to get the completion status?
+				rTag = C_QuestLog.GetQuestTagInfo(i); -- REVIEW: is this the right way to get the tag?
+				rComplete = C_QuestLog.IsComplete(i); -- REVIEW: is this the right way to get the completion status?
 			end
 		end
 	end
@@ -2353,7 +2342,8 @@ function NuNF.NuN_ProcessQuest(quest, qLevel, qTag, qHeader, qCollapsed, qComple
 			pNuNQuestHistory[quest] = {};
 			pNuNQuestHistory[quest].sortDate = tostring(date("%Y%m%d%H%M%S")) .. ":" .. qI;
 			pNuNQuestHistory[quest].pLevel = UnitLevel("player");
-			local qTxt = NuNC.NUN_CREATED .. "   " .. qChar .. "\n    " .. NuNF.NuN_GetDateStamp() .. "\n    " .. location .. "\n";
+			local qTxt = NuNC.NUN_CREATED ..
+					"   " .. qChar .. "\n    " .. NuNF.NuN_GetDateStamp() .. "\n    " .. location .. "\n";
 			pNuNQuestHistory[quest].txt = NuNF.NuN_SetSaveText(qTxt);
 			locals.qTriggs = locals.qTriggs + 1;
 		end
@@ -2377,8 +2367,8 @@ function NuNF.NuN_ProcessQuest(quest, qLevel, qTag, qHeader, qCollapsed, qComple
 				testComplete = NuNF.NuN_GetDisplayText(pNuNQuestHistory[quest].complete);
 			end
 			if (
-					(qComplete) and (pNuNQuestHistory[quest]) and
-							((not testComplete) or ((testComplete ~= chk) and (strfind(qText, chk))))) then
+						(qComplete) and (pNuNQuestHistory[quest]) and
+						((not testComplete) or ((testComplete ~= chk) and (strfind(qText, chk))))) then
 				pNuNQuestHistory[quest].complete = NuNF.NuN_SetSaveText(chk);
 				local qTxt = NuNF.NuN_GetDisplayText(pNuNQuestHistory[quest].txt);
 				qTxt = qTxt .. "\n\n" .. NuNC.NUN_COMPLETE .. "\n    " .. NuNF.NuN_GetDateStamp() .. "\n    " .. location .. "\n";
@@ -2405,7 +2395,7 @@ function NuNF.NuN_ProcessQuest(quest, qLevel, qTag, qHeader, qCollapsed, qComple
 					NuNF.NuN_SetGText("Realm");
 				end
 			elseif (
-					(not NuNDataANotes[quest]) and (not NuNDataRNotes[quest]) and (NuNSettings[local_player.realmName].autoQ)) then
+						(not NuNDataANotes[quest]) and (not NuNDataRNotes[quest]) and (NuNSettings[local_player.realmName].autoQ)) then
 				if (NuNSettings[local_player.realmName].dLevel) then
 					NuNDataANotes[quest] = {};
 					NuNDataANotes[quest].type = 5;
@@ -2674,7 +2664,6 @@ function NuNF.NuN_SortAltArray(ele1, ele2)
 end
 
 function NuNF.NuN_SortTalentArray(elemA, elemB)
-
 	local sortElemAFirst = false;
 	if elemA.talentTier < elemB.talentTier then
 		sortElemAFirst = true;
@@ -2852,7 +2841,6 @@ function NuNF.CapitaliseName(parm1)
 			if ((t2) and (t2 > 159) and (t2 < 190)) then
 				t2 = t2 - 32;
 				newInitial = strchar(t1) .. strchar(t2);
-
 			elseif ((t2 > 127) and (t2 < 160)) then
 				newInitial = strchar(t1) .. strchar(t2);
 			end
@@ -2862,15 +2850,12 @@ function NuNF.CapitaliseName(parm1)
 	if (newInitial) then
 		contactName = newInitial .. remainder;
 		initial = newInitial;
-
 	else
 		initial = strupper(initial);
 		if (strlen(initial) > 0) then
 			contactName = initial .. remainder;
-
 		else
-
-			contactName = initial .. remainder;  -- I give up - they should pass capitalised...
+			contactName = initial .. remainder; -- I give up - they should pass capitalised...
 			initial = nil;
 			remainder = nil;
 		end
@@ -2898,7 +2883,8 @@ StaticPopupDialogs["NUN_CHOOSE_SN_IMPORT"] = {
 	OnShow = function(self)
 		sn.Waiting = true;
 		sn.Choice = nil;
-		_G[self:GetName() .. "Text"]:SetText(NUN_SN_IMPORT .. " " .. sn.Count .. "/" .. sn.totCount .. " : " .. sn.Name .. " ?");
+		_G[self:GetName() .. "Text"]:SetText(NUN_SN_IMPORT ..
+			" " .. sn.Count .. "/" .. sn.totCount .. " : " .. sn.Name .. " ?");
 	end,
 	OnAccept = function()
 		if ((IsControlKeyDown()) and (not IsAltKeyDown())) then
@@ -3146,10 +3132,9 @@ function NuN_CmdLine(option, parm1, pList)
 			DEFAULT_CHAT_FRAME:AddMessage(" ");
 
 			-- Guild Refresh -- 5.60
-		elseif (switch == "-gr") then -- 5.60
+		elseif (switch == "-gr") then      -- 5.60
 			NuN_GuildRefreshCheckBox_OnClick(); -- 5.60
-
-		elseif (switch == "-grv") then -- 5.60
+		elseif (switch == "-grv") then     -- 5.60
 			NuN_GRVerboseCheckBox_OnClick(); -- 5.60
 
 			-- Toggles the NotesUNeed Help Tooltips & the main NuN Game Tooltip
@@ -3233,19 +3218,14 @@ function NuN_CmdLine(option, parm1, pList)
 			-- old legacy fix for conversion from German to English								???
 		elseif ((switch == "->de") or (switch == "->en")) then
 			NuN_LangPatch(switch);
-
 		elseif (switch == "-sendc") then
 			NuN_ManualTransmit(nil, "Contact", parm1);
-
 		elseif (switch == "-sendg") then
 			NuN_ManualTransmit(nil, "General", parm1);
-
 		elseif (switch == "-sendcf") then
 			NuN_ManualTransmit(true, "Contact", parm1);
-
 		elseif (switch == "-sendgf") then
 			NuN_ManualTransmit(true, "General", parm1);
-
 		elseif (switch == "-delay") then
 			if (parm1) then
 				parm1 = tonumber(parm1);
@@ -3255,7 +3235,6 @@ function NuN_CmdLine(option, parm1, pList)
 			NuN_DTrans.tDelay = parm1;
 			NuNSettings[local_player.realmName].delay = NuN_DTrans.tDelay;
 			NuN_Message(oldDelay .. " ---> " .. NuN_DTrans.tDelay);
-
 		elseif (switch == "-restrictwho") then
 			if (not NuNSettings[local_player.realmName].restrictwho) then
 				NuNSettings[local_player.realmName].restrictwho = true;
@@ -3264,7 +3243,6 @@ function NuN_CmdLine(option, parm1, pList)
 				NuNSettings[local_player.realmName].restrictwho = nil;
 				NuN_Message("-restrictwho : Off");
 			end
-
 		elseif (switch == "-alternativewho") then
 			if (not NuNSettings[local_player.realmName].alternativewho) then
 				NuNSettings[local_player.realmName].alternativewho = true;
@@ -3273,7 +3251,6 @@ function NuN_CmdLine(option, parm1, pList)
 				NuNSettings[local_player.realmName].alternativewho = nil;
 				NuN_Message("-alternativewho : Off");
 			end
-
 		elseif (switch == "-importsn") then
 			NuN_ImportSocialNotes_Start();
 
@@ -3292,10 +3269,8 @@ function NuN_CmdLine(option, parm1, pList)
 			-- Resets Friend / Ignore lists to current Toons lists
 		elseif (switch == "-resetlists") then
 			NuN_ResetFriendIgnoreLists();
-
 		elseif (switch == "-debug") then
 			NotesUNeed.NuN_Statics.ToggleDebugMode();
-
 		elseif (switch == "-verbosedebug") then
 			if not locals.NuNDebugVerbose then
 				locals.NuNDebugVerbose = true;
@@ -3304,7 +3279,6 @@ function NuN_CmdLine(option, parm1, pList)
 				locals.NuNDebugVerbose = nil;
 				NuN_Message("Verbose debug logging now disabled.");
 			end
-
 		elseif (switch == "-togglechathandler") then
 			NotesUNeed.NuN_Statics.ToggleAddMessageHandler();
 
@@ -3316,7 +3290,7 @@ function NuN_CmdLine(option, parm1, pList)
 			if (receiptPending) then
 				return;
 			end
-			contactName, initial, remainder = NuNF.CapitaliseName(switch);  -- pass 'switch' NOT 'parm1'
+			contactName, initial, remainder = NuNF.CapitaliseName(switch); -- pass 'switch' NOT 'parm1'
 			if (locals.NuNDataPlayers[contactName]) then
 				if (NuNFrame:IsVisible()) then
 					NuNEditDetailsFrame:Hide();
@@ -3449,26 +3423,23 @@ end
 function NuN_CheckTarget(arg1)
 	local result = "";
 
-	if (UnitExists("target")) then -- 20200
-		local chkName = GetUnitName("target", true);  -- 20200
+	if (UnitExists("target")) then                                                  -- 20200
+		local chkName = GetUnitName("target", true);                                  -- 20200
 		if ((UnitPlayerControlled("target")) and (UnitIsUnit("player", "target"))) then -- 20200
-			local_player.currentNote.unit = locals.player_Name;  -- 20200
-			result = "S";  -- 20200
-
+			local_player.currentNote.unit = locals.player_Name;                         -- 20200
+			result = "S";                                                               -- 20200
 		elseif (
-				((UnitPlayerControlled("target")) and (not UnitIsUnit("player", "target"))) or (UnitInParty("target")) or
-						(UnitInRaid("target"))) then
+					((UnitPlayerControlled("target")) and (not UnitIsUnit("player", "target"))) or (UnitInParty("target")) or
+					(UnitInRaid("target"))) then
 			local_player.currentNote.unit = chkName;
 			result = "F";
-
 		elseif (not UnitPlayerControlled("target")) then
 			local_player.currentNote.general = chkName;
 			result = "N";
 		end
-
-	else -- 20200
+	else          -- 20200
 		local_player.currentNote.unit = locals.player_Name;
-		result = "S";  -- evo: it seems like this shouldn't return the exact same thing as if we have a valid unit targeted.
+		result = "S"; -- evo: it seems like this shouldn't return the exact same thing as if we have a valid unit targeted.
 	end
 
 	--	nun_msgf("NuN_CheckTarget - arg1:%s     result:%s    currentNote.unit:%s", tostring(arg1), tostring(result), tostring(local_player.currentNote.unit));
@@ -3487,7 +3458,7 @@ function NuN_DisplayAll(mButton)
 		NuNSearchFrame:Hide();
 	else
 		-- Commands are all in English; Localisation files associate localised variables with the English commands
-		local sTyp = "All";  -- default
+		local sTyp = "All"; -- default
 		if (mButton == "LeftButton") then
 			if (IsAltKeyDown()) then
 				sTyp = "Notes";
@@ -3720,13 +3691,13 @@ function NuN_ShowNote()
 		if NuNFrame:IsVisible() then
 			HideNUNFrame();
 		end
-		locals.prevName = local_player.currentNote.unit;  -- save for toggle check
+		locals.prevName = local_player.currentNote.unit; -- save for toggle check
 
 		if (NuNOptionsFrame:IsVisible()) then
 			NuNOptionsFrame:Hide();
 		end
 
-		locals.lastDD = nil;  -- just opened so no changes to Drop Down Boxes yet
+		locals.lastDD = nil; -- just opened so no changes to Drop Down Boxes yet
 		NuNButtonClrDD:Disable();
 
 		NuNF.ClearButtonChanges(); -- just opened so no changes to User Definable Buttons yet
@@ -3741,10 +3712,10 @@ function NuN_ShowNote()
 			end
 			NuNText:SetText(contact.text);
 			if (
-					(NuNSettings[local_player.realmName].autoA) and
-							(
+						(NuNSettings[local_player.realmName].autoA) and
+						(
 							(locals.NuNDataPlayers[local_player.currentNote.unit].friendLst) or
-									(locals.NuNDataPlayers[local_player.currentNote.unit].ignoreLst))) then
+							(locals.NuNDataPlayers[local_player.currentNote.unit].ignoreLst))) then
 				NuNButtonDelete:Disable();
 			else
 				NuNButtonDelete:Enable();
@@ -3811,9 +3782,9 @@ function NuN_ShowNote()
 		end
 
 		if (
-				(locals.NuNDataPlayers[local_player.currentNote.unit]) and
-						(locals.NuNDataPlayers[local_player.currentNote.unit][locals.player_Name]) and
-						(locals.NuNDataPlayers[local_player.currentNote.unit][locals.player_Name].partied)) then
+					(locals.NuNDataPlayers[local_player.currentNote.unit]) and
+					(locals.NuNDataPlayers[local_player.currentNote.unit][locals.player_Name]) and
+					(locals.NuNDataPlayers[local_player.currentNote.unit][locals.player_Name].partied)) then
 			--			NuNPartiedLabel:Show();
 			NuNPartiedNumberLabel:SetText("(x" ..
 				tostring(locals.NuNDataPlayers[local_player.currentNote.unit][locals.player_Name].partied) .. ")");
@@ -3898,14 +3869,13 @@ NuN_Update_Ignored = function()
 					end
 					if ((locals.NuNDataPlayers[iName]) and (locals.NuNDataPlayers[iName].ignoreLst)) then
 						if (
-								(NuNSettings[local_player.realmName].autoD) and (locals.NuNDataPlayers[iName].type == NuNC.NUN_AUTO_C) and
-										(not locals.NuNDataPlayers[iName].friendLst)) then
+									(NuNSettings[local_player.realmName].autoD) and (locals.NuNDataPlayers[iName].type == NuNC.NUN_AUTO_C) and
+									(not locals.NuNDataPlayers[iName].friendLst)) then
 							locals.NuNDataPlayers[iName] = nil;
 						else
 							locals.NuNDataPlayers[iName].ignoreLst = nil;
 						end
 					end
-
 				elseif ((NuNSettings[local_player.realmName].autoA) and (not locals.NuNDataPlayers[iName])) then
 					locals.NuNDataPlayers[iName] = {};
 					locals.NuNDataPlayers[iName].type = NuNC.NUN_AUTO_C;
@@ -3919,8 +3889,8 @@ NuN_Update_Ignored = function()
 		-- Check Saved Data and validate against WoW Ignored List
 		for idx, value in pairs(locals.NuNDataPlayers) do
 			if (
-					(locals.NuNDataPlayers[idx].faction) and (locals.NuNDataPlayers[idx].faction == local_player.factionName) and
-							(idx ~= locals.player_Name)) then
+						(locals.NuNDataPlayers[idx].faction) and (locals.NuNDataPlayers[idx].faction == local_player.factionName) and
+						(idx ~= locals.player_Name)) then
 				local isIndexIgnored = false;
 				if (isIgnored[idx]) then
 					isIndexIgnored = true;
@@ -3932,30 +3902,27 @@ NuN_Update_Ignored = function()
 					end
 					if ((locals.NuNDataPlayers[idx]) and (locals.NuNDataPlayers[idx].ignoreLst)) then
 						if (
-								(NuNSettings[local_player.realmName].autoD) and (locals.NuNDataPlayers[idx].type == NuNC.NUN_AUTO_C) and
-										(not locals.NuNDataPlayers[idx].friendLst)) then
+									(NuNSettings[local_player.realmName].autoD) and (locals.NuNDataPlayers[idx].type == NuNC.NUN_AUTO_C) and
+									(not locals.NuNDataPlayers[idx].friendLst)) then
 							locals.NuNDataPlayers[idx] = nil;
 						else
 							locals.NuNDataPlayers[idx].ignoreLst = nil;
 						end
 					end
-
 				elseif (isIndexIgnored) then
 					if (not locals.NuNDataPlayers[idx].ignoreLst) then -- Ignored but no ignore list currently
 						locals.NuNDataPlayers[idx].ignoreLst = true;
 					end
-
 				else
 					if (locals.NuNDataPlayers[idx].ignoreLst) then
 						if (NuNSettings[local_player.realmName].gNotIgnores[idx]) then
 							if (
-									(locals.NuNDataPlayers[idx].type == NuNC.NUN_AUTO_C) and (NuNSettings[local_player.realmName].autoD) and
-											(not locals.NuNDataPlayers[idx].friendLst)) then
+										(locals.NuNDataPlayers[idx].type == NuNC.NUN_AUTO_C) and (NuNSettings[local_player.realmName].autoD) and
+										(not locals.NuNDataPlayers[idx].friendLst)) then
 								locals.NuNDataPlayers[idx] = nil;
 							else
 								locals.NuNDataPlayers[idx].ignoreLst = nil;
 							end
-
 						else
 							if (NuNSettings[local_player.realmName].autoA) then
 								startIgnoring[idx] = true;
@@ -4046,14 +4013,13 @@ function NuN_Update_Friends()
 					end
 					if ((locals.NuNDataPlayers[iName]) and (locals.NuNDataPlayers[iName].friendLst)) then
 						if (
-								(NuNSettings[local_player.realmName].autoD) and (locals.NuNDataPlayers[iName].type == NuNC.NUN_AUTO_C) and
-										(not locals.NuNDataPlayers[iName].ignoreLst)) then
+									(NuNSettings[local_player.realmName].autoD) and (locals.NuNDataPlayers[iName].type == NuNC.NUN_AUTO_C) and
+									(not locals.NuNDataPlayers[iName].ignoreLst)) then
 							locals.NuNDataPlayers[iName] = nil;
 						else
 							locals.NuNDataPlayers[iName].friendLst = nil;
 						end
 					end
-
 				elseif ((not locals.NuNDataPlayers[iName]) and (NuNSettings[local_player.realmName].autoA)) then
 					locals.NuNDataPlayers[iName] = {};
 					locals.NuNDataPlayers[iName].type = NuNC.NUN_AUTO_C;
@@ -4068,7 +4034,6 @@ function NuN_Update_Friends()
 		for idx, value in pairs(locals.NuNDataPlayers) do
 			if (idx == locals.player_Name) then
 				locals.NuNDataPlayers[idx].type = NuNC.NUN_SELF_C;
-
 			elseif ((locals.NuNDataPlayers[idx].faction) and (locals.NuNDataPlayers[idx].faction == local_player.factionName)) then
 				local isIndexFriendly = false;
 				if (isFriendly[idx]) then
@@ -4081,30 +4046,27 @@ function NuN_Update_Friends()
 					end
 					if ((locals.NuNDataPlayers[idx]) and (locals.NuNDataPlayers[idx].friendLst)) then
 						if (
-								(NuNSettings[local_player.realmName].autoD) and (locals.NuNDataPlayers[idx].type == NuNC.NUN_AUTO_C) and
-										(not locals.NuNDataPlayers[idx].ignoreLst)) then
+									(NuNSettings[local_player.realmName].autoD) and (locals.NuNDataPlayers[idx].type == NuNC.NUN_AUTO_C) and
+									(not locals.NuNDataPlayers[idx].ignoreLst)) then
 							locals.NuNDataPlayers[idx] = nil;
 						else
 							locals.NuNDataPlayers[idx].friendLst = nil;
 						end
 					end
-
 				elseif (isIndexFriendly) then
 					if (not locals.NuNDataPlayers[idx].friendLst) then -- Ignored but no ignore list currently
 						locals.NuNDataPlayers[idx].friendLst = true;
 					end
-
 				else
 					if (locals.NuNDataPlayers[idx].friendLst) then
 						if (NuNSettings[local_player.realmName].gNotFriends[idx]) then
 							if (
-									(locals.NuNDataPlayers[idx].type == NuNC.NUN_AUTO_C) and (NuNSettings[local_player.realmName].autoD) and
-											(not locals.NuNDataPlayers[idx].ignoreLst)) then
+										(locals.NuNDataPlayers[idx].type == NuNC.NUN_AUTO_C) and (NuNSettings[local_player.realmName].autoD) and
+										(not locals.NuNDataPlayers[idx].ignoreLst)) then
 								locals.NuNDataPlayers[idx] = nil;
 							else
 								locals.NuNDataPlayers[idx].friendLst = nil;
 							end
-
 						else
 							if (NuNSettings[local_player.realmName].autoA) then
 								addFriends[idx] = true;
@@ -4172,8 +4134,8 @@ function NuN_WriteNote()
 		locals.NuNDataPlayers[local_player.currentNote.unit].type = NuNC.NUN_SELF_C;
 		NuNHeader:SetText(NUN_PLAYER .. " : " .. local_player.currentNote.unit);
 	elseif (
-			(not locals.NuNDataPlayers[local_player.currentNote.unit].type) or
-					(locals.NuNDataPlayers[local_player.currentNote.unit].type == NuNC.NUN_AUTO_C)) then
+				(not locals.NuNDataPlayers[local_player.currentNote.unit].type) or
+				(locals.NuNDataPlayers[local_player.currentNote.unit].type == NuNC.NUN_AUTO_C)) then
 		locals.NuNDataPlayers[local_player.currentNote.unit].type = NuNC.NUN_MANU_C;
 		NuNHeader:SetText(NUN_MANU .. " : " .. local_player.currentNote.unit);
 	end
@@ -4256,7 +4218,8 @@ function NuN_WriteNote()
 			locals.NuNDataPlayers[local_player.currentNote.unit].prating = locals.dropdownFrames.ddPRating;
 		end
 	elseif (contact.prating ~= nil) then
-		locals.NuNDataPlayers[local_player.currentNote.unit].prating = NuNF.NuNGet_TableID(NuNSettings.ratings, contact.prating);
+		locals.NuNDataPlayers[local_player.currentNote.unit].prating = NuNF.NuNGet_TableID(NuNSettings.ratings,
+			contact.prating);
 	end
 	if (locals.dropdownFrames.ddProf1) then
 		if (locals.dropdownFrames.ddProf1 == -1) then
@@ -4318,8 +4281,8 @@ function NuN_WriteNote()
 				locals.NuNDataPlayers[locals.customHeadingTitle_dbKey] = {};
 			end
 
-			if (locals.bttnChanges[n] == -1) then -- 5.60 Use -1 to flag blank
-				locals.NuNDataPlayers[locals.customHeadingTitle_dbKey].txt = "";  -- nil = default; "" = manually blanked. For User Button Headers.
+			if (locals.bttnChanges[n] == -1) then                          -- 5.60 Use -1 to flag blank
+				locals.NuNDataPlayers[locals.customHeadingTitle_dbKey].txt = ""; -- nil = default; "" = manually blanked. For User Button Headers.
 			else
 				locals.NuNDataPlayers[locals.customHeadingTitle_dbKey].txt = locals.bttnChanges[n];
 			end
@@ -4368,7 +4331,6 @@ if locals.customHeadingValue_dbKey then
 	locals.debugRecord_CustomHeadingValue = locals.NuNDataPlayers[locals.customHeadingValue_dbKey];
 end
 --@end-debug@]===]
-
 	-- Talents ?
 	-- if (
 	-- 	(NuNTalents.player) and (NuNTalents.total) and (NuNTalents.player == local_player.currentNote.unit) and
@@ -4385,10 +4347,10 @@ end
 
 	NuNF.ClearButtonChanges();
 	if (
-			(NuNSettings[local_player.realmName].autoA) and
-					(
+				(NuNSettings[local_player.realmName].autoA) and
+				(
 					(locals.NuNDataPlayers[local_player.currentNote.unit].friendLst) or
-							(locals.NuNDataPlayers[local_player.currentNote.unit].ignoreLst))) then
+					(locals.NuNDataPlayers[local_player.currentNote.unit].ignoreLst))) then
 	else
 		NuNButtonDelete:Enable();
 	end
@@ -4481,8 +4443,8 @@ function NuNGNote_WriteNote(noteName)
 		end
 
 		if (
-				((locals.NuN_GNote_OriTitle) and (locals.NuN_GNote_OriTitle ~= local_player.currentNote.general)) or
-						(not locals.NuN_GNote_OriTitle)) then
+					((locals.NuN_GNote_OriTitle) and (locals.NuN_GNote_OriTitle ~= local_player.currentNote.general)) or
+					(not locals.NuN_GNote_OriTitle)) then
 			if ((NuNDataRNotes[local_player.currentNote.general]) or (NuNDataANotes[local_player.currentNote.general])) then
 				NuN_SearchForNote("Text", local_player.currentNote.general);
 				receiptPending = true;
@@ -4556,17 +4518,20 @@ function NuNGNote_WriteNote(noteName)
 			if (NUN_NOTETYPES[NuNGNoteFrame.type].Command == "QST") then
 				if (not NuNData[local_player.realmName].QuestHistory[locals.player_Name][local_player.currentNote.general]) then
 					NuNData[local_player.realmName].QuestHistory[locals.player_Name][local_player.currentNote.general] = {};
-					NuNData[local_player.realmName].QuestHistory[locals.player_Name][local_player.currentNote.general].sortDate = tostring(date("%Y%m%d%H%M%S"));
-					NuNData[local_player.realmName].QuestHistory[locals.player_Name][local_player.currentNote.general].pLevel = UnitLevel("player");
+					NuNData[local_player.realmName].QuestHistory[locals.player_Name][local_player.currentNote.general].sortDate =
+							tostring(date("%Y%m%d%H%M%S"));
+					NuNData[local_player.realmName].QuestHistory[locals.player_Name][local_player.currentNote.general].pLevel =
+							UnitLevel("player");
 					local qTxt = NuNC.NUN_CREATED .. "\n    " .. NuNF.NuN_GetDateStamp() .. "\n    " .. NuNF.NuN_GetLoc() .. "\n";
-					NuNData[local_player.realmName].QuestHistory[locals.player_Name][local_player.currentNote.general].txt = NuNF.NuN_SetSaveText(qTxt);
+					NuNData[local_player.realmName].QuestHistory[locals.player_Name][local_player.currentNote.general].txt = NuNF
+							.NuN_SetSaveText(qTxt);
 					NuNF.NuN_UpdateQuestNotes("Write");
 				end
 
 				-- else if an NPC note, and auto-noting NPCs, and MapNotes is installed, then .............
 			elseif (
-					(NUN_NOTETYPES[NuNGNoteFrame.type].Command == "NPC") and (NuN_Creating) and
-							(NuNSettings[local_player.realmName].autoMapNotes)) then
+						(NUN_NOTETYPES[NuNGNoteFrame.type].Command == "NPC") and (NuN_Creating) and
+						(NuNSettings[local_player.realmName].autoMapNotes)) then
 				NuN_MapNote("Target", "", "", nil);
 			end
 		end
@@ -4772,13 +4737,13 @@ local function OnNotesUNeedFullyLoaded(self, ...)
 	if (EarthFeature_AddButton) then
 		EarthFeature_AddButton(
 			{
-				id = NUN_OPTIONS_HEADER;
-				name = NUN_OPTIONS_HEADER;
-				subtext = "";
-				tooltip = "";
-				icon = "Interface\\Buttons\\UI-CheckBox-Check";
-				callback = NuN_Options;
-				test = nil;
+				id = NUN_OPTIONS_HEADER,
+				name = NUN_OPTIONS_HEADER,
+				subtext = "",
+				tooltip = "",
+				icon = "Interface\\Buttons\\UI-CheckBox-Check",
+				callback = NuN_Options,
+				test = nil,
 			}
 		);
 	elseif (Cosmos_RegisterButton) then
@@ -4817,8 +4782,8 @@ local function OnNotesUNeedFullyLoaded(self, ...)
 	local altCounter = 1;
 	local sortKey;
 	local tAltArray = {};
-	tAltArray[1] = {};  -- for other Alts on this Realm
-	tAltArray[2] = {};  -- for other Alts on other Realms
+	tAltArray[1] = {}; -- for other Alts on this Realm
+	tAltArray[2] = {}; -- for other Alts on other Realms
 
 	AltArray[altCounter] = {};
 	AltArray[altCounter].name = locals.player_Name;
@@ -4853,7 +4818,7 @@ local function OnNotesUNeedFullyLoaded(self, ...)
 	end
 	tsort(tAltArray[2], NuNF.NuN_SortAltArray);
 
-	altCounter = 1;  -- start at 2; locals.player_Name at 1
+	altCounter = 1; -- start at 2; locals.player_Name at 1
 	for i = 1, getn(tAltArray[1]), 1 do
 		altCounter = altCounter + 1;
 		AltArray[altCounter] = {};
@@ -5102,7 +5067,6 @@ function NuN_OnEvent(self, event, ...)
 		-- REMOVE: This is no longer needed. Will revist talent information in Dragonflight
 		-- elseif (event == "INSPECT_READY") then
 		-- 	NuNF.QueryTalents();
-
 	end
 end
 
@@ -5220,7 +5184,6 @@ function NuNF.NuN_OnClickDropDown_PRatings(self)
 		if (chosenRating < maxRatings) then
 			StaticPopup_Show("NUN_CHANGE_RATING_ONE");
 		end
-
 	elseif (IsAltKeyDown()) then
 		if (chosenRating < maxRatings) then
 			NuNSettings.ratings[chosenRating] = NUN_ORATINGS[chosenRating];
@@ -5232,7 +5195,6 @@ function NuNF.NuN_OnClickDropDown_PRatings(self)
 				UIDropDownMenu_SetText(NuNDropDown_PlayerRating, NUN_ORATINGS[chosenRating]);
 			end
 		end
-
 	else
 		UIDropDownMenu_SetSelectedID(NuNDropDown_PlayerRating, chosenRating);
 		locals.dropdownFrames.ddPRating = chosenRating;
@@ -5505,7 +5467,7 @@ function NuN_InitializeDropDown_SearchQH(frame)
 	local info = UIDropDownMenu_CreateInfo();
 	for i = 1, getn(AltArray), 1 do
 		info.func = NuNF.NuN_OnClickDropDown_SearchQH;
-		info.text = AltArray[i].displayName;  -- 5.60  Make sure AltArray[1] = locals.player_Name
+		info.text = AltArray[i].displayName; -- 5.60  Make sure AltArray[1] = locals.player_Name
 		info.checked = nil;
 		UIDropDownMenu_AddButton(info);
 	end
@@ -5640,11 +5602,13 @@ function NuNEditDetails_Save()
 		local enableTooltipInclude = (NuNEditDetail_TooltipCheck:GetChecked() == 1) or nil;
 		local oldTooltipTokenMarkStart, oldTooltipTokenMarkEnd = strfind(strlower(newTxt), NuNC.NUN_TT_HDNG);
 		nun_msgf("enableTooltipInclude:%s   MarkStart:%s    MarkEnd:%s    newTxt:%s",
-			tostring(enableTooltipInclude), tostring(oldTooltipTokenMarkStart), tostring(oldTooltipTokenMarkEnd), tostring(newTxt));
+			tostring(enableTooltipInclude), tostring(oldTooltipTokenMarkStart), tostring(oldTooltipTokenMarkEnd),
+			tostring(newTxt));
 
 		if (oldTooltipTokenMarkStart and oldTooltipTokenMarkEnd) then
 			enableTooltipInclude = true;
-			local preMark, postMark = strsub(newTxt, 1, oldTooltipTokenMarkStart - 1), strsub(newTxt, oldTooltipTokenMarkEnd + 1);
+			local preMark, postMark = strsub(newTxt, 1, oldTooltipTokenMarkStart - 1),
+					strsub(newTxt, oldTooltipTokenMarkEnd + 1);
 			nun_msgf("preMark:%s   postMark:%s", tostring(preMark), tostring(postMark));
 			newTxt = preMark .. postMark;
 		end
@@ -5667,11 +5631,11 @@ function NuNEditDetails_Save()
 		local idx = tonumber(locals.bttnNumb);
 		if (enableSaveDefault) then
 			if (locals.NuNDataPlayers[locals.customHeadingTitle_dbKey]) then -- As we have set a new Account Default while viewing this Player, then nil any Player specific setting for this player
-				locals.NuNDataPlayers[locals.customHeadingTitle_dbKey] = nil;  -- this does not reset all player specific settings.
+				locals.NuNDataPlayers[locals.customHeadingTitle_dbKey] = nil; -- this does not reset all player specific settings.
 			end
 		else
 			if ((newTxt == "") or (newTxt == nil)) then
-				locals.bttnChanges[idx] = -1;  -- 5.60 Use -1 to flag blank
+				locals.bttnChanges[idx] = -1; -- 5.60 Use -1 to flag blank
 			else
 				locals.bttnChanges[idx] = newTxt;
 			end
@@ -5685,7 +5649,7 @@ function NuNEditDetails_Save()
 	else
 		local idx = locals.bttnNumb + locals.detlOffset;
 		if (newTxt == "") then
-			locals.bttnChanges[idx] = -1;  -- 5.60 Use -1 to flag blank
+			locals.bttnChanges[idx] = -1; -- 5.60 Use -1 to flag blank
 		else
 			locals.bttnChanges[idx] = newTxt;
 		end
@@ -5772,7 +5736,6 @@ function NuN_EditDetailTooltipCheckButton_OnClick(checkbox)
 	end
 end
 --]]
-
 function NuNEditDetailsRestore()
 	locals.headingID_dbKey = locals.suffix_Header .. locals.bttnNumb;
 	locals.customHeadingTitle_dbKey = local_player.currentNote.unit .. locals.headingID_dbKey;
@@ -5897,7 +5860,8 @@ function NuN_RetrieveIgnoreListParams()
 end
 
 function NuNNew_IgnoreList_Update()
-	local numIgnores, numBlocks, numMutes, numToonBlocks, ignoredHeader, blockedHeader, mutedHeader, blockedToonHeader = NuN_RetrieveIgnoreListParams();
+	local numIgnores, numBlocks, numMutes, numToonBlocks, ignoredHeader, blockedHeader, mutedHeader, blockedToonHeader =
+			NuN_RetrieveIgnoreListParams();
 	local lastIgnoredIndex = numIgnores + ignoredHeader;
 	local lastBlockedIndex = lastIgnoredIndex + numBlocks + blockedHeader;
 	local lastBlockedToonIndex = lastBlockedIndex + numToonBlocks + blockedToonHeader;
@@ -6086,8 +6050,8 @@ end
 ---@param linkName string
 local function ConvertManualNoteToLinkNote(sanitizedLink, linkName)
 	if (
-			(NuNDataRNotes[linkName] or NuNDataANotes[linkName])
-					and not ((NuNDataRNotes[sanitizedLink]) or (NuNDataANotes[sanitizedLink]))) then
+				(NuNDataRNotes[linkName] or NuNDataANotes[linkName])
+				and not ((NuNDataRNotes[sanitizedLink]) or (NuNDataANotes[sanitizedLink]))) then
 		print("A manual note already exists; converting it to an linked note");
 		NuNData[locals.itmIndex_dbKey][linkName] = sanitizedLink;
 		if (NuNDataRNotes[linkName]) then
@@ -6134,7 +6098,6 @@ function NuNQuickNote.ProcessHyperlink(itemLink)
 					StackSplitFrame:Hide();
 					return true;
 				else
-
 					NuNF.NuN_GNoteFromItem(sanitizedLink, "GameTooltip");
 					StackSplitFrame:Hide();
 					return true;
@@ -6260,7 +6223,6 @@ function NuNF.RegisterModifier_TrainerFrame(buttonName)
 			NuNF.HookButtonClick(button, buttonName, TradeskillButton_Click);
 		end
 	end
-
 end
 
 --end experimental code lifted from old blizzard feedback ui
@@ -6305,7 +6267,7 @@ local function questInfoItem_Click(frame, mouseButton, isMouseButtonDown)
 	return NuNHooks.originalOnClick[frame:GetID()](frame, mouseButton, isMouseButtonDown);
 end
 
---[[ -- REMOVE: 
+--[[ -- REMOVE:
 -- function NuNF.RegisterModifier_QuestLogFrame(buttonName)
 -- 	local button;
 
@@ -6324,7 +6286,6 @@ end
 -- 	end
 -- end
 -- ]]
-
 function NuNF.RegisterModifier_Main(buttonName)
 	-- Quest Reward buttons
 	-- NuNF.RegisterModifier_QuestLogFrame(buttonName);
@@ -6350,7 +6311,7 @@ function NuNF.NotesUNeed_RegisterFramesForClicks(delayInMilliseconds)
 	if delayInMilliseconds and type(delayInMilliseconds) == "number" then
 		delayInMilliseconds = delayInMilliseconds / 1000.0;
 		if ((locals.RegisterFrameOnClick_DelayMS == nil) or
-				(delayInMilliseconds > locals.RegisterFrameOnClick_DelayMS)) then
+					(delayInMilliseconds > locals.RegisterFrameOnClick_DelayMS)) then
 			locals.RegisterFrameOnClick_DelayMS = delayInMilliseconds;
 		end
 	end
@@ -6384,7 +6345,6 @@ function NotesUNeed.SetLinkRef(linkText)
 			-- add the link to the note
 			NuNGNoteTextScroll:Insert(linkText);
 			result = true;
-
 		elseif NuNFrame:IsVisible() then
 			NuNText:Insert(linkText);
 			result = true;
@@ -6421,7 +6381,6 @@ function NuN_HandleModifiedItemClick(itemLink)
 	if itemLink and itemLink ~= "" and NuNSettings and NuNSettings[local_player.realmName] and
 			NuNSettings[local_player.realmName].modifier and NuNSettings[local_player.realmName].modifier == "on" and
 			((receiptPending == nil) or (locals.NuN_Receiving.type ~= "General")) then
-
 		-- determine which mouse button is being pressed
 		local mouseButton = GetMouseButtonClicked();
 
@@ -6433,7 +6392,8 @@ function NuN_HandleModifiedItemClick(itemLink)
 
 		-- debug output
 		if locals.NuNDebug and locals.debugging_msg_hooks then
-			nun_msgf("NuN_HandleModifiedItemClick - general_note_open:%s    player_note_open:%s     original_link:%s    bResult:%s   mouseButton:%s   rawLink:%s"
+			nun_msgf(
+				"NuN_HandleModifiedItemClick - general_note_open:%s    player_note_open:%s     original_link:%s    bResult:%s   mouseButton:%s   rawLink:%s"
 				,
 				tostring(NuNGNoteFrame:IsVisible()), tostring(NuNFrame:IsVisible()), itemLink, tostring(bResult),
 				tostring(mouseButton), DecodeHyperlink(itemLink));
@@ -6459,7 +6419,8 @@ function NuN_OnHyperlinkShow(chatFrame, link, text, button)
 		DecodeHyperlink(link), DecodeHyperlink(text), tostring(button));
 	if locals.NuNDebug and chatFrame == DEFAULT_CHAT_FRAME and locals.debugging_msg_hooks then
 		-- debug output
-		nun_msgf(" >>>NuN_OnHyperlinkShow<<< chatFrame:%s    link:%s     text:%s     button:%s", tostring(chatFrame:GetName())
+		nun_msgf(" >>>NuN_OnHyperlinkShow<<< chatFrame:%s    link:%s     text:%s     button:%s",
+			tostring(chatFrame:GetName())
 			, DecodeHyperlink(link), DecodeHyperlink(text), tostring(button));
 	end
 end
@@ -6560,7 +6521,6 @@ function NuNNew_SetItemRef(self, link, text, btn)
 					end
 				end
 			end
-
 		elseif (IsNuNModifierKeyDown(btn)) then -- 5.60
 			text, linkName = SimplifyHyperlink(text);
 
@@ -6703,7 +6663,8 @@ function NuNNew_QuestRewardCompleteButton_OnClick()
 			if (f == nil) then
 				f = i;
 				break
-				; end
+				;
+			end
 		end
 		if (f < 4) then
 			local qTxt = NuNF.NuN_GetDisplayText(NuNData[local_player.realmName].QuestHistory[locals.player_Name][q].txt);
@@ -6743,21 +6704,23 @@ function NuNNew_ChatFrame_MessageEventHandler(chatframe, event, ...)
 		arg7: zoneID for system channels (1 for General, 2 for Trade, 22 for LocalDefense, 23 for WorldDefense, 26 for LFG)
 		arg8: channel number
 		arg9: channel name without number
-		arg10: 
+		arg10:
 		arg11: chat lineID (used for reporting messages)
 		arg12: sender GUID
-		arg13: 
-		arg14: 
+		arg13:
+		arg14:
 		arg15:
 	--]]
-
 	if locals.NuNDebugVerbose then
 		if arg1 and chatframe == DEFAULT_CHAT_FRAME then
-			nun_msgf("NuNNew_ChatFrame_MessageEventHandler - event:%s  frame:%s  arg2:%s  arg3:%s  arg4:%s  arg5:%s  arg6:%s  arg7:%s  arg8:%s  arg9:%s  arg10:%s  arg11:%s  arg12:%s  arg13:%s  arg14:%s  arg15:%s   arg1:%s"
+			nun_msgf(
+				"NuNNew_ChatFrame_MessageEventHandler - event:%s  frame:%s  arg2:%s  arg3:%s  arg4:%s  arg5:%s  arg6:%s  arg7:%s  arg8:%s  arg9:%s  arg10:%s  arg11:%s  arg12:%s  arg13:%s  arg14:%s  arg15:%s   arg1:%s"
 				,
-				tostring(event), tostring(chatframe), tostring(arg2), tostring(arg3), tostring(arg4), tostring(arg5), tostring(arg6)
+				tostring(event), tostring(chatframe), tostring(arg2), tostring(arg3), tostring(arg4), tostring(arg5),
+				tostring(arg6)
 				, tostring(arg7), tostring(arg8),
-				tostring(arg9), tostring(arg10), tostring(arg11), tostring(arg12), tostring(arg13), tostring(arg14), tostring(arg15)
+				tostring(arg9), tostring(arg10), tostring(arg11), tostring(arg12), tostring(arg13), tostring(arg14),
+				tostring(arg15)
 				, tostring(arg1));
 		else
 			nun_msgf("NuNNew_ChatFrame_MessageEventHandler - event:%s  args:NONE", tostring(event));
@@ -6805,13 +6768,12 @@ function NuNNew_ChatFrame_MessageEventHandler(chatframe, event, ...)
 		-- if waitng for a /who, then ignore Chat_msg_system messages that contain the name of the /who we were looking for...
 		-- won't ignore more than 1 but shouldn't usually have > 1, and its only a chat message anyway so...
 	elseif (event == "CHAT_MSG_SYSTEM") then
-
 		if (type(arg1) == "string") then
 			if ((NuN_WhoReturnStruct.func) and (strfind(arg1, NuN_WhoReturnStruct.name))) then
-				NuN_WhoReturnStruct.func(); -- 5.60
+				NuN_WhoReturnStruct.func();      -- 5.60
 				NuN_WhoReturnStruct.func = nil;  -- 5.60
 				NuN_WhoReturnStruct.name = nil;  -- 5.60
-				NuN_WhoReturnStruct.timeLimit = nil;  -- 5.60
+				NuN_WhoReturnStruct.timeLimit = nil; -- 5.60
 				NuN_WhoReturnStruct.secondTry = nil;
 				if ((NuNSettings[local_player.realmName]) and (NuNSettings[local_player.realmName].alternativewho)) then
 					C_FriendList.SetWhoToUi(0); -- 5.60
@@ -6819,9 +6781,8 @@ function NuNNew_ChatFrame_MessageEventHandler(chatframe, event, ...)
 				end
 				processedByNuN = true;
 				NuN_suppressExtraWho = true;
-
 			elseif ((NuN_suppressExtraWho)
-					and ((strfind(arg1, WHO_NUM_RESULTS))
+						and ((strfind(arg1, WHO_NUM_RESULTS))
 							or ((WHO_NUM_RESULTS_P1) and (strfind(arg1, WHO_NUM_RESULTS_P1))))) then
 				processedByNuN = true;
 				NuN_suppressExtraWho = nil;
@@ -6878,7 +6839,7 @@ function NuNNew_ChatFrame_MessageEventHandler(chatframe, event, ...)
 
 			-- LineType 4 : Signifies Last Message in sequence, and the note can now be created
 			if ((lLineType == 4) and (locals.NuN_Receiving.version)) then
-				locals.NuN_Receiving.log = locals.NuN_Receiving.log .. "\n" .. arg1;  -- NuN Creates a NuN Log type note recording the last 10 transmitted/received notes for tracking / debugging purposes
+				locals.NuN_Receiving.log = locals.NuN_Receiving.log .. "\n" .. arg1; -- NuN Creates a NuN Log type note recording the last 10 transmitted/received notes for tracking / debugging purposes
 				NuN_CreateReceivedNote();
 				if (not receiptPending) then
 					locals.NuN_Receiving = {};
@@ -6891,7 +6852,7 @@ function NuNNew_ChatFrame_MessageEventHandler(chatframe, event, ...)
 
 				-- LineType 2 : identifies whether the note being sent is for a Contact or a General Note, and the Name under which the note should be saved
 			elseif ((lLineType == 2) and (locals.NuN_Receiving.version)) then
-				locals.NuN_Receiving.log = locals.NuN_Receiving.log .. "\n" .. arg1;  -- NuN Creates a NuN Log type note recording the last 10 transmitted/received notes for tracking / debugging purposes
+				locals.NuN_Receiving.log = locals.NuN_Receiving.log .. "\n" .. arg1; -- NuN Creates a NuN Log type note recording the last 10 transmitted/received notes for tracking / debugging purposes
 				local nameStart = strfind(arg1, ": Contact : ");
 				if (nameStart) then
 					locals.NuN_Receiving.type = "Contact";
@@ -6914,19 +6875,18 @@ function NuNNew_ChatFrame_MessageEventHandler(chatframe, event, ...)
 				-- LineType 3 : Control message specifying the client language of the Sender, and the version of NotesUNeed they use
 				-- Transmission of notes between different versions of NuN needed to be handled
 			elseif (lLineType == 3) then
-				locals.NuN_Receiving.log = locals.NuN_Receiving.log .. "\n" .. arg1;  -- NuN Creates a NuN Log type note recording the last 10 transmitted/received notes for tracking / debugging purposes
+				locals.NuN_Receiving.log = locals.NuN_Receiving.log .. "\n" .. arg1; -- NuN Creates a NuN Log type note recording the last 10 transmitted/received notes for tracking / debugging purposes
 				local split = strfind(arg1, "v");
 				locals.NuN_Receiving.lang = strsub(arg1, NuNC.NUN_SOURCE_LEN + locals.NuN_Receiving.pos + 1, split - 2);
 				locals.NuN_Receiving.version = strsub(arg1, split + 1);
 				processedByNuN = true;
 				locals.NuN_Receiving.timer = 0;
-
 			elseif (locals.NuN_Receiving.version) then
 				-- The MAIN Body of the message is flagged with a message key prefix to identify chat messages that need to be included in the Note. They are not assigned a 'global' line type in the above sequence
 				-- Line Type below is determined by a Text flag in the message at locals.NuN_Receiving.pos + 1 ;p
 				local msgPrefix = strsub(arg1, 1, locals.NuN_Receiving.pos);
 				if (msgPrefix == locals.NuN_Receiving.prefix) then
-					locals.NuN_Receiving.log = locals.NuN_Receiving.log .. "\n" .. arg1;  -- NuN Creates a NuN Log type note recording the last 10 transmitted/received notes for tracking / debugging purposes
+					locals.NuN_Receiving.log = locals.NuN_Receiving.log .. "\n" .. arg1; -- NuN Creates a NuN Log type note recording the last 10 transmitted/received notes for tracking / debugging purposes
 					local lineType = strsub(arg1, locals.NuN_Receiving.pos + 1, locals.NuN_Receiving.pos + 1);
 					local lineData = strsub(arg1, locals.NuN_Receiving.pos + 3);
 
@@ -7064,7 +7024,7 @@ function NuNNew_ChatFrame_MessageEventHandler(chatframe, event, ...)
 				locals.NuN_Receiving.from = strsub(arg1, prfxPos + prfxLen, prfxEnd - 1);
 				locals.NuN_Receiving.pos = strfind(arg1, ":", 1);
 				if (locals.NuN_Receiving.pos) then
-					local __, __, delay = strfind(arg1, ".+::(%d+%.*%d*)::.*");  -- Custom time delay between each line
+					local __, __, delay = strfind(arg1, ".+::(%d+%.*%d*)::.*"); -- Custom time delay between each line
 					if (delay) then delay = tonumber(delay); end
 					if ((delay) and (delay > defaultReceiptDeadline)) then
 						receiptDeadline = delay;
@@ -7078,7 +7038,7 @@ function NuNNew_ChatFrame_MessageEventHandler(chatframe, event, ...)
 					NuN_tCount = 0;
 					processedByNuN = true;
 					NuN_Message(NUN_RECEIVING_START .. NuN_Receiving.from);
-					locals.NuN_Receiving.log = arg1;  -- NuN Creates a NuN Log type note recording the last 10 transmitted/received notes for tracking / debugging purposes
+					locals.NuN_Receiving.log = arg1; -- NuN Creates a NuN Log type note recording the last 10 transmitted/received notes for tracking / debugging purposes
 					locals.NuN_Receiving.receivedKeys = {};
 					lastTextKey = "";
 				end
@@ -7110,71 +7070,71 @@ function NuNNew_ChatFrame_MessageEventHandler(chatframe, event, ...)
 end
 
 function NuN_RegisterChatFilter()
-	if (IsAddOnLoaded("Prat-3.0")) then
-		-- register with prat instead
-		NotesUNeed.NuN_Prat:Initialize();
-	else
-		ChatFrame_AddMessageEventFilter("FRIENDLIST_UPDATE", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("IGNORELIST_UPDATE", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("MUTELIST_UPDATE", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHANNEL_INVITE_REQUEST", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_ACHIEVEMENT", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_ADDON", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_AFK", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_BATTLEGROUND", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_BATTLEGROUND_LEADER", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_BG_SYSTEM_ALLIANCE", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_BG_SYSTEM_HORDE", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_BG_SYSTEM_NEUTRAL", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_CONVERSATION", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_CONVERSATION_LIST", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_CONVERSATION_NOTICE", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_INLINE_TOAST_ALERT", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_INLINE_TOAST_BROADCAST", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_INLINE_TOAST_BROADCAST_INFORM", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_INLINE_TOAST_CONVERSATION", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_WHISPER", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_WHISPER_INFORM", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL_JOIN", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL_LEAVE", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL_LIST", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL_NOTICE", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL_NOTICE_USER", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_DND", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_FILTERED", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_ACHIEVEMENT", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_MSG_IGNORED", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_MONSTER_EMOTE", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_MONSTER_SAY", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_MONSTER_WHISPER", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_MONSTER_YELL", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_OFFICER", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_OPENING", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY_LEADER", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_PET_INFO", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_BOSS_EMOTE", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_BOSS_WHISPER", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_WARNING", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_LEADER", NuNNew_ChatFrame_MessageEventHandler);
-		--	ChatFrame_AddMessageEventFilter("CHAT_MSG_RESTRICTED", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_TARGETICONS", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_TRADESKILLS", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", NuNNew_ChatFrame_MessageEventHandler);
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", NuNNew_ChatFrame_MessageEventHandler);
-		--	ChatFrame_AddMessageEventFilter("CHAT_MSG_", NuNNew_ChatFrame_MessageEventHandler);
-		--	ChatFrame_AddMessageEventFilter("CHAT_MSG_", NuNNew_ChatFrame_MessageEventHandler);
-		--	ChatFrame_AddMessageEventFilter("CHAT_MSG_", NuNNew_ChatFrame_MessageEventHandler);
-		--	ChatFrame_AddMessageEventFilter("CHAT_MSG_", NuNNew_ChatFrame_MessageEventHandler);
-	end
+	-- if (IsAddOnLoaded("Prat-3.0")) then
+	-- 	-- register with prat instead
+	-- 	NotesUNeed.NuN_Prat:Initialize();
+	-- else
+	ChatFrame_AddMessageEventFilter("FRIENDLIST_UPDATE", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("IGNORELIST_UPDATE", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("MUTELIST_UPDATE", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHANNEL_INVITE_REQUEST", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_ACHIEVEMENT", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_ADDON", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_AFK", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_BATTLEGROUND", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_BATTLEGROUND_LEADER", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_BG_SYSTEM_ALLIANCE", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_BG_SYSTEM_HORDE", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_BG_SYSTEM_NEUTRAL", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_CONVERSATION", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_CONVERSATION_LIST", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_CONVERSATION_NOTICE", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_INLINE_TOAST_ALERT", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_INLINE_TOAST_BROADCAST", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_INLINE_TOAST_BROADCAST_INFORM", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_INLINE_TOAST_CONVERSATION", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_WHISPER", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_WHISPER_INFORM", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL_JOIN", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL_LEAVE", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL_LIST", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL_NOTICE", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL_NOTICE_USER", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_DND", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_FILTERED", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_ACHIEVEMENT", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_MSG_IGNORED", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_MONSTER_EMOTE", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_MONSTER_SAY", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_MONSTER_WHISPER", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_MONSTER_YELL", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_OFFICER", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_OPENING", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY_LEADER", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_PET_INFO", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_BOSS_EMOTE", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_BOSS_WHISPER", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_WARNING", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_LEADER", NuNNew_ChatFrame_MessageEventHandler);
+	--	ChatFrame_AddMessageEventFilter("CHAT_MSG_RESTRICTED", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_TARGETICONS", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_TRADESKILLS", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_TEXT_EMOTE", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", NuNNew_ChatFrame_MessageEventHandler);
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", NuNNew_ChatFrame_MessageEventHandler);
+	--	ChatFrame_AddMessageEventFilter("CHAT_MSG_", NuNNew_ChatFrame_MessageEventHandler);
+	--	ChatFrame_AddMessageEventFilter("CHAT_MSG_", NuNNew_ChatFrame_MessageEventHandler);
+	--	ChatFrame_AddMessageEventFilter("CHAT_MSG_", NuNNew_ChatFrame_MessageEventHandler);
+	--	ChatFrame_AddMessageEventFilter("CHAT_MSG_", NuNNew_ChatFrame_MessageEventHandler);
+	-- end
 end
 
 -- World Map Frame was altered to allow normal GameTooltips to appear above it
@@ -7200,19 +7160,19 @@ function NuN_UpdateCurLinks()
 	local cont, zone, curZ;
 
 	-- REVIEW: Probably need to rewrite this with the Map API. Need to find out if MapNotes is still a thing and updated.
-	if (MapNotes_Data_Notes) then -- + v5.00.11200
-		cont = "WM ";  -- + v5.00.11200
-		local map = C_Map.GetMapInfo(WorldMapFrame:GetMapID());  -- REVIEW: Is this what we are trying to get here?
-		if (map) then -- + v5.00.11200
-			cont = cont .. map;  -- + v5.00.11200
-		else -- + v5.00.11200
-			cont = cont .. "WorldMap";  -- + v5.00.11200
-		end -- + v5.00.11200
-		zone = 0;  -- + v5.00.11200
-		if (MapNotes_Data_Notes[cont]) then -- + v5.00.11200
+	if (MapNotes_Data_Notes) then                            -- + v5.00.11200
+		cont = "WM ";                                          -- + v5.00.11200
+		local map = C_Map.GetMapInfo(WorldMapFrame:GetMapID()); -- REVIEW: Is this what we are trying to get here?
+		if (map) then                                          -- + v5.00.11200
+			cont = cont .. map;                                  -- + v5.00.11200
+		else                                                   -- + v5.00.11200
+			cont = cont .. "WorldMap";                           -- + v5.00.11200
+		end                                                    -- + v5.00.11200
+		zone = 0;                                              -- + v5.00.11200
+		if (MapNotes_Data_Notes[cont]) then                    -- + v5.00.11200
 			NuN_IndexByZone(cont, zone, MapNotes_Data_Notes[cont]); -- + v5.00.11200
-		end -- + v5.00.11200
-	end -- + v5.00.11200
+		end                                                    -- + v5.00.11200
+	end                                                      -- + v5.00.11200
 end
 
 function NuNNew_AlphaMapNotes_OnEnter(id, lFrame)
@@ -7262,36 +7222,36 @@ end
 
 function NuNNew_MapNotes_WriteNote()
 	NuNHooks.NuNOri_MapNotes_WriteNote();
-	if (MapNotes_Data_Notes) then -- + v5.00.11200
-		local cont = "WM ";  -- + v5.00.11200
-		local map = C_Map.GetMapInfo(C_Map.GetBestMapForUnit("player"));  -- REVIEW: what info do we need here? Update with the Map API for now.
-		if (map) then -- + v5.00.11200
-			cont = cont .. map;  -- + v5.00.11200
-		else -- + v5.00.11200
-			cont = cont .. "WorldMap";  -- + v5.00.11200
-		end -- + v5.00.11200
-		zone = 0;  -- + v5.00.11200
-		if (MapNotes_Data_Notes[cont]) then -- + v5.00.11200
-			NuN_IndexByZone(cont, zone, MapNotes_Data_Notes[cont]); -- + v5.00.11200
-		end -- + v5.00.11200
-	end -- + v5.00.11200
+	if (MapNotes_Data_Notes) then                                    -- + v5.00.11200
+		local cont = "WM ";                                            -- + v5.00.11200
+		local map = C_Map.GetMapInfo(C_Map.GetBestMapForUnit("player")); -- REVIEW: what info do we need here? Update with the Map API for now.
+		if (map) then                                                  -- + v5.00.11200
+			cont = cont .. map;                                          -- + v5.00.11200
+		else                                                           -- + v5.00.11200
+			cont = cont .. "WorldMap";                                   -- + v5.00.11200
+		end                                                            -- + v5.00.11200
+		zone = 0;                                                      -- + v5.00.11200
+		if (MapNotes_Data_Notes[cont]) then                            -- + v5.00.11200
+			NuN_IndexByZone(cont, zone, MapNotes_Data_Notes[cont]);      -- + v5.00.11200
+		end                                                            -- + v5.00.11200
+	end                                                              -- + v5.00.11200
 end
 
 function NuNNew_MapNotes_Quicknote()
 	NuNHooks.NuNOri_MapNotes_Quicknote();
-	if (MapNotes_Data_Notes) then -- + v5.00.11200
-		local cont = "WM ";  -- + v5.00.11200
-		local map = C_Map.GetMapInfo(C_Map.GetBestMapForUnit("player"));  -- REVIEW: what info do we need here? Update with the Map API for now.
-		if (map) then -- + v5.00.11200
-			cont = cont .. map;  -- + v5.00.11200
-		else -- + v5.00.11200
-			cont = cont .. "WorldMap";  -- + v5.00.11200
-		end -- + v5.00.11200
-		zone = 0;  -- + v5.00.11200
-		if (MapNotes_Data_Notes[cont]) then -- + v5.00.11200
-			NuN_IndexByZone(cont, zone, MapNotes_Data_Notes[cont]); -- + v5.00.11200
-		end -- + v5.00.11200
-	end -- + v5.00.11200
+	if (MapNotes_Data_Notes) then                                    -- + v5.00.11200
+		local cont = "WM ";                                            -- + v5.00.11200
+		local map = C_Map.GetMapInfo(C_Map.GetBestMapForUnit("player")); -- REVIEW: what info do we need here? Update with the Map API for now.
+		if (map) then                                                  -- + v5.00.11200
+			cont = cont .. map;                                          -- + v5.00.11200
+		else                                                           -- + v5.00.11200
+			cont = cont .. "WorldMap";                                   -- + v5.00.11200
+		end                                                            -- + v5.00.11200
+		zone = 0;                                                      -- + v5.00.11200
+		if (MapNotes_Data_Notes[cont]) then                            -- + v5.00.11200
+			NuN_IndexByZone(cont, zone, MapNotes_Data_Notes[cont]);      -- + v5.00.11200
+		end                                                            -- + v5.00.11200
+	end                                                              -- + v5.00.11200
 end
 
 ----------------------------
@@ -7306,19 +7266,18 @@ function NuN_Who()
 	if (not NuN_WhoReturnStruct.func) then -- 5.60
 		-- make sure the /who call triggers an EVENT, rather than a chat message 										-- 5.60
 		if ((NuNSettings[local_player.realmName]) and (NuNSettings[local_player.realmName].alternativewho)) then
-			C_FriendList.SetWhoToUi(1); -- 5.60
+			C_FriendList.SetWhoToUi(1);                   -- 5.60
 			FriendsFrame:UnregisterEvent("WHO_LIST_UPDATE"); -- 5.60
 		end
 		-- unregister the who frame from the who update events, and trigger the who									-- 5.60
 		-- also set up the Who Return Structure so the EVENT returns to the correct function								-- 5.60
-		NuN_WhoReturnStruct.func = NuN_Who;  -- 5.60
-		NuN_WhoReturnStruct.timeLimit = 0;  -- 5.60
-		NuN_WhoReturnStruct.name = local_player.currentNote.unit;  -- 5.60
+		NuN_WhoReturnStruct.func = NuN_Who;                     -- 5.60
+		NuN_WhoReturnStruct.timeLimit = 0;                      -- 5.60
+		NuN_WhoReturnStruct.name = local_player.currentNote.unit; -- 5.60
 		NuN_WhoReturnStruct.secondTry = nil;
 		NuN_suppressExtraWho = true;
 		C_FriendList.SendWho("n-" .. local_player.currentNote.unit); -- 5.60 "n-"..
-
-	elseif (NuN_WhoReturnStruct.func == NuN_Who) then -- 5.60
+	elseif (NuN_WhoReturnStruct.func == NuN_Who) then            -- 5.60
 		local wName = nil;
 		local wGuildName = nil;
 		local wRace = nil;
@@ -7330,8 +7289,8 @@ function NuN_Who()
 
 		local n = C_FriendList.GetNumWhoResults();
 		for i = 1, n, 1 do
-			wName, wGuildName, wLevel, wRace, wClass, wZone = C_FriendList.GetWhoInfo(i);  -- 5.60 merged double call
-			if (wName == local_player.currentNote.unit) then -- Not interested in Level / Zone
+			wName, wGuildName, wLevel, wRace, wClass, wZone = C_FriendList.GetWhoInfo(i); -- 5.60 merged double call
+			if (wName == local_player.currentNote.unit) then                           -- Not interested in Level / Zone
 				if (wGuildName ~= nil) then
 					contact.guild = wGuildName;
 				end
@@ -7341,7 +7300,7 @@ function NuN_Who()
 					bttnDetailText1:SetText(wGuildName);
 					contact.guild = wGuildName;
 					if (wGuildName == "") then
-						locals.bttnChanges[6] = -1;  -- 5.60 Use -1 to flag blank
+						locals.bttnChanges[6] = -1; -- 5.60 Use -1 to flag blank
 					else
 						locals.bttnChanges[6] = wGuildName;
 					end
@@ -7363,7 +7322,6 @@ function NuN_Who()
 				if (locals.NuNDataPlayers[local_player.currentNote.unit]) then
 					NuN_WriteNote();
 				end
-
 			end
 		end
 	end -- 5.60
@@ -7497,15 +7455,15 @@ function NuNOptions_ResetDefaults()
 	NuNSettings[local_player.realmName].ttLen = NuNC.NUN_TT_MAX;
 	NuNSettings[local_player.realmName].ttLLen = NuNC.NUN_TT_LEN;
 	NuNSettings[local_player.realmName].hideMicro = nil;
-	NuNSettings[local_player.realmName].autoGuildNotes = nil;  -- 5.60
-	NuNSettings[local_player.realmName].autoGRVerbose = nil;  -- 5.60
-	NuNSettings[local_player.realmName].modKeys = nil;  -- 5.60
-	NuNSettings[local_player.realmName].antiKey = nil;  -- 5.60
-	NuNSettings[local_player.realmName].mouseBttn = nil;  -- 5.60
-	NuNOptions_SetModifierText(); -- 5.60
+	NuNSettings[local_player.realmName].autoGuildNotes = nil; -- 5.60
+	NuNSettings[local_player.realmName].autoGRVerbose = nil; -- 5.60
+	NuNSettings[local_player.realmName].modKeys = nil;       -- 5.60
+	NuNSettings[local_player.realmName].antiKey = nil;       -- 5.60
+	NuNSettings[local_player.realmName].mouseBttn = nil;     -- 5.60
+	NuNOptions_SetModifierText();                            -- 5.60
 	NuN_OnModifierOptionUpdated();
-	NuNSettings[local_player.realmName].modifier = "on";  -- 5.60
-	NuNSettings[local_player.realmName].delay = nil;  -- 5.60 Effect won't be noticed until relog
+	NuNSettings[local_player.realmName].modifier = "on";     -- 5.60
+	NuNSettings[local_player.realmName].delay = nil;         -- 5.60 Effect won't be noticed until relog
 	NuNSettings[local_player.realmName].restrictwho = nil;
 	NuNSettings[local_player.realmName].alternativewho = nil;
 	NuNSettings[local_player.realmName].lastNote = {};
@@ -7555,8 +7513,8 @@ function NuNOptions_ResetDefaults()
 	NuNMicroFrame:SetUserPlaced(0);
 	NuNMicroFrame:ClearAllPoints();
 	NuNMicroFrame:SetPoint("TOP", UIParent, "TOP", 0, -30);
-	NuNSettings[local_player.realmName].nunFont = nil;  -- 5.60
-	NuN_UpdateFont("Fonts\\FRIZQT__.TTF", 12); -- 5.60
+	NuNSettings[local_player.realmName].nunFont = nil; -- 5.60
+	NuN_UpdateFont("Fonts\\FRIZQT__.TTF", 12);        -- 5.60
 	NuNMicroFrame:Show();
 	NuN_Options();
 end
@@ -7585,7 +7543,6 @@ function NuNOptions_Import()
 		if ((idx ~= UNKNOWN) and (idx ~= UNKNOWNOBJECT)) then -- 5.60
 			if ((locals.NuNDataPlayers[idx].faction) and (idx == locals.player_Name)) then
 				locals.NuNDataPlayers[idx].type = NuNC.NUN_SELF_C;
-
 			elseif (locals.NuNDataPlayers[idx].faction == local_player.factionName) then
 				if (locals.NuNDataPlayers[idx].ignoreLst) then
 					if ((not NuN_Is_Ignored(idx)) and (not NuNSettings[local_player.realmName].gNotIgnores[idx])) then
@@ -7598,9 +7555,8 @@ function NuNOptions_Import()
 				end
 
 				if (
-						(isInGuild) and (locals.NuNDataPlayers[idx].guild == lGuild) and (not NuNSettings[local_player.realmName].autoG)) then
+							(isInGuild) and (locals.NuNDataPlayers[idx].guild == lGuild) and (not NuNSettings[local_player.realmName].autoG)) then
 					-- Forget this entry as they are guild mates with current player and settings say not to add as friend
-
 				elseif (locals.NuNDataPlayers[idx].friendLst) then
 					if ((not NuN_Is_Friendly(idx)) and (not NuNSettings[local_player.realmName].gNotFriends[idx])) then
 						NuN_AttemptedFriendIgnores = NuN_AttemptedFriendIgnores + 1;
@@ -7725,12 +7681,12 @@ end
 -- Perhaps a better name would have been "Filter" - it filters notes based on the Drop Down Box available on the Options Frame
 -- e.g. Just show Quest Notes, or show Player Notes with a Profession drop down box for further filtering
 function NuNOptions_Search()
-	local lDisplay = NUN_SEARCHFOR[locals.dropdownFrames.ddSearch].Display;  -- locals.dropdownFrames.ddSearch must be set before calling this function
-	local lCommand = NUN_SEARCHFOR[locals.dropdownFrames.ddSearch].Command;  -- i.e. locals.dropdownFrames.ddSearch controls how records are filtered when the Browser frame is displayed
+	local lDisplay = NUN_SEARCHFOR[locals.dropdownFrames.ddSearch].Display; -- locals.dropdownFrames.ddSearch must be set before calling this function
+	local lCommand = NUN_SEARCHFOR[locals.dropdownFrames.ddSearch].Command; -- i.e. locals.dropdownFrames.ddSearch controls how records are filtered when the Browser frame is displayed
 
 	ddClassSearch = nil;
 	ddProfSearch = nil;
-	ddQHSearch = nil;  -- 5.60
+	ddQHSearch = nil; -- 5.60
 	locals.lastBttnIndex = 0;
 	locals.lastBttn = nil;
 	locals.lastBttnDetl = nil;
@@ -7753,11 +7709,10 @@ function NuNOptions_Search()
 	--	nun_msgf("NuNOptions_Search - lDisplay:%s  lCommand:%s  searchText:%s   ddSearch:%s",
 	--		tostring(lDisplay), tostring(lCommand), tostring(NuNSearchTextBox:GetText()), tostring(locals.dropdownFrames.ddSearch));
 	--[===[@debug@
-	if NuNDropDown_SearchFilter then 
+	if NuNDropDown_SearchFilter then
 		UIDropDownMenu_SetSelectedID(NuNDropDown_SearchFilter, locals.dropdownFrames.ddSearch);
 	end
 --@end-debug@]===]
-
 	if ((lCommand == "All") or (strfind(lCommand, "Notes"))) then
 		NuNDropDown_SearchClass:Hide();
 		NuNDropDown_SearchProf:Hide();
@@ -7765,7 +7720,6 @@ function NuNOptions_Search()
 		NuNSearchSubSet:Hide();
 		NuNDropDown_SearchQH:Hide(); -- 5.60
 		NuNSearch_Search();
-
 	elseif (lCommand == "Class") then
 		UIDropDownMenu_ClearAll(NuNDropDown_SearchClass);
 		NuNDropDown_SearchClass:Show();
@@ -7775,7 +7729,6 @@ function NuNOptions_Search()
 		NuNSearchFrameSearchButton:Disable();
 		NuNDropDown_SearchQH:Hide(); -- 5.60
 		NuNSearch_Update();
-
 	elseif (lCommand == "Profession") then
 		NuNDropDown_SearchClass:Hide();
 		UIDropDownMenu_ClearAll(NuNDropDown_SearchProf);
@@ -7785,10 +7738,8 @@ function NuNOptions_Search()
 		NuNSearchFrameSearchButton:Disable();
 		NuNDropDown_SearchQH:Hide(); -- 5.60
 		NuNSearch_Update();
-
 	elseif (lCommand == "Quest History") then
 		NuN_FetchQuestHistory();
-
 	else
 		NuNDropDown_SearchClass:Hide();
 		NuNDropDown_SearchProf:Hide();
@@ -7869,7 +7820,6 @@ function NuNSearch_Search(mButton)
 					countA = countA + 1;
 					locals.foundANuN[countA] = idx;
 				end
-
 			elseif (locals.searchType == "Class") then
 				if (locals.NuNDataPlayers[idx].faction == "Horde") then
 					if (NUN_HCLASSES[locals.NuNDataPlayers[idx].cls] == classType) then
@@ -7882,7 +7832,6 @@ function NuNSearch_Search(mButton)
 						locals.foundANuN[countA] = idx;
 					end
 				end
-
 			elseif (locals.searchType == "Profession") then
 				if (locals.NuNDataPlayers[idx].faction == "Horde") then
 					if ((locals.NuNDataPlayers[idx].prof1 == ddProfSearch) or (locals.NuNDataPlayers[idx].prof2 == ddProfSearch)) then
@@ -7911,7 +7860,7 @@ function NuNSearch_Search(mButton)
 					end
 					-- still testing [idx].txt for the special case of locals.suffix_Details/pHeader User Definable buttons  LOWER CASE IT !!!
 					if (
-							(strfind(srchText, tstTxt)) or (strfind(locals.NuNDataPlayers[idx].txt, tstTxt)) or (strfind(noteTitle, tstTxt))) then
+								(strfind(srchText, tstTxt)) or (strfind(locals.NuNDataPlayers[idx].txt, tstTxt)) or (strfind(noteTitle, tstTxt))) then
 						local tName = idx;
 						if (not locals.NuNDataPlayers[idx].faction) then
 							tName = nil;
@@ -7951,13 +7900,12 @@ function NuNSearch_Search(mButton)
 			end
 			if ((locals.searchType == "All") or (locals.searchType == "Notes")) then
 				if (
-						(subType == "") or ((subType == "Generic") and (noteType == 1)) or ((subType == "Items") and (noteType == 2)) or
-								((subType == "Logs") and (noteType == 3)) or ((subType == "NPCs") and (noteType == 4)) or
-								((subType == "Quests") and (noteType == 5)) or ((subType == "LUA") and (noteType == 6))) then
+							(subType == "") or ((subType == "Generic") and (noteType == 1)) or ((subType == "Items") and (noteType == 2)) or
+							((subType == "Logs") and (noteType == 3)) or ((subType == "NPCs") and (noteType == 4)) or
+							((subType == "Quests") and (noteType == 5)) or ((subType == "LUA") and (noteType == 6))) then
 					countN = countN + 1;
 					locals.foundNNuN[countN] = idx;
 				end
-
 			elseif (locals.searchType == "Text") then
 				srchText = NuNF.NuN_GetGText(idx);
 				local noteTitle = idx;
@@ -7984,13 +7932,12 @@ function NuNSearch_Search(mButton)
 
 			if ((locals.searchType == "All") or (locals.searchType == "Notes")) then
 				if (
-						(subType == "") or ((subType == "Generic") and (noteType == 1)) or ((subType == "Items") and (noteType == 2)) or
-								((subType == "Logs") and (noteType == 3)) or ((subType == "NPCs") and (noteType == 4)) or
-								((subType == "Quests") and (noteType == 5)) or ((subType == "LUA") and (noteType == 6))) then
+							(subType == "") or ((subType == "Generic") and (noteType == 1)) or ((subType == "Items") and (noteType == 2)) or
+							((subType == "Logs") and (noteType == 3)) or ((subType == "NPCs") and (noteType == 4)) or
+							((subType == "Quests") and (noteType == 5)) or ((subType == "LUA") and (noteType == 6))) then
 					countN = countN + 1;
 					locals.foundNNuN[countN] = idx;
 				end
-
 			elseif (locals.searchType == "Text") then
 				srchText = NuNF.NuN_GetGText(idx);
 				local noteTitle = idx;
@@ -8157,8 +8104,8 @@ function NuNSearch_Update()
 						theNoteType:SetText("   ");
 					end
 					if (
-							(NuNSettings[local_player.realmName].autoP) and (locals.NuNDataPlayers[noteName][locals.player_Name]) and
-									(locals.NuNDataPlayers[noteName][locals.player_Name].partied)) then
+								(NuNSettings[local_player.realmName].autoP) and (locals.NuNDataPlayers[noteName][locals.player_Name]) and
+								(locals.NuNDataPlayers[noteName][locals.player_Name].partied)) then
 						theNoteReps:SetText("x" .. locals.NuNDataPlayers[noteName][locals.player_Name].partied);
 					end
 				else
@@ -8167,8 +8114,8 @@ function NuNSearch_Update()
 			elseif (typ == NuNC.NUN_QUEST_C) then
 				theNoteLFlag:Hide();
 				if (
-						(not locals.NuNQuestLog[noteName]) and
-								((NuNQuestHistory[noteName].handedIn) or (NuNQuestHistory[noteName].complete))) then
+							(not locals.NuNQuestLog[noteName]) and
+							((NuNQuestHistory[noteName].handedIn) or (NuNQuestHistory[noteName].complete))) then
 					theNoteLFlag:Show();
 				elseif ((NuNQuestHistory[noteName]) and (NuNQuestHistory[noteName].abandoned)) then
 					locals.noteNameLabel:SetTextColor(0.9, 0, 0, 0.9);
@@ -8332,8 +8279,8 @@ end
 -- Create note for "Self"
 NuN_AutoNote = function()
 	if (
-			(NuNSettings) and (local_player.realmName) and (NuNSettings[local_player.realmName]) and
-					(NuNSettings[local_player.realmName].autoN)) then
+				(NuNSettings) and (local_player.realmName) and (NuNSettings[local_player.realmName]) and
+				(NuNSettings[local_player.realmName].autoN)) then
 		local lName;
 		local lRace;
 		local lClass;
@@ -8387,8 +8334,8 @@ function NuN_ClrDD()
 	if (locals.lastDD == "Race") then
 		UIDropDownMenu_ClearAll(locals.NuNRaceDropDown);
 		if (
-				(locals.NuNDataPlayers[local_player.currentNote.unit]) and
-						(locals.NuNDataPlayers[local_player.currentNote.unit].race)) then
+					(locals.NuNDataPlayers[local_player.currentNote.unit]) and
+					(locals.NuNDataPlayers[local_player.currentNote.unit].race)) then
 			locals.dropdownFrames.ddRace = -1;
 		else
 			locals.dropdownFrames.ddRace = nil;
@@ -8396,8 +8343,8 @@ function NuN_ClrDD()
 	elseif (locals.lastDD == "Class") then
 		UIDropDownMenu_ClearAll(locals.NuNClassDropDown);
 		if (
-				(locals.NuNDataPlayers[local_player.currentNote.unit]) and
-						(locals.NuNDataPlayers[local_player.currentNote.unit].cls)) then
+					(locals.NuNDataPlayers[local_player.currentNote.unit]) and
+					(locals.NuNDataPlayers[local_player.currentNote.unit].cls)) then
 			locals.dropdownFrames.ddClass = -1;
 		else
 			locals.dropdownFrames.ddClass = nil;
@@ -8405,8 +8352,8 @@ function NuN_ClrDD()
 	elseif (locals.lastDD == "Sex") then
 		UIDropDownMenu_ClearAll(NuNDropDown_Sex);
 		if (
-				(locals.NuNDataPlayers[local_player.currentNote.unit]) and
-						(locals.NuNDataPlayers[local_player.currentNote.unit].sex)) then
+					(locals.NuNDataPlayers[local_player.currentNote.unit]) and
+					(locals.NuNDataPlayers[local_player.currentNote.unit].sex)) then
 			locals.dropdownFrames.ddSex = -1;
 		else
 			locals.dropdownFrames.ddSex = nil;
@@ -8414,8 +8361,8 @@ function NuN_ClrDD()
 	elseif (locals.lastDD == "Prof1") then
 		UIDropDownMenu_ClearAll(NuNDropDown_Prof1);
 		if (
-				(locals.NuNDataPlayers[local_player.currentNote.unit]) and
-						(locals.NuNDataPlayers[local_player.currentNote.unit].prof1)) then
+					(locals.NuNDataPlayers[local_player.currentNote.unit]) and
+					(locals.NuNDataPlayers[local_player.currentNote.unit].prof1)) then
 			locals.dropdownFrames.ddProf1 = -1;
 		else
 			locals.dropdownFrames.ddProf1 = nil;
@@ -8423,8 +8370,8 @@ function NuN_ClrDD()
 	elseif (locals.lastDD == "Prof2") then
 		UIDropDownMenu_ClearAll(NuNDropDown_Prof2);
 		if (
-				(locals.NuNDataPlayers[local_player.currentNote.unit]) and
-						(locals.NuNDataPlayers[local_player.currentNote.unit].prof2)) then
+					(locals.NuNDataPlayers[local_player.currentNote.unit]) and
+					(locals.NuNDataPlayers[local_player.currentNote.unit].prof2)) then
 			locals.dropdownFrames.ddProf2 = -1;
 		else
 			locals.dropdownFrames.ddProf2 = nil;
@@ -8439,8 +8386,8 @@ function NuN_ClrDD()
 	elseif (locals.lastDD == "Arena") then
 		UIDropDownMenu_ClearAll(NuNDropDown_ArenaRating);
 		if (
-				(locals.NuNDataPlayers[local_player.currentNote.unit]) and
-						(locals.NuNDataPlayers[local_player.currentNote.unit].arena)) then
+					(locals.NuNDataPlayers[local_player.currentNote.unit]) and
+					(locals.NuNDataPlayers[local_player.currentNote.unit].arena)) then
 			locals.dropdownFrames.ddArena = -1;
 		else
 			locals.dropdownFrames.ddArena = nil;
@@ -8448,8 +8395,8 @@ function NuN_ClrDD()
 	elseif (locals.lastDD == "HRank") then
 		UIDropDownMenu_ClearAll(locals.NuNHRankDropDown);
 		if (
-				(locals.NuNDataPlayers[local_player.currentNote.unit]) and
-						(locals.NuNDataPlayers[local_player.currentNote.unit].hrank)) then
+					(locals.NuNDataPlayers[local_player.currentNote.unit]) and
+					(locals.NuNDataPlayers[local_player.currentNote.unit].hrank)) then
 			locals.dropdownFrames.ddHRank = -1;
 		else
 			locals.dropdownFrames.ddHRank = nil;
@@ -8457,8 +8404,8 @@ function NuN_ClrDD()
 	elseif (locals.lastDD == "PRating") then
 		UIDropDownMenu_ClearAll(NuNDropDown_PlayerRating);
 		if (
-				(locals.NuNDataPlayers[local_player.currentNote.unit]) and
-						(locals.NuNDataPlayers[local_player.currentNote.unit].prating)) then
+					(locals.NuNDataPlayers[local_player.currentNote.unit]) and
+					(locals.NuNDataPlayers[local_player.currentNote.unit].prating)) then
 			locals.dropdownFrames.ddPRating = -1;
 		else
 			locals.dropdownFrames.ddPRating = 0;
@@ -8495,7 +8442,7 @@ function NuN_ShowSavedGNote(nN)
 		if ((NuNDataRNotes[local_player.currentNote.general]) and (NuNDataRNotes[local_player.currentNote.general].type)) then
 			contact.type = NuNDataRNotes[local_player.currentNote.general].type;
 		elseif (
-				(NuNDataANotes[local_player.currentNote.general]) and (NuNDataANotes[local_player.currentNote.general].type)) then
+					(NuNDataANotes[local_player.currentNote.general]) and (NuNDataANotes[local_player.currentNote.general].type)) then
 			contact.type = NuNDataANotes[local_player.currentNote.general].type;
 		else
 			contact.type = NuNGet_CommandID(NUN_NOTETYPES, "   ");
@@ -8961,7 +8908,6 @@ function NuN_NPCInfo(funcToCall, autoHide)
 			NPCInfo_Proceed.func = funcToCall;
 			NPCInfo_Proceed.autoHide = autoHide;
 		end
-
 	else
 		local NPCInfo = "";
 		local NPCloc;
@@ -9046,10 +8992,12 @@ function NuN_ShowFriendNote()
 
 		if (selectedFriend) then
 			if (FriendsFrame.selectedFriendType == FRIENDS_BUTTON_TYPE_WOW) then
-				local_player.currentNote.unit, locals.discard--[[level]] , contact.class, locals.discard--[[area]] , connected = GetFriendInfo(selectedFriend);
+				local_player.currentNote.unit, locals.discard --[[level]], contact.class, locals.discard --[[area]], connected =
+						GetFriendInfo(selectedFriend);
 			elseif (FriendsFrame.selectedFriendType == FRIENDS_BUTTON_TYPE_BNET) then
 				local presenceID, firsstname, surName, toonID, client;
-				presenceID, firstname, surName, contact.class, toonID, client, connected = C_BattleNet.GetFriendAccountInfo(selectedFriend);  -- REVIEW:
+				presenceID, firstname, surName, contact.class, toonID, client, connected = C_BattleNet.GetFriendAccountInfo(
+					selectedFriend); -- REVIEW:
 				if (firstname and surName) then
 					local_player.currentNote.unit = format(BATTLENET_NAME_FORMAT, firstname, surName);
 				elseif (firstname ~= nil) then
@@ -9066,7 +9014,8 @@ function NuN_ShowFriendNote()
 			if (contact.class == UNKNOWN) then -- 5.60
 				contact.class = nil;
 			end
-			;contact.race = nil;
+			;
+			contact.race = nil;
 			contact.sex = nil;
 			contact.prof1 = nil;
 			contact.prof2 = nil;
@@ -9102,7 +9051,6 @@ function NuN_ShowIgnoreNote(clickedButton)
 	end
 
 	if clickedButton then
-
 		--@{evo
 		--	local numIgnores = GetNumIgnores();
 		--	if (numIgnores ~= nil) and (numIgnores > 0) then
@@ -9143,7 +9091,7 @@ function NuN_ShowGuildNote()
 		contact.class = nil;
 		contact.race = nil;
 		local_player.currentNote.unit, gRank, gRankIndex, locals.discard, contact.class, locals.discard, gNote
-				, gOfficerNote, locals.discard = GetGuildRosterInfo(GetGuildRosterSelection());
+		, gOfficerNote, locals.discard = GetGuildRosterInfo(GetGuildRosterSelection());
 		if (local_player.currentNote.unit ~= nil) then
 			contact.guild = GetGuildInfo("player");
 			contact.route = "Guild";
@@ -9204,15 +9152,15 @@ NuN_UpdateNoteButton = function(nBttn, nBttnID, refreshType)
 		end
 	end
 	local isGuildRefresh = (
-			refreshType == NuNC.UPDATETAG_GUILD_SUMMARY
-					or refreshType == NuNC.UPDATETAG_GUILD_ROSTER
-					or refreshType == NuNC.GUILDFRAME_NEWS
-					or refreshType == NuNC.GUILDFRAME_REWARDS
-					or refreshType == NuNC.GUILDFRAME_INFO_EVENTS);
+		refreshType == NuNC.UPDATETAG_GUILD_SUMMARY
+		or refreshType == NuNC.UPDATETAG_GUILD_ROSTER
+		or refreshType == NuNC.GUILDFRAME_NEWS
+		or refreshType == NuNC.GUILDFRAME_REWARDS
+		or refreshType == NuNC.GUILDFRAME_INFO_EVENTS);
 
 	--nun_msgf("refreshType:%s  isGuildRefresh:%s  FriendsFrameVisible:%s", tostring(refreshType), tostring(isGuildRefresh), tostring(FriendsFrame:IsVisible()));
 	if (bttnNoteAFlag and bttnNoteHFlag and bttnNoteNFlag and
-			(isGuildRefresh or (FriendsFrame:IsVisible() and refreshType ~= NuNC.NUN_QUEST_C))) then
+				(isGuildRefresh or (FriendsFrame:IsVisible() and refreshType ~= NuNC.NUN_QUEST_C))) then
 		local btn;
 		pBttnTxt, btn = NuN_GetName_FrameButton(nBttnID, refreshType);
 
@@ -9231,7 +9179,6 @@ if locals.NuNDebug then
 	end
 end
 --]]
-
 		if (locals.NuNDataPlayers[pBttnTxt]) then
 			if (locals.NuNDataPlayers[pBttnTxt].faction == "Horde") then
 				bttnNoteAFlag:Hide();
@@ -9269,7 +9216,6 @@ end
 		end
 	end
 --]]
-
 end
 
 
@@ -9281,21 +9227,21 @@ function NuN_NoteButton_OnMouseWheel(noteButton, delta)
 
 	if (NuN_IsFrameInteractive(FriendsListFrame)) then
 		pBttnTxt, pBttn = NuN_GetName_FrameButton(nBttnID, NuNC.UPDATETAG_FRIEND);
-
 	elseif (NuN_IsFrameInteractive(IgnoreListFrame)) then
 		-- in 3.3.5 - they added a header to the Ignore panel, and the header is now the first button
 		pBttnTxt, pBttn = NuN_GetName_FrameButton(nBttnID, NuNC.UPDATETAG_IGNORE);
-
 	elseif (NuN_IsFrameInteractive(GuildFrame)) then
 		if (NuN_IsFrameInteractive(GuildRosterFrame)) then
 			pBttnTxt, pBttn = NuN_GetName_FrameButton(nBttnID, NuNC.UPDATETAG_GUILD_ROSTER);
 			--[-[
 			if locals.NuNDebug then
 				if pBttn and pBttn.string2 then
-					nun_msgf("MouseOver action - locals.ttName:%s    nBttnID:%s  pBttn:%s =================================================================="
+					nun_msgf(
+						"MouseOver action - locals.ttName:%s    nBttnID:%s  pBttn:%s =================================================================="
 						, tostring(pBttnTxt), tostring(nBttnID), pBttn.string2:GetText());
 				else
-					nun_msgf("MouseOver action - locals.ttName:%s    nBttnID:%s  pBttn:%s =================================================================="
+					nun_msgf(
+						"MouseOver action - locals.ttName:%s    nBttnID:%s  pBttn:%s =================================================================="
 						, tostring(pBttnTxt), tostring(nBttnID), "nil");
 				end
 			end
@@ -9496,7 +9442,7 @@ function NuN_GetName_FrameButton(lBttnID, refreshType)
 				lBttnTxt = GetFriendInfo(friendID);
 			elseif (lBttn.buttonType == FRIENDS_BUTTON_TYPE_BNET) then
 				lBttnTxt = "";
-				local accountInfo = C_BattleNet.GetAccountInfoByID(friendID);  -- TODO: use info from accountInfo instead
+				local accountInfo = C_BattleNet.GetAccountInfoByID(friendID); -- TODO: use info from accountInfo instead
 				if (accountInfo and accountInfo.accountName) then
 					lBttnTxt = accountInfo.accountName;
 				end
@@ -9510,7 +9456,7 @@ function NuN_GetName_FrameButton(lBttnID, refreshType)
 				lBttnTxt = GetIgnoreName(ignoreID);
 			elseif (lBttn.type == SQUELCH_TYPE_BLOCK_INVITE) then
 				-- unused, lBttnTxt = BNGetBlockedInfo(ignoreID);
-				lBttnTxt = "PLACEHOLDER";  -- TODO: get the name of the player who blocked you
+				lBttnTxt = "PLACEHOLDER"; -- TODO: get the name of the player who blocked you
 			end
 		end
 		--		NuN_Message("GetName_FrameButton(I) - button:" .. tostring(lBttn) .. "    ButtonID:" .. tostring(lBttnID) .. "   buttonText:" .. tostring(lBttnTxt));
@@ -9653,27 +9599,20 @@ function NuN_FFButton_Down()
 				NuN_ShowSavedNote(_name);
 			end
 		end
-
 	elseif (NuN_IsFrameInteractive(FriendsListFrame)) then
 		NuN_ShowFriendNote();
-
 	elseif (NuN_IsFrameInteractive(IgnoreListFrame)) then
 		NuN_ShowIgnoreNote();
-
 	elseif (NuN_IsFrameInteractive(GuildFrame)) then
 		if (NuN_IsFrameInteractive(GuildRosterFrame)) then
 			NuN_ShowGuildNote();
 
 			-- other tabs here, after cata
-
-
 		end
-
 	elseif (NuN_IsFrameInteractive(WhoFrame)) then
 		if (WhoFrame.selectedName) then
 			NuN_ShowWhoNote(WhoFrame.selectedName);
 		end
-
 	elseif (NuN_IsFrameInteractive(RaidFrame)) then
 		local tstValue = NuN_CheckTarget();
 		if (UnitInRaid("target")) then
@@ -9769,7 +9708,8 @@ function NuN_GameTooltip_OnShow(self, tTip)
 			if (locals.currentTooltipTitleString == value) then
 				pRating = idx;
 				break
-				; end
+				;
+			end
 		end
 	end
 
@@ -9802,9 +9742,9 @@ orgevo: I'm not really sure exactly what case this code was trying to handle, bu
 	--nun_msgf("NuN_GameToolTip_OnShow - focused:%s   tooltipCaption:%s   UnitName:%s", tostring(focus), tostring(locals.currentTooltipTitleString), tostring(GetUnitName("mouseover")));
 
 	if (UnitExists("mouseover") or
-			(RaidFrame:IsVisible() and MouseIsOver(RaidFrame)) or
-			(TargetFrame:IsVisible() and MouseIsOver(TargetFrame)) or
-			(FocusFrame:IsVisible() and MouseIsOver(FocusFrame))) then
+				(RaidFrame:IsVisible() and MouseIsOver(RaidFrame)) or
+				(TargetFrame:IsVisible() and MouseIsOver(TargetFrame)) or
+				(FocusFrame:IsVisible() and MouseIsOver(FocusFrame))) then
 		local typ = "Nil";
 		if (UnitExists("mouseover")) then
 			locals.ttName = GetUnitName("mouseover");
@@ -9830,7 +9770,7 @@ orgevo: I'm not really sure exactly what case this code was trying to handle, bu
 		end
 		-- if we have a string in the tooltip, and we have a character, realm, or account note for this particular string, display it.
 		if (locals.ttName ~= nil and
-				(locals.NuNDataPlayers[locals.ttName] or NuNDataRNotes[locals.ttName] or NuNDataANotes[locals.ttName])) then
+					(locals.NuNDataPlayers[locals.ttName] or NuNDataRNotes[locals.ttName] or NuNDataANotes[locals.ttName])) then
 			anchorBy, anchorTo = NuN_GetTipAnchor(tTip);
 			NuN_Tooltip:Hide();
 			NuN_Tooltip:SetOwner(tTip, "ANCHOR_NONE");
@@ -9844,19 +9784,16 @@ orgevo: I'm not really sure exactly what case this code was trying to handle, bu
 			NuN_Tooltip:ClearAllPoints();
 			NuN_Tooltip:SetPoint(anchorBy, tTip, anchorTo, 0, 0);
 			NuN_Tooltip:Show();
-
 		else
 			NuN_Tooltip:ClearLines();
 			NuN_Tooltip:Hide();
 		end
-
 	elseif (pRating) then
 		pRating = NuNSettings.ratingsT[pRating];
 		if ((pRating) and (pRating ~= "")) then
 			pRating = NuNF.NuN_ParseTT(pRating, 80);
 			GameTooltip:AddLine(pRating);
 		end
-
 	else
 		locals.ttName = locals.currentTooltipTitleString;
 		if (NuNData[locals.itmIndex_dbKey][locals.ttName]) then
@@ -9865,7 +9802,7 @@ orgevo: I'm not really sure exactly what case this code was trying to handle, bu
 
 		-- if we have a string in the tooltip, and we have a character, realm, or account note for this particular string, display it.
 		if (locals.ttName ~= nil and
-				(locals.NuNDataPlayers[locals.ttName] or NuNDataRNotes[locals.ttName] or NuNDataANotes[locals.ttName])) then
+					(locals.NuNDataPlayers[locals.ttName] or NuNDataRNotes[locals.ttName] or NuNDataANotes[locals.ttName])) then
 			NuN_State.NuN_Fade = false;
 			NuN_Tooltip:ClearLines();
 			NuN_Tooltip:Hide();
@@ -9879,11 +9816,11 @@ orgevo: I'm not really sure exactly what case this code was trying to handle, bu
 			local num1 = ShoppingTooltip1:NumLines();
 			local num2 = ShoppingTooltip2:NumLines();
 			if (
-					num2 and (num2 > 0) and ShoppingTooltip2 and MerchantFrame and (MerchantFrame:IsVisible()) and
-							(MouseIsOver(MerchantFrame))) or
+						num2 and (num2 > 0) and ShoppingTooltip2 and MerchantFrame and (MerchantFrame:IsVisible()) and
+						(MouseIsOver(MerchantFrame))) or
 					(
-					num2 and (num2 > 0) and ShoppingTooltip2 and AuctionFrame and (AuctionFrame:IsVisible()) and
-							(MouseIsOver(AuctionFrame))) then
+						num2 and (num2 > 0) and ShoppingTooltip2 and AuctionFrame and (AuctionFrame:IsVisible()) and
+						(MouseIsOver(AuctionFrame))) then
 				anchorBy, anchorTo = NuN_GetTipAnchor(ShoppingTooltip2);
 				NuN_Tooltip:SetPoint(anchorBy, "ShoppingTooltip2", anchorTo, 0, 0);
 			elseif (num1 and (num1 > 0)) and
@@ -9925,16 +9862,15 @@ function NuN_WorldMapTooltip_OnShow(id, lTooltip)
 	local MNZone = nil;
 	local NuN_Key = nil;
 
-	if (MapNotes_Data_Notes) then -- + v5.00.11200
-		MNCont = "WM ";  -- + v5.00.11200
-		local cont = C_Map.GetMapInfo(WorldMapFrame:GetMapID());  -- REVIEW:
-		if (cont) then -- + v5.00.11200
-			MNCont = MNCont .. cont;  -- + v5.00.11200
-		else -- + v5.00.11200
-			MNCont = MNCont .. "WorldMap";  -- + v5.00.11200
-		end -- + v5.00.11200
-		MNZone = 0;  -- + v5.00.11200
-
+	if (MapNotes_Data_Notes) then                            -- + v5.00.11200
+		MNCont = "WM ";                                        -- + v5.00.11200
+		local cont = C_Map.GetMapInfo(WorldMapFrame:GetMapID()); -- REVIEW:
+		if (cont) then                                         -- + v5.00.11200
+			MNCont = MNCont .. cont;                             -- + v5.00.11200
+		else                                                   -- + v5.00.11200
+			MNCont = MNCont .. "WorldMap";                       -- + v5.00.11200
+		end                                                    -- + v5.00.11200
+		MNZone = 0;                                            -- + v5.00.11200
 	else
 		id = nil;
 	end
@@ -10195,11 +10131,9 @@ function NuN_PinnedTooltipToggle(self, ttType, noteName, setTTOwner)
 			if (NuNGNoteFrame:IsVisible()) then
 				ttType = "General";
 				noteName = local_player.currentNote.general;
-
 			elseif (NuNFrame:IsVisible()) then
 				ttType = "Contact";
 				noteName = local_player.currentNote.unit;
-
 			else
 				return;
 			end
@@ -10207,8 +10141,8 @@ function NuN_PinnedTooltipToggle(self, ttType, noteName, setTTOwner)
 	end
 	--toggle
 	if (
-			(not NuN_PinnedTooltip:IsVisible()) or
-					((NuN_PinnedTooltip:IsVisible()) and (noteName ~= NuN_PinnedTooltip.noteName))) then
+				(not NuN_PinnedTooltip:IsVisible()) or
+				((NuN_PinnedTooltip:IsVisible()) and (noteName ~= NuN_PinnedTooltip.noteName))) then
 		locals.ttName = noteName;
 		NuN_PinnedTooltip.noteName = noteName;
 		NuN_ClearPinnedTT();
@@ -10234,7 +10168,6 @@ function NuN_PinnedTooltipToggle(self, ttType, noteName, setTTOwner)
 				NuN_PinnedTooltip:SetPoint("TOP", "UIParent", "TOP", 0, -60);
 			end
 		end
-
 	else
 		NuN_ClearPinnedTT();
 	end
@@ -10276,7 +10209,6 @@ function NuN_PinnedTT_OnClick()
 		if (locals.NuNDataPlayers[ttTitle]) then
 			NuN_ShowSavedNote(ttTitle);
 		end
-
 	elseif (NuN_PinnedTooltip.type == "General") then
 		if (NuNData[locals.itmIndex_dbKey][ttTitle]) then
 			ttTitle = NuNData[locals.itmIndex_dbKey][ttTitle];
@@ -10298,7 +10230,6 @@ function NuN_PinnedTT_OnHide()
 		if ((NuNFrame:IsVisible()) and (NuN_CTTCheckBox:GetChecked())) then
 			NuN_CTTCheckBox:SetChecked(false);
 		end
-
 	elseif (NuN_PinnedTooltip.type == "General") then
 		if ((NuNGNoteFrame:IsVisible()) and (NuN_GTTCheckBox:GetChecked())) then
 			NuN_GTTCheckBox:SetChecked(false);
@@ -10330,7 +10261,6 @@ function NuN_OpenChat(noteType)
 	end
 	NuNChatNoteTitle:SetText(dspText);
 	NuN_ChatFrame:Show();
-
 end
 
 -- -sendC, -sendG, -sendCF, -sendGF
@@ -10349,7 +10279,6 @@ function NuN_ManualTransmit(formatted, tType, parms)
 		end
 
 		if ((noteName) and (sendType)) then
-
 			-- just to be a tiny bit more forgiving
 			sendType = strupper(sendType);
 
@@ -10369,7 +10298,6 @@ function NuN_ManualTransmit(formatted, tType, parms)
 				end
 				tUser = sendToChannel.id;
 				--NuN_Message( " 1 : " .. tUser );
-
 			elseif (sendType == "WHISPER") then
 				if (not tUser) then
 					NuN_Message("Invalid WHISPER Target");
@@ -10383,11 +10311,9 @@ function NuN_ManualTransmit(formatted, tType, parms)
 					HideNUNFrame();
 				end
 				NuN_ShowSavedNote(noteName);
-
 			elseif (NuN_GNoteExists(noteName)) then
 				NuNGNoteFrame.fromQuest = nil;
 				NuN_ShowSavedGNote();
-
 			else
 				NuN_Message(NUN_TRANSMISSION_MISSING .. " : " .. noteName);
 				return;
@@ -10402,7 +10328,6 @@ function NuN_ManualTransmit(formatted, tType, parms)
 			NuNEditDetailsFrame:Hide();
 			HideNUNFrame();
 			NuNGNoteFrame:Hide();
-
 		else
 			NuN_Message("Invalid Parameters : " .. parms);
 		end
@@ -10469,8 +10394,8 @@ function NuN_Transmit(tType, tUser)
 		user = NuNChatTextBox:GetText();
 		busySending.user = user;
 	elseif (tUser) and (locals.sendTo == "WHISPER") then -- 5.61
-		user = tUser;  -- 5.61
-		busySending.user = user;  -- 5.61
+		user = tUser;                                     -- 5.61
+		busySending.user = user;                          -- 5.61
 	end
 
 	if (locals.sendTo == "WHISPER") or (locals.sendTo == "NuN") then
@@ -10514,11 +10439,11 @@ function NuN_Transmit(tType, tUser)
 	logText = logText .. "\n" .. prfx;
 
 	-- Which type of note to create
-	if (tType == "Contact") then -- 5.61
-		parsedArray, error = NuN_TransmitContact(dfltLang, user);  -- 5.61
-	elseif (tType == "General") then -- 5.61
-		parsedArray, error = NuN_TransmitGeneral(dfltLang, user);  -- 5.61
-	elseif (NuN_ChatFrame.type == "Contact") then -- 5.61
+	if (tType == "Contact") then                              -- 5.61
+		parsedArray, error = NuN_TransmitContact(dfltLang, user); -- 5.61
+	elseif (tType == "General") then                          -- 5.61
+		parsedArray, error = NuN_TransmitGeneral(dfltLang, user); -- 5.61
+	elseif (NuN_ChatFrame.type == "Contact") then             -- 5.61
 		parsedArray, error = NuN_TransmitContact(dfltLang, user);
 	else
 		parsedArray, error = NuN_TransmitGeneral(dfltLang, user);
@@ -10537,7 +10462,8 @@ function NuN_Transmit(tType, tUser)
 			if (strlen(singleLine) > 255) then
 				error = "Err02";
 				break
-				; end
+				;
+			end
 			local beginnings = NuN_Validate(singleLine, "|c");
 			local endings = NuN_Validate(singleLine, "|h|r");
 			if (beginnings == endings) then
@@ -10549,7 +10475,6 @@ function NuN_Transmit(tType, tUser)
 					flagged = true;
 					logText = logText .. "\n" .. NUN_NOROOM;
 				end
-
 			else
 				parsedArray[i] = "";
 				nonCriticalError = true;
@@ -10699,7 +10624,8 @@ function NuN_TransmitContact(dfltLang, user)
 				generalCode = generalCode .. ",-";
 			end
 			if (locals.NuNDataPlayers[local_player.currentNote.unit].prating) then
-				singleLine = singleLine .. ", " .. NuNSettings.ratings[locals.NuNDataPlayers[local_player.currentNote.unit].prating];
+				singleLine = singleLine ..
+						", " .. NuNSettings.ratings[locals.NuNDataPlayers[local_player.currentNote.unit].prating];
 				generalCode = generalCode .. "," .. locals.NuNDataPlayers[local_player.currentNote.unit].prating;
 			elseif (formatIt) then
 				singleLine = singleLine .. ", -";
@@ -10760,8 +10686,8 @@ function NuN_TransmitContact(dfltLang, user)
 				locals.customHeadingValue_dbKey = local_player.currentNote.unit .. locals.suffix_Details .. n;
 
 				if (
-						(locals.NuNDataPlayers[locals.customHeadingTitle_dbKey]) and
-								(locals.NuNDataPlayers[locals.customHeadingTitle_dbKey].txt)) then
+							(locals.NuNDataPlayers[locals.customHeadingTitle_dbKey]) and
+							(locals.NuNDataPlayers[locals.customHeadingTitle_dbKey].txt)) then
 					singleLine = locals.NuNDataPlayers[locals.customHeadingTitle_dbKey].txt .. "~    ";
 					if (locals.NuNDataPlayers[locals.customHeadingTitle_dbKey].isTooltip) then
 						singleLine = singleLine .. "~1";
@@ -10781,8 +10707,8 @@ function NuN_TransmitContact(dfltLang, user)
 				end
 
 				if (
-						(locals.NuNDataPlayers[locals.customHeadingValue_dbKey]) and
-								(locals.NuNDataPlayers[locals.customHeadingValue_dbKey].txt)) then
+							(locals.NuNDataPlayers[locals.customHeadingValue_dbKey]) and
+							(locals.NuNDataPlayers[locals.customHeadingValue_dbKey].txt)) then
 					singleLine = singleLine .. "~" .. locals.NuNDataPlayers[locals.customHeadingValue_dbKey].txt;
 				end
 				if (singleLine ~= "") then
@@ -10914,8 +10840,8 @@ function NuN_ParseNote(parseText)
 	local parseTextLen = strlen(parseText);
 	local negOffset = -1 * (parseTextLen);
 
-	parseText = gsub(parseText, "|h|r\n", "|h|r");  -- Not EVERY Hyperlink is NECESSARILY followed by a SINGLE new line...
-	parseText = gsub(parseText, "|h|r", "|h|r\n");  -- Until AFTER BOTH of these lines of code
+	parseText = gsub(parseText, "|h|r\n", "|h|r"); -- Not EVERY Hyperlink is NECESSARILY followed by a SINGLE new line...
+	parseText = gsub(parseText, "|h|r", "|h|r\n"); -- Until AFTER BOTH of these lines of code
 
 	while (negOffset < 0) do
 		p2 = strfind(parseText, "\n", (p1 + 1));
@@ -10979,7 +10905,8 @@ function NuN_RemoveColours(colouredText)
 			next = ps + 8;
 		else
 			break
-			; end
+			;
+		end
 	end
 
 	local next = 0;
@@ -11006,7 +10933,8 @@ function NuN_RemoveColours(colouredText)
 			next = ps;
 		else
 			break
-			; end
+			;
+		end
 	end
 	workingText = strgsub(workingText, "%b<>", "");
 
@@ -11025,7 +10953,8 @@ function NuN_Validate(txt, tst)
 		p2 = strfind(txt, tst, (p1 + 1));
 		if (p2 == nil) then
 			break
-			; else
+			;
+		else
 			count = count + 1;
 			p1 = p2;
 		end
@@ -11055,7 +10984,8 @@ function NuN_CheckHyperlinkPositions(theText)
 		p2 = strfind(theText, "|Hitem:", (p1 + 1));
 		if (p2 == nil) then
 			break
-			; else
+			;
+		else
 			counter = counter + 1;
 			hypBegs[counter] = p2 - 10;
 			p1 = p2;
@@ -11076,7 +11006,8 @@ function NuN_CheckHyperlinkPositions(theText)
 				p4 = strfind(preText, "\n", (p3 + 1));
 				if (p4 == nil) then
 					break
-					; else
+					;
+				else
 					p2 = p4;
 					p3 = p4;
 				end
@@ -11110,7 +11041,8 @@ function NuN_CheckEnchantLinkPositions(theText)
 		p2 = strfind(theText, "|Henchant:", (p1 + 1));
 		if (p2 == nil) then
 			break
-			; else
+			;
+		else
 			counter = counter + 1;
 			hypBegs[counter] = p2 - 10;
 			p1 = p2;
@@ -11131,7 +11063,8 @@ function NuN_CheckEnchantLinkPositions(theText)
 				p4 = strfind(preText, "\n", (p3 + 1));
 				if (p4 == nil) then
 					break
-					; else
+					;
+				else
 					p2 = p4;
 					p3 = p4;
 				end
@@ -11383,8 +11316,8 @@ function NuN_ProcessParty()
 		NuNData[local_player.realmName][NuNC.NUN_PARTIES] = {};
 	end
 	if (
-			(not NuNData[local_player.realmName][NuNC.NUN_PARTIES][locals.player_Name]) or
-					((not UnitInRaid("player")) and (lMembers == 0))) then
+				(not NuNData[local_player.realmName][NuNC.NUN_PARTIES][locals.player_Name]) or
+				((not UnitInRaid("player")) and (lMembers == 0))) then
 		NuNData[local_player.realmName][NuNC.NUN_PARTIES][locals.player_Name] = {};
 	end
 
@@ -11414,7 +11347,8 @@ function NuN_ProcessParty()
 					elseif (not locals.NuNDataPlayers[lMember][locals.player_Name].partied) then
 						locals.NuNDataPlayers[lMember][locals.player_Name].partied = 1;
 					else
-						locals.NuNDataPlayers[lMember][locals.player_Name].partied = locals.NuNDataPlayers[lMember][locals.player_Name].partied
+						locals.NuNDataPlayers[lMember][locals.player_Name].partied = locals.NuNDataPlayers[lMember]
+								[locals.player_Name].partied
 								+ 1;
 						----ToDo: Add Option Setting to Enable/Disable this feature (Record every party join time)
 						--if (locals.NuNDataPlayers[lMember][locals.txtTxt] == nil) then
@@ -11425,7 +11359,7 @@ function NuN_ProcessParty()
 					end
 				end
 				locals.NuNDataPlayers[lMember][locals.player_Name].partiedOn = NuNF.NuN_GetDateStamp();
-				NuNF.NuN_UnitInfoDB(lMember, lUnit); -- 5.60 Auto-populate some data 
+				NuNF.NuN_UnitInfoDB(lMember, lUnit); -- 5.60 Auto-populate some data
 			end
 		end
 	end
@@ -11559,7 +11493,6 @@ function NuN_AutoPartyCheckBox_OnClick()
 		NuN_ProcessParty();
 	else
 		NuNSettings[local_player.realmName].autoP = nil;
-
 	end
 end
 
@@ -11671,8 +11604,8 @@ function NuN_MapNote(MNType, MNxtra1, MNxtra2, MNColour)
 	end
 
 	local theData;
-	if (MapNotes_Data_Notes) then -- + v5.00.11200
-		theData = MapNotes_Data_Notes[MNCont];  -- + v5.00.11200
+	if (MapNotes_Data_Notes) then          -- + v5.00.11200
+		theData = MapNotes_Data_Notes[MNCont]; -- + v5.00.11200
 	end
 
 	if (checknote) then
@@ -11739,7 +11672,6 @@ function NuN_MergeMapNote(MNCont, MNZone, id, MNName, NuN_Key, MNxtra1, MNxtra2)
 
 	if (MapNotes_Data_Notes) then -- + v5.00.11200
 		theData = MapNotes_Data_Notes[MNCont];
-
 	else
 		return;
 	end
@@ -11755,7 +11687,6 @@ function NuN_MergeMapNote(MNCont, MNZone, id, MNName, NuN_Key, MNxtra1, MNxtra2)
 
 	if (not NuNData[locals.mrgIndex_dbKey][NuN_Key]) then
 		NuNData[locals.mrgIndex_dbKey][NuN_Key] = {};
-
 	else
 		mrgEntry = true;
 	end
@@ -11778,10 +11709,8 @@ function NuN_MergeMapNote(MNCont, MNZone, id, MNName, NuN_Key, MNxtra1, MNxtra2)
 			NuNData[locals.mrgIndex_dbKey][NuN_Key].noteCounter = NuNData[locals.mrgIndex_dbKey][NuN_Key].noteCounter + 1;
 			NuNData[locals.mrgIndex_dbKey][NuN_Key][MNName] = "1";
 		end
-
 	elseif (mapNoted) then
 		NuN_ReLinkMapNote(MNName, MNCont, MNZone, id);
-
 	else
 		if ((not NuNDataANotes[oriNote]) and (not NuNDataRNotes[oriNote])) then
 			NuNData[locals.mrgIndex_dbKey][NuN_Key].noteCounter = 1;
@@ -11814,13 +11743,12 @@ function NuN_WriteMapNote(MNCont, MNZone, x, y, MNColour, MNName, MNLine1, MNLin
 	local NuN_SetNextAsMiniNote;
 	local numNotes, i, j, tmpID;
 
-	if (MapNotes_Data_Notes) then -- + v5.00.11200
-		theData = MapNotes_Data_Notes[MNCont];  -- + v5.00.11200
-		theMiniData = MapNotes_MiniNote_Data;  -- + v5.00.11200
-		NuN_SetNextAsMiniNote = MapNotes_SetNextAsMiniNote;  -- + v5.00.11200
-		numNotes = MapNotes_NotesPerZone;  -- + v5.00.11200
-		i = MapNotes_GetZoneTableSize(theData);  -- + v5.00.11200
-
+	if (MapNotes_Data_Notes) then                       -- + v5.00.11200
+		theData = MapNotes_Data_Notes[MNCont];            -- + v5.00.11200
+		theMiniData = MapNotes_MiniNote_Data;             -- + v5.00.11200
+		NuN_SetNextAsMiniNote = MapNotes_SetNextAsMiniNote; -- + v5.00.11200
+		numNotes = MapNotes_NotesPerZone;                 -- + v5.00.11200
+		i = MapNotes_GetZoneTableSize(theData);           -- + v5.00.11200
 	else
 		return;
 	end
@@ -11861,7 +11789,6 @@ function NuN_WriteMapNote(MNCont, MNZone, x, y, MNColour, MNName, MNLine1, MNLin
 			end
 		end
 	end
-
 end
 
 function NuN_GetMapNotesKey()
@@ -11878,17 +11805,17 @@ function NuN_GetMapNotesKey()
 		return nil;
 	end
 
-	if (MapNotes_Data_Notes) then -- + v5.00.11200
-		MNCont = "WM ";  -- + v5.00.11200
-		local map = C_Map.GetMapInfo(WorldMapFrame:GetMapID());  -- REVIEW:
-		if (map) then -- + v5.00.11200
-			MNCont = MNCont .. map;  -- + v5.00.11200
-		else -- + v5.00.11200
-			MNCont = MNCont .. "WorldMap";  -- + v5.00.11200
-		end -- + v5.00.11200
-		MNZone = 0;  -- + v5.00.11200
-		id = MapNotes_CheckNearbyNotes(MNCont, x, y);  -- + v5.00.11200
-	end -- + v5.00.11200
+	if (MapNotes_Data_Notes) then                           -- + v5.00.11200
+		MNCont = "WM ";                                       -- + v5.00.11200
+		local map = C_Map.GetMapInfo(WorldMapFrame:GetMapID()); -- REVIEW:
+		if (map) then                                         -- + v5.00.11200
+			MNCont = MNCont .. map;                             -- + v5.00.11200
+		else                                                  -- + v5.00.11200
+			MNCont = MNCont .. "WorldMap";                      -- + v5.00.11200
+		end                                                   -- + v5.00.11200
+		MNZone = 0;                                           -- + v5.00.11200
+		id = MapNotes_CheckNearbyNotes(MNCont, x, y);         -- + v5.00.11200
+	end                                                     -- + v5.00.11200
 
 	if (id) then
 		nKey = MNCont .. "-" .. MNZone .. "-" .. id;
@@ -11944,7 +11871,7 @@ function NuN_GuildRefreshCheckBox_OnClick()
 	if (NuN_GuildRefreshCheckBox:GetChecked()) then
 		NuNSettings[local_player.realmName].autoGuildNotes = "1";
 		NuN_GRVerboseCheckBox:Enable();
-		NuN_GRVerboseCheckBox:SetChecked(true); -- Default verbose guild reporting when turning on
+		NuN_GRVerboseCheckBox:SetChecked(true);                                    -- Default verbose guild reporting when turning on
 		NuNSettings[local_player.realmName].autoGRVerbose = "1";
 		NuN_SyncGuildMemberNotes(NuNSettings[local_player.realmName].autoGRVerbose); -- Trigger an immediate Guild Refresh
 	else
@@ -12018,7 +11945,8 @@ function NuN_HyperButton_OnClick(nType)
 		p2 = strfind(lText, "|h|r", p1);
 		if ((not p2 or (p2 + colorCodeSuffixLength)) > lTextLen) then
 			break
-			; end
+			;
+		end
 		p1 = p1 - colorCodePrefixLength;
 		p2 = p2 + colorCodeSuffixLength;
 		local link = strsub(lText, p1, p2);
@@ -12033,7 +11961,8 @@ function NuN_HyperButton_OnClick(nType)
 		p2 = strfind(lText, "|h|r", p1);
 		if ((not p2 or (p2 + colorCodeSuffixLength)) > lTextLen) then
 			break
-			; end
+			;
+		end
 		p1 = p1 - colorCodePrefixLength;
 		p2 = p2 + colorCodeSuffixLength;
 		local link = strsub(lText, p1, p2);
@@ -12048,7 +11977,8 @@ function NuN_HyperButton_OnClick(nType)
 		p2 = strfind(lText, "|h|r", p1);
 		if ((not p2 or (p2 + colorCodeSuffixLength)) > lTextLen) then
 			break
-			; end
+			;
+		end
 		p1 = p1 - colorCodePrefixLength;
 		p2 = p2 + colorCodeSuffixLength;
 		local link = strsub(lText, p1, p2);
@@ -12134,7 +12064,8 @@ function NuN_UpdateMapNotesIndex(deletedNote)
 				NuNData[locals.mrgIndex_dbKey][MNindex][nIndex] = nil;
 				NuNData[locals.mrgIndex_dbKey][MNindex].noteCounter = NuNData[locals.mrgIndex_dbKey][MNindex].noteCounter - 1;
 				break
-				; end
+				;
+			end
 			if (NuNData[locals.mrgIndex_dbKey][MNindex].noteCounter < 1) then
 				NuNData[locals.mrgIndex_dbKey][MNindex] = nil;
 			end
@@ -12145,9 +12076,9 @@ end
 function NuN_PreDeleteMapIndex(id, cont, zone)
 	local curZ, lstEntry;
 
-	if (MapNotes_Data_Notes) then -- + v5.00.11200
+	if (MapNotes_Data_Notes) then                       -- + v5.00.11200
 		if (not cont) then
-			cont = C_Map.GetMapInfo(WorldMapFrame:GetMapID());  -- REVIEW:
+			cont = C_Map.GetMapInfo(WorldMapFrame:GetMapID()); -- REVIEW:
 			if (cont) then
 				cont = "WM " .. cont;
 			else
@@ -12155,9 +12086,9 @@ function NuN_PreDeleteMapIndex(id, cont, zone)
 			end
 		end
 		if (MapNotes_Data_Notes[cont]) then
-			curZ = MapNotes_Data_Notes[cont];  -- + v5.00.11200
+			curZ = MapNotes_Data_Notes[cont]; -- + v5.00.11200
 		end
-	end -- + v5.00.11200
+	end                                -- + v5.00.11200
 
 	lstEntry = MapNotes_GetZoneTableSize(curZ);
 	return cont, zone, lstEntry;
@@ -12167,8 +12098,8 @@ end
 
 function NuN_DeleteMapIndex(id, cont, zone, lstEntry)
 	if (not zone) then -- + v5.00.11200
-		zone = 0;  -- + v5.00.11200
-	end -- + v5.00.11200
+		zone = 0;       -- + v5.00.11200
+	end               -- + v5.00.11200
 	local nKey = cont .. "-" .. zone .. "-" .. id;
 	local lstKey = cont .. "-" .. zone .. "-" .. lstEntry;
 	if (NuNData[locals.mrgIndex_dbKey][nKey]) then
@@ -12187,18 +12118,18 @@ end
 -- Called when Alt-Right Clicking on a button in the Popup to remove a single NuN - MapNote link
 
 function NuN_DeleteMapIndexNote(id, noteN)
-	local cont, zone;  -- + v5.00.11200
+	local cont, zone;                                       -- + v5.00.11200
 
-	if (MapNotes_Data_Notes) then -- + v5.00.11200
-		cont = "WM ";  -- + v5.00.11200
-		local map = C_Map.GetMapInfo(WorldMapFrame:GetMapID());  -- REVIEW:
-		if (map) then -- + v5.00.11200
-			cont = cont .. map;  -- + v5.00.11200
-		else -- + v5.00.11200
-			cont = cont .. "WorldMap";  -- + v5.00.11200
-		end -- + v5.00.11200
-		zone = 0;  -- + v5.00.11200
-	end -- + v5.00.11200
+	if (MapNotes_Data_Notes) then                           -- + v5.00.11200
+		cont = "WM ";                                         -- + v5.00.11200
+		local map = C_Map.GetMapInfo(WorldMapFrame:GetMapID()); -- REVIEW:
+		if (map) then                                         -- + v5.00.11200
+			cont = cont .. map;                                 -- + v5.00.11200
+		else                                                  -- + v5.00.11200
+			cont = cont .. "WorldMap";                          -- + v5.00.11200
+		end                                                   -- + v5.00.11200
+		zone = 0;                                             -- + v5.00.11200
+	end                                                     -- + v5.00.11200
 
 	local nKey = cont .. "-" .. zone .. "-" .. id;
 	if ((NuNData[locals.mrgIndex_dbKey][nKey]) and (NuNData[locals.mrgIndex_dbKey][nKey][noteN])) then
@@ -12246,16 +12177,14 @@ function NuN_ExtractMapNotesInfo(nKey)
 	zone = tonumber(strsub(nKey, (p + 1), (q - 1)));
 	id = tonumber(strsub(nKey, (q + 1)));
 
-	if (MapNotes_Data_Notes) then -- + v5.00.11200
-		theData = MapNotes_Data_Notes;  -- + v5.00.11200
+	if (MapNotes_Data_Notes) then  -- + v5.00.11200
+		theData = MapNotes_Data_Notes; -- + v5.00.11200
 	end
 
 	if ((zone == 0) and (theData[cont]) and (theData[cont][id])) then
 		return true;
-
 	elseif ((theData[cont]) and (theData[cont][zone]) and (theData[cont][zone][id])) then
 		return true;
-
 	else
 		return nil;
 	end
@@ -12401,7 +12330,6 @@ function NuN_CreateReceivedNote()
 			end
 			NuN_ShowTitledGNote(general.text);
 			NuNGNote_WriteNote();
-
 		elseif (locals.NuN_Receiving.type == "Contact") then
 			if (NuNFrame:IsVisible()) then
 				NuN_WriteNote();
@@ -12419,7 +12347,6 @@ function NuN_CreateReceivedNote()
 				NuNHeader:SetText(NUN_SENT .. " : " .. local_player.currentNote.unit);
 			end
 		end
-
 	end
 end
 
@@ -12516,8 +12443,8 @@ function NuN_ShowReceivedContact()
 	if (locals.NuN_Receiving.version) then
 		-- If Sender has different client, create a dummy note for language translation processing
 		if (
-				(locals.NuN_Receiving.lang ~= NUN_CLIENT) and
-						((locals.NuN_Receiving.lang == "German") or (NUN_CLIENT == "German"))) then
+					(locals.NuN_Receiving.lang ~= NUN_CLIENT) and
+					((locals.NuN_Receiving.lang == "German") or (NUN_CLIENT == "German"))) then
 			if (locals.NuN_Receiving.lang == "German") then
 				langDir = "->en";
 			else
@@ -12698,8 +12625,8 @@ function NuN_SetReceivedUserButtons()
 			if (locals.NuN_Receiving.user[i].title) then
 				-- if Receiver NOT using Global defaults <OR> we have not been sent a global default, then create Notes specific heading
 				if (
-						(NuNSettings[local_player.realmName][locals.headingID_dbKey]) or
-								(locals.NuN_Receiving.user[i].title ~= NUN_DFLTHEADINGS[i])) then
+							(NuNSettings[local_player.realmName][locals.headingID_dbKey]) or
+							(locals.NuN_Receiving.user[i].title ~= NUN_DFLTHEADINGS[i])) then
 					bttnHeadingText:SetText(locals.NuN_Receiving.user[i].title);
 					locals.bttnChanges[i] = locals.NuN_Receiving.user[i].title;
 				end
@@ -12709,8 +12636,8 @@ function NuN_SetReceivedUserButtons()
 				if ((not hdngTest) or (hdngTest == "")) then
 					bttnDetailText:SetText("");
 					bttnDetail:Disable();
-					locals.bttnChanges[i] = -1;  -- 5.60 Use -1 to flag blank
-					locals.bttnChanges[i + locals.detlOffset] = -1;  -- 5.60 Use -1 to flag blank
+					locals.bttnChanges[i] = -1;                -- 5.60 Use -1 to flag blank
+					locals.bttnChanges[i + locals.detlOffset] = -1; -- 5.60 Use -1 to flag blank
 				else
 					if (locals.NuN_Receiving.user[i].detl) then
 						bttnDetailText:SetText(locals.NuN_Receiving.user[i].detl);
@@ -12861,8 +12788,7 @@ function NuN_IndexAll()
 	local curZ;
 
 	if (MapNotes_Data_Notes) then -- + v5.00.11200
-		curZ = MapNotes_Data_Notes;  -- + v5.00.11200
-
+		curZ = MapNotes_Data_Notes; -- + v5.00.11200
 	else
 		return;
 	end
@@ -12870,7 +12796,6 @@ function NuN_IndexAll()
 	for cont, dataSet in pairs(curZ) do
 		if (type(cont) == "string") then
 			NuN_IndexByZone(cont, 0, curZ[cont]);
-
 		elseif (type(cont) == "number") then
 			for zone = 0, 40, 1 do
 				if (curZ[cont][zone]) then
@@ -12939,8 +12864,8 @@ function NuN_CreateIndex(nKey, nName)
 		NuNData[locals.mrgIndex_dbKey][nKey][nName] = "1";
 		--		NuN_Message("-> MapNote : "..nName);
 	elseif (
-			(NuNData[locals.mrgIndex_dbKey][nKey]) and (NuNData[locals.mrgIndex_dbKey][nKey].noteCounter) and
-					(NuNData[locals.mrgIndex_dbKey][nKey].noteCounter < 5) and (not NuNData[locals.mrgIndex_dbKey][nKey][nName])) then
+				(NuNData[locals.mrgIndex_dbKey][nKey]) and (NuNData[locals.mrgIndex_dbKey][nKey].noteCounter) and
+				(NuNData[locals.mrgIndex_dbKey][nKey].noteCounter < 5) and (not NuNData[locals.mrgIndex_dbKey][nKey][nName])) then
 		NuNData[locals.mrgIndex_dbKey][nKey].noteCounter = NuNData[locals.mrgIndex_dbKey][nKey].noteCounter + 1;
 		NuNData[locals.mrgIndex_dbKey][nKey][nName] = "1";
 		--		NuN_Message("-> MapNote : "..nName);
@@ -12983,8 +12908,8 @@ end
 function NuN_ResetPlayerIgnoreStatus(parm1)
 	if ((locals.NuNDataPlayers[parm1]) and (locals.NuNDataPlayers[parm1].ignoreLst)) then
 		if (
-				(NuNSettings[local_player.realmName].autoD) and (locals.NuNDataPlayers[parm1].type == NuNC.NUN_AUTO_C) and
-						(not locals.NuNDataPlayers[parm1].friendLst)) then
+					(NuNSettings[local_player.realmName].autoD) and (locals.NuNDataPlayers[parm1].type == NuNC.NUN_AUTO_C) and
+					(not locals.NuNDataPlayers[parm1].friendLst)) then
 			locals.NuNDataPlayers[parm1] = nil;
 		else
 			locals.NuNDataPlayers[parm1].ignoreLst = nil;
@@ -13001,8 +12926,8 @@ end
 function NuN_ResetPlayerFriendStatus(parm1)
 	if ((locals.NuNDataPlayers[parm1]) and (locals.NuNDataPlayers[parm1].friendLst)) then
 		if (
-				(NuNSettings[local_player.realmName].autoD) and (locals.NuNDataPlayers[parm1].type == NuNC.NUN_AUTO_C) and
-						(not locals.NuNDataPlayers[parm1].ignoreLst)) then
+					(NuNSettings[local_player.realmName].autoD) and (locals.NuNDataPlayers[parm1].type == NuNC.NUN_AUTO_C) and
+					(not locals.NuNDataPlayers[parm1].ignoreLst)) then
 			locals.NuNDataPlayers[parm1] = nil;
 		else
 			locals.NuNDataPlayers[parm1].friendLst = nil;
@@ -13099,7 +13024,6 @@ function NuN_SetupRatings(initialSetup)
 		for i = 1, maxRatings, 1 do
 			NuNSettings.ratingsBL[i] = 0;
 		end
-
 	else
 		NUN_PR_TP = NuNSettings.ratings[1];
 		NUN_PR_MB = NuNSettings.ratings[2];
@@ -13195,8 +13119,8 @@ userData:		used differently by all the code that actually passes a value for thi
 original signature:
 UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
 --]]
-NuNNew_UnitPopup_ShowMenu = function(--[[table]] dropdownMenu, --[[string]] frame_tag, --[[string]] unit_tag,
-                                     --[[string]] u_name, --[[int]] userData)
+NuNNew_UnitPopup_ShowMenu = function( --[[table]] dropdownMenu, --[[string]] frame_tag, --[[string]] unit_tag,
+	--[[string]] u_name, --[[int]] userData)
 	--[[
 nun_msgf("dropdownMenu:%s  (%s)   frame_tag:%s  unit_tag:%s  u_name:%s  userdata:%s  UIDROPDOWNMENU_MENU_VALUE:%s   UIDROPDOWNMENU_INIT_MENU:%s    UIDROPDOWNMENU_MENU_LEVEL:%s",
 	tostring(dropdownMenu.name), type(dropdownMenu), tostring(frame_tag), tostring(unit_tag), tostring(u_name), tostring(userData),
@@ -13217,7 +13141,6 @@ nun_msgf("dropdownMenu:%s  (%s)   frame_tag:%s  unit_tag:%s  u_name:%s  userdata
 
 		NuN_BuildPlayerRatingsSubmenu(NuNNew_UnitPopup_OnClick, u_name, UIDROPDOWNMENU_MENU_VALUE);
 	end
-
 end
 
 -- 5.60 Re-Written
@@ -13230,12 +13153,13 @@ NuNNew_UnitPopup_OnClick = function(self)
 		-- open a NuN Note for the Player
 		rating = 99;
 	else
-		for i = 1, maxRatings, 1 do -- 5.60 BETA.02	leave if no NuN button clicked
+		for i = 1, maxRatings, 1 do            -- 5.60 BETA.02	leave if no NuN button clicked
 			if (btn == NuNSettings.ratings[i]) then -- 5.60 BETA.02	leave if no NuN button clicked
 				NuN_PlayerRated = true;
 				rating = i;
 				break
-				; end -- 5.60 BETA.02	leave if no NuN button clicked
+				;
+			end -- 5.60 BETA.02	leave if no NuN button clicked
 		end -- 5.60 BETA.02	leave if no NuN button clicked
 	end
 
@@ -13288,7 +13212,6 @@ NuNNew_UnitPopup_OnClick = function(self)
 			else
 				NuN_FromTarget(true);
 			end
-
 		elseif (unit) then
 			NuN_NewContact(unit);
 			if (not leaveOpen) then
@@ -13296,7 +13219,6 @@ NuNNew_UnitPopup_OnClick = function(self)
 				HideNUNFrame();
 				NuN_Message(local_player.currentNote.unit .. NUN_AUTONOTED);
 			end
-
 		else
 			NuN_CreateContact(_name, local_player.factionName); -- fingers crossed not an opposing faction name ??? "target" taken care of above, but what about chat links ?
 			if (not leaveOpen) then
@@ -13451,14 +13373,17 @@ end
 								msg = before ..
 										playerLink ..
 										"|h" ..
-										colorOpen .. linkOpen .. displayText .. linkClose .. colorClose .. linkOpen .. noteIcon .. linkClose .. after;
+										colorOpen ..
+										linkOpen .. displayText .. linkClose .. colorClose .. linkOpen .. noteIcon .. linkClose .. after;
 							elseif noteIcon == "" then
 								msg = before ..
-										playerLink .. "|h" .. colorOpen .. linkOpen .. displayText .. linkClose .. colorClose .. noteIcon .. after;
+										playerLink ..
+										"|h" .. colorOpen .. linkOpen .. displayText .. linkClose .. colorClose .. noteIcon .. after;
 							end
 
 							break
-							; end
+							;
+						end
 					end
 				end
 			end
@@ -13518,7 +13443,8 @@ function NotesUNeed.NuN_Statics.TagPlayerChatName(playerChatName, showDebug)
 				else
 					displayText = " " .. displayText;
 				end
-				taggedPlayerName = colorOpen .. linkOpen .. strippedPlayerName .. displayText .. linkClose .. colorClose .. noteIcon;
+				taggedPlayerName = colorOpen ..
+						linkOpen .. strippedPlayerName .. displayText .. linkClose .. colorClose .. noteIcon;
 			end
 		end
 	end
@@ -13547,7 +13473,6 @@ function NuN_QuestWatch_Update()
 
 				if (NuNDataANotes[theQuest]) then
 					qNoteLevel = "Account";
-
 				elseif (NuNDataRNotes[theQuest]) then
 					qNoteLevel = "Realm";
 				end
@@ -13569,11 +13494,9 @@ function NuN_QuestWatch_Update()
 						end
 						general.text = " ";
 						NuNF.NuN_SetGText(qNoteLevel);
-
 					elseif (NuNDataANotes[theQuestI]) then
 						qNoteLevel = "Account";
 						general.text = NuNF.NuN_GetGText(local_player.currentNote.general);
-
 					elseif (NuNDataRNotes[theQuestI]) then
 						qNoteLevel = "Realm";
 						general.text = NuNF.NuN_GetGText(local_player.currentNote.general);
@@ -13586,9 +13509,9 @@ function NuN_QuestWatch_Update()
 						for j = 1, numObjectives do
 							text, type, finished = GetQuestLogLeaderBoard(j, questIndex);
 							if (
-									(
+										(
 											not strfind(general.text, text) and (not strfind(text, ": 0")) and
-													(strlen(general.text) < NuNC.NUN_MAX_TXT_BUF))) then
+											(strlen(general.text) < NuNC.NUN_MAX_TXT_BUF))) then
 								if (not location) then
 									-- SetMapToCurrentZone(); -- TODO: What is the replacement for this?
 									location = NuNF.NuN_GetLoc();
@@ -13624,16 +13547,15 @@ function NuN_MainUpdate(self, elapsed)
 	if (NuN_WhoReturnStruct.timeLimit) then
 		NuN_WhoReturnStruct.timeLimit = NuN_WhoReturnStruct.timeLimit + elapsed;
 		if (NuN_WhoReturnStruct.timeLimit > (NuNC.NUN_WHO_TIMELIMIT * 2)) then
-			NuN_WhoReturnStruct.func = nil;  -- 5.60
-			NuN_WhoReturnStruct.name = nil;  -- 5.60
-			NuN_WhoReturnStruct.timeLimit = nil;  -- 5.60
+			NuN_WhoReturnStruct.func = nil;   -- 5.60
+			NuN_WhoReturnStruct.name = nil;   -- 5.60
+			NuN_WhoReturnStruct.timeLimit = nil; -- 5.60
 			NuN_WhoReturnStruct.secondTry = nil;
 			NuN_suppressExtraWho = nil;
 			if ((NuNSettings[local_player.realmName]) and (NuNSettings[local_player.realmName].alternativewho)) then
-				C_FriendList.SetWhoToUi(0); -- 5.60
+				C_FriendList.SetWhoToUi(0);                -- 5.60
 				FriendsFrame:RegisterEvent("WHO_LIST_UPDATE"); -- 5.60
 			end
-
 		elseif ((NuN_WhoReturnStruct.timeLimit > NuNC.NUN_WHO_TIMELIMIT) and (not NuN_WhoReturnStruct.secondTry)) then
 			NuN_WhoReturnStruct.secondTry = true;
 			NuN_suppressExtraWho = true;
@@ -13737,7 +13659,6 @@ function NuN_MainUpdate(self, elapsed)
 	-- Mainly a timed update of Quest notes
 	locals.timeSinceLastUpdate = locals.timeSinceLastUpdate + elapsed;
 	if ((locals.timeSinceLastUpdate > 3) and (not UnitAffectingCombat("player"))) then
-
 		if (not locals.NuNDataPlayers[locals.player_Name]) then
 			NuN_AutoNote();
 		end
@@ -13756,7 +13677,6 @@ function NuN_MainUpdate(self, elapsed)
 			NuN_State.oneDone = false;
 			NuN_State.NuN_AtStartup = false;
 			NuN_State.NuN_QuestsUpdating = false;
-
 		else
 			NuN_State.oneDone = true;
 			--[[
@@ -13787,15 +13707,14 @@ function NuN_MainUpdate(self, elapsed)
 
 	------------------------ Deferred registration of frame OnClick hooks ---------------------------
 	if (
-			locals.RegisterFrameOnClick_DelayMS and type(locals.RegisterFrameOnClick_DelayMS) == "number" and
-					locals.RegisterFrameOnClick_DelayMS > 0) then
+				locals.RegisterFrameOnClick_DelayMS and type(locals.RegisterFrameOnClick_DelayMS) == "number" and
+				locals.RegisterFrameOnClick_DelayMS > 0) then
 		locals.RegisterFrameOnClick_DelayMS = locals.RegisterFrameOnClick_DelayMS - elapsed;
 		if (locals.RegisterFrameOnClick_DelayMS <= 0) then
 			locals.RegisterFrameOnClick_DelayMS = nil;
 			NuN_OnModifierOptionUpdated();
 		end
 	end
-
 end
 
 function NuN_CustomFontCheckBox_OnClick(self, btn, down)
@@ -13853,13 +13772,13 @@ function NuN_SyncGuildMemberNotes(forceReport)
 	local guildName = GetGuildInfo("player");
 
 	if (locals.NuNDebug) then
-		nun_msgf("INITIALIZING GUILD ROSTER [NuN_SyncGuildMemberNotes(forceReport=%s)] guildName:%s    forceGR:%s    numGuildMembers:%i"
+		nun_msgf(
+			"INITIALIZING GUILD ROSTER [NuN_SyncGuildMemberNotes(forceReport=%s)] guildName:%s    forceGR:%s    numGuildMembers:%i"
 			, tostring(forceReport), tostring(guildName), tostring(NuN_State.NuN_syncGuildMemberNotes), numGuildMembers);
 	end
 
 	if ((not guildName) or (guildName == "")) then
 		return;
-
 	elseif (numGuildMembers < 1) then
 		--evo:	it seems like we should just let MainUpdate call GuildRoster during the next frame, by setting NuN_syncGuildMemberNotes = true
 		--		so I need to find out why GuildRoster() is called here...
@@ -13887,8 +13806,9 @@ function NuN_SyncGuildMemberNotes(forceReport)
 	local dfltH1, dfltH2 = NUN_DFLTHEADINGS[1], NUN_DFLTHEADINGS[2];
 	for guildMemberIndex = 1, numGuildMembers, 1 do
 		memberName, memberRank, memberRankIndex, --[[playerLevel]] __, memberClass, --[[zone]] __, --[[public note]] __,
-				--[[officerNote]] __, memberIsOnline, memberStatus,
-				--[[englishClassName]] __, memberGuildAchievementPoints, memberGuildAchievementRank, memberIsMobile = GetGuildRosterInfo(guildMemberIndex);
+		--[[officerNote]] __, memberIsOnline, memberStatus,
+		--[[englishClassName]] __, memberGuildAchievementPoints, memberGuildAchievementRank, memberIsMobile =
+				GetGuildRosterInfo(guildMemberIndex);
 		memberClass = NuNF.NuNGet_TableID(classes, memberClass);
 		if (memberName) then
 			rosterA[memberName] = {};
@@ -13928,7 +13848,7 @@ function NuN_SyncGuildMemberNotes(forceReport)
 			-- if Player Specific Heading not equal to default, -OR- Account Specific Heading not equal to default, then don't update -ELSE-
 			phdr = memberName .. hdr1;
 			if ((locals.NuNDataPlayers[phdr] and locals.NuNDataPlayers[phdr].txt ~= dfltH1) or
-					(NuNSettings[hdr1] and NuNSettings[hdr1].txt ~= dfltH1)) then
+						(NuNSettings[hdr1] and NuNSettings[hdr1].txt ~= dfltH1)) then
 				-- do nothing...
 			else
 				pdtl = memberName .. locals.suffix_Details .. "1";
@@ -13936,7 +13856,7 @@ function NuN_SyncGuildMemberNotes(forceReport)
 				locals.NuNDataPlayers[pdtl].txt = guildName;
 				phdr = memberName .. hdr2;
 				if ((locals.NuNDataPlayers[phdr] and locals.NuNDataPlayers[phdr].txt ~= dfltH2) or
-						(NuNSettings[hdr2] and NuNSettings[hdr2].txt ~= dfltH2)) then
+							(NuNSettings[hdr2] and NuNSettings[hdr2].txt ~= dfltH2)) then
 					-- do nothing...
 				else
 					pdtl = memberName .. locals.suffix_Details .. "2";
@@ -14000,7 +13920,6 @@ function NuN_SyncGuildMemberNotes(forceReport)
 			end
 		end
 	end
-
 end
 
 -----------------------------------------------------------------------------------------------
@@ -14014,7 +13933,6 @@ function NuNOptions_SetModifier(mBttn)
 		local antiSep = "";
 
 		if (mBttn == "LeftButton") then
-
 			if (IsControlKeyDown()) then
 				modKeys = "Control";
 				sep = "-";
@@ -14034,9 +13952,7 @@ function NuNOptions_SetModifier(mBttn)
 			else
 				antiKey = antiKey .. antiSep .. "Shift";
 			end
-
 		elseif (mBttn == "RightButton") then
-
 			if (IsLeftControlKeyDown()) then
 				modKeys = "LeftControl";
 				sep = "-";
@@ -14077,12 +13993,10 @@ function NuNOptions_SetModifier(mBttn)
 			else
 				antiKey = antiKey .. antiSep .. "RightShift";
 			end
-
 		end
 		NuNSettings[local_player.realmName].modKeys = modKeys;
 		NuNSettings[local_player.realmName].antiKey = antiKey;
 		NuNOptions_SetModifierText();
-
 	else
 		NuNSettings[local_player.realmName].mouseBttn = mBttn;
 		NuNOptions_SetModifierText();
@@ -14123,8 +14037,8 @@ end
 function IsNuNModifierKeyDown(mBttn)
 	if ((IsModifierKeyDown()) and (NuNSettings[local_player.realmName])) then
 		if (
-				((not NuNSettings[local_player.realmName].mouseBttn) and (mBttn == "LeftButton")) or
-						(mBttn == NuNSettings[local_player.realmName].mouseBttn)) then
+					((not NuNSettings[local_player.realmName].mouseBttn) and (mBttn == "LeftButton")) or
+					(mBttn == NuNSettings[local_player.realmName].mouseBttn)) then
 			if (not NuNSettings[local_player.realmName].modKeys) then
 				NuNSettings[local_player.realmName].modKeys = "Alt";
 			end
@@ -14134,7 +14048,7 @@ function IsNuNModifierKeyDown(mBttn)
 
 			local modKeys = {};
 			if (strfind(NuNSettings[local_player.realmName].modKeys, "-")) then
-				modKeys = { strsplit("-", NuNSettings[local_player.realmName].modKeys) };  -- Note my curly brackets....
+				modKeys = { strsplit("-", NuNSettings[local_player.realmName].modKeys) }; -- Note my curly brackets....
 			else
 				modKeys[1] = NuNSettings[local_player.realmName].modKeys;
 			end
@@ -14152,7 +14066,7 @@ function IsNuNModifierKeyDown(mBttn)
 			--  i.e. it would allow the full Set of <Control><Alt><Shift> to be used by another AddOn without invoking NotesUNeeds limited <Control><Shift> Set
 			local antiKey = {};
 			if (strfind(NuNSettings[local_player.realmName].antiKey, "-")) then
-				antiKey = { strsplit("-", NuNSettings[local_player.realmName].antiKey) };  -- Note my curly brackets....
+				antiKey = { strsplit("-", NuNSettings[local_player.realmName].antiKey) }; -- Note my curly brackets....
 			else
 				antiKey[1] = NuNSettings[local_player.realmName].antiKey;
 			end
@@ -14224,14 +14138,11 @@ function NuN_ProcessSocialNote(playerDetails)
 		else
 			sn.Exists = sn.Exists + 1;
 		end
-
 	elseif (sn.CancelAll) then
 		sn.Ignored = sn.Ignored + 1;
-
 	else
 		StaticPopup_Show("NUN_CHOOSE_SN_IMPORT");
 	end
-
 end
 
 -----------------------------------------------------------------------------------------------
@@ -14255,7 +14166,6 @@ function NuN_ColourText(noteType, fBttn, mBttn)
 
 	-- Toggle display of colour markers or change Preset colour selection
 	if (mBttn == "RightButton") then
-
 		-- Open Colour Picker to change a preset if necessary
 		if (fBttn.preset) then
 			-- Reset the preset if Alt key is down
@@ -14297,7 +14207,6 @@ function NuN_ColourText(noteType, fBttn, mBttn)
 				dText = strgsub(dText, "||c", "|c");
 				dText = strgsub(dText, "||r", "|r");
 				eBox:SetText(dText);
-
 			else
 				NuN_ForbidColours(fBttn.parentType);
 				local dText = eBox:GetText();
@@ -14340,7 +14249,6 @@ function NuN_ColourText(noteType, fBttn, mBttn)
 			end
 		end
 	end
-
 end
 
 -- Functions to choose custom text colours
@@ -14433,7 +14341,8 @@ function NuNF.NuN_Colouriser(textToColour, toColour)
 				openTag = false;
 			end
 			break
-			; else
+			;
+		else
 			qTst = strsub(textToColour, tT, tT + 1);
 			if (qTst == "|r") then
 				nextString = strsub(textToColour, tF + 1, tT + 1);
@@ -14441,7 +14350,6 @@ function NuNF.NuN_Colouriser(textToColour, toColour)
 					colouredText = colouredText .. strsub(textToColour, tF + 1, tT + 1);
 				end
 				tF = tT + 1;
-
 			elseif (qTst == "|c") then
 				nextString = strsub(textToColour, tF + 1, tT - 1);
 				if ((nextString) and (nextString ~= "")) then
@@ -14458,11 +14366,11 @@ function NuNF.NuN_Colouriser(textToColour, toColour)
 				if (not tT) then
 					colouredText = colouredText .. strsub(textToColour, tF + 1);
 					break
-					; else
+					;
+				else
 					colouredText = colouredText .. strsub(textToColour, tF + 1, tT + 1);
 					tF = tT + 1;
 				end
-
 			else
 				nextString = strsub(textToColour, tF + 1, tT);
 				if (openTag) then
@@ -14533,7 +14441,6 @@ function NuN_AllowColours(fType)
 		NuNCColourPreset3:Show();
 		NuNCColourPreset4:Show();
 		NuNCColourPreset5:Show();
-
 	elseif (fType == "General") then
 		NuNGColourButton.showCTags = nil;
 		NuNGColourPreset1:Show();
@@ -14552,7 +14459,6 @@ function NuN_ForbidColours(fType)
 		NuNCColourPreset3:Hide();
 		NuNCColourPreset4:Hide();
 		NuNCColourPreset5:Hide();
-
 	elseif (fType == "General") then
 		NuNGColourButton.showCTags = true;
 		NuNGColourPreset1:Hide();
@@ -14578,7 +14484,6 @@ function NuN_ChatDelay_EditBoxValidate()
 	if (not delay) then
 		NuN_ChatDelay_EditBoxInit();
 		return true;
-
 	else
 		NuNSettings[local_player.realmName].delay = delay;
 		NuN_DTrans.tDelay = delay;
@@ -14738,7 +14643,6 @@ function NuN_LangPatch(langDirection, single)
 					end
 				end
 			end
-
 		elseif (langDirection == "->en") then
 			for idx, value in pairs(locals.NuNDataPlayers) do
 				if (locals.NuNDataPlayers[idx].faction) then
@@ -14804,10 +14708,8 @@ function NuNNew_AddFriend(...)
 
 	if (type(_name) == "number") then
 		_name = GetFriendInfo(_name);
-
 	elseif ((_name) and (_name == "target")) then
 		_name = GetUnitName(_name, true);
-
 	elseif ((type(_name) == "string") and (_name == "")) then
 		_name = GetUnitName("target", true);
 	end
@@ -14875,8 +14777,8 @@ function NuN_RemoveFriend(_name)
 		end
 		if (locals.NuNDataPlayers[_name]) then
 			if (
-					(NuNSettings[local_player.realmName].autoD) and (locals.NuNDataPlayers[_name].type == NuNC.NUN_AUTO_C) and
-							(not locals.NuNDataPlayers[_name].ignoreLst)) then
+						(NuNSettings[local_player.realmName].autoD) and (locals.NuNDataPlayers[_name].type == NuNC.NUN_AUTO_C) and
+						(not locals.NuNDataPlayers[_name].ignoreLst)) then
 				locals.NuNDataPlayers[_name] = nil;
 			else
 				locals.NuNDataPlayers[_name].friendLst = nil;
@@ -14941,10 +14843,8 @@ function NuNNew_DelIgnore(...)
 
 	if (type(_name) == "number") then
 		_name = GetIgnoreName(_name);
-
 	elseif ((_name) and (_name == "target")) then
 		_name = GetUnitName(_name, true);
-
 	elseif ((type(_name) == "string") and (_name == "")) then
 		_name = GetUnitName("target", true);
 	end
@@ -14969,8 +14869,8 @@ function NuN_DelIgnore(_name)
 		end
 		if (locals.NuNDataPlayers[_name]) then
 			if (
-					(NuNSettings[local_player.realmName].autoD) and (locals.NuNDataPlayers[_name].type == NuNC.NUN_AUTO_C) and
-							(not locals.NuNDataPlayers[_name].friendLst)) then
+						(NuNSettings[local_player.realmName].autoD) and (locals.NuNDataPlayers[_name].type == NuNC.NUN_AUTO_C) and
+						(not locals.NuNDataPlayers[_name].friendLst)) then
 				locals.NuNDataPlayers[_name] = nil;
 			else
 				locals.NuNDataPlayers[_name].ignoreLst = nil;
@@ -14991,10 +14891,8 @@ function NuNNew_AddOrDelIgnore(...)
 
 	if (type(_name) == "number") then
 		_name = GetIgnoreName(_name);
-
 	elseif ((_name) and (_name == "target")) then
 		_name = GetUnitName(_name, true);
-
 	elseif ((type(_name) == "string") and (_name == "")) then
 		_name = GetUnitName("target", true);
 	end
@@ -15101,7 +14999,8 @@ function NuN_DisplayTooltip(self, ttBase, shouldWrap)
 					NuN_Tooltip:AddLine(NuNC[ttKey], 0, 1, 0, shouldWrap);
 				else
 					break
-					; end
+					;
+				end
 			end
 			NuN_Tooltip:Show();
 		end
@@ -15114,13 +15013,11 @@ function NuN_TalentsTooltip(self)
 	local talents;
 
 	if (
-			locals.NuNDataPlayers[local_player.currentNote.unit] and locals.NuNDataPlayers[local_player.currentNote.unit].talents
+				locals.NuNDataPlayers[local_player.currentNote.unit] and locals.NuNDataPlayers[local_player.currentNote.unit].talents
 			) then
 		talents = locals.NuNDataPlayers[local_player.currentNote.unit].talents;
-
 	elseif (NuNTalents.player and NuNTalents.player == local_player.currentNote.unit) then
 		talents = NuNTalents;
-
 	else
 		return;
 	end
@@ -15170,7 +15067,8 @@ function NuN_TalentsTooltip(self)
 										colorR = RED_FONT_COLOR;
 									end
 									NuN_Tooltip:AddDoubleLine(talentDetails.talentName,
-										"(" .. talentDetails.curR .. "/" .. (talentDetails.maxR or "1") .. ")", colorL.r, colorL.g, colorL.b, colorR.r
+										"(" .. talentDetails.curR .. "/" .. (talentDetails.maxR or "1") .. ")", colorL.r, colorL.g, colorL.b,
+										colorR.r
 										, colorR.g, colorR.b);
 								end
 							end
@@ -15183,7 +15081,6 @@ function NuN_TalentsTooltip(self)
 			NuN_Tooltip:AddLine("\n");
 		end
 		NuN_Tooltip:Show();
-
 	end
 end
 
@@ -15269,7 +15166,6 @@ function NuN_GNoteExists(tstNote, simpleCheck)
 			local_player.currentNote.general = tstNote;
 		end
 		return true;
-
 	elseif (NuNData[locals.itmIndex_dbKey][tstNote]) then
 		cmplxName = NuNData[locals.itmIndex_dbKey][tstNote];
 		if ((NuNDataRNotes[cmplxName]) or (NuNDataANotes[cmplxName])) then
@@ -15297,7 +15193,6 @@ function NuN_ReturnText(noteType, noteName)
 			return NuNF.NuN_GetGText(gLclNote);
 		end
 		return nil, 2;
-
 	elseif (noteType == "Contact") then
 		if (locals.NuNDataPlayers[noteName]) then
 			return NuNF.NuN_GetCText(noteName);
@@ -15340,7 +15235,6 @@ function NuN_InsertText(noteType, noteName, noteText, pos)
 
 	if (noteType == "General") then
 		if ((NuNDataRNotes[noteName]) or (NuNDataANotes[noteName])) then
-
 			local nLvl = "Account";
 			if (NuNDataRNotes[noteName]) then
 				nLvl = "Realm";
@@ -15351,10 +15245,8 @@ function NuN_InsertText(noteType, noteName, noteText, pos)
 					errorCode = 5;
 				end
 				fetchedText = fetchedText .. noteText;
-
 			elseif (pos < 0) then
 				fetchedText = noteText;
-
 			else
 				fetchedText = strsub(fetchedText, 1, pos) .. noteText .. strsub(fetchedText, pos + 1);
 			end
@@ -15371,23 +15263,18 @@ function NuN_InsertText(noteType, noteName, noteText, pos)
 			general.text = tmpT;
 			local_player.currentNote.general = tmpN;
 			return errorCode;
-
 		end
 		return 3;
-
 	elseif (noteType == "Contact") then
 		if (locals.NuNDataPlayers[noteName]) then
-
 			local fetchedText = NuNF.NuN_GetCText(noteName);
 			if ((not pos) or (pos > strlen(fetchedText))) then
 				if ((pos) and (pos > strlen(fetchedText))) then
 					errorCode = 5;
 				end
 				fetchedText = fetchedText .. noteText;
-
 			elseif ((pos) and (pos < 0)) then
 				fetchedText = noteText;
-
 			else
 				fetchedText = strsub(fetchedText, 1, pos) .. noteText .. strsub(fetchedText, pos + 1);
 			end
@@ -15401,10 +15288,8 @@ function NuN_InsertText(noteType, noteName, noteText, pos)
 			NuNF.NuN_SetCText(noteName);
 			contact.text = tmpT;
 			return errorCode;
-
 		end
 		return 4;
-
 	end
 	return 2;
 end

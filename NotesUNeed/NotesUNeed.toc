@@ -1,7 +1,7 @@
-## Interface: 90205
-## Title: Notes'U'Need |c0000FF00(v9.00.90205)|r
-## Version: 9.00.90205
-## X-Curse-Packaged-Version: NotesUNeed_v9.00
+## Interface: 100100 
+## Title: Notes'U'Need |c0000FF00(v10.00.100100)|r
+## Version: 10.00.100100
+## X-Curse-Packaged-Version: NotesUNeed_v10.00
 ## X-Curse-Project-Name: NotesUNeed
 ## X-Curse-Project-ID: notes-uneed
 ## X-Curse-Repository-ID: wow/notes-uneed/mainline
@@ -16,8 +16,7 @@
 ##  Informationen angezeigt wenn du mit der Maus daueber gehst.
 
 ## SavedVariables: NuNData, NuNSettings
-## OptionalDeps: Titan, MapNotes, TipBuddy, EQL3, beql, UberQuest, Blacklist
-## Dependencies: Blizzard_Calendar, Blizzard_GuildUI
+
 NotesUNeed.xml
 Modules.xml
 Bindings.xml

@@ -324,7 +324,8 @@ NUN_FEMALE = "Female";
 
 
 
-NUN_NOTESUNEED_INFO = "NotesUNeed Noted";
+NUN_NOTESUNEED_INFO = "Noted";
+-- NUN_NOTESUNEED_INFO = "NotesUNeed Noted";
 
 NUN_TT_PIN_TXT = "Pin Up Tooltip";
 
