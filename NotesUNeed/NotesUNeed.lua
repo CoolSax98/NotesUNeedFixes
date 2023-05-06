@@ -1678,27 +1678,7 @@ function NuNF.NuN_SetCText(sLclName)
 	local tmpText = contact.text;
 
 	contact.text = NuNF.NuN_SetSaveText(contact.text);
-	contact.text_len = strlen(contact.text);
-	if (contact.text_len < NuNC.NUN_MAX_TXT_CHR) then
-		cUpper = contact.text_len;
-	else
-		cUpper = NuNC.NUN_MAX_TXT_CHR;
-	end
-	locals.NuNDataPlayers[sLclName][locals.txtTxt] = strsub(contact.text, 1, cUpper);
-	for i = 1, NuNC.NUN_MAX_ADD_TXT, 1 do
-		cLower = NuNC.NUN_MAX_TXT_CHR * i;
-		txtIndex = locals.txtTxt .. i;
-		if (contact.text_len > cLower) then
-			cLower = cLower + 1;
-			cUpper = NuNC.NUN_MAX_TXT_CHR * (i + 1);
-			if (contact.text_len < cUpper) then
-				cUpper = contact.text_len;
-			end
-			locals.NuNDataPlayers[sLclName][txtIndex] = strsub(contact.text, cLower, cUpper);
-		else
-			locals.NuNDataPlayers[sLclName][txtIndex] = "";
-		end
-	end
+	locals.NuNDataPlayers[sLclName][locals.txtTxt] = contact.text;
 	locals.NuNDataPlayers[sLclName].lastChanged = NuNF.NuN_GetComparitiveDate(locals.NuNDataPlayers[sLclName]);
 
 	contact.text = tmpText;
@@ -1712,47 +1692,12 @@ function NuNF.NuN_SetGText(saveLvl)
 	local tmpText = general.text;
 
 	general.text = NuNF.NuN_SetSaveText(general.text);
-	general.text_len = strlen(general.text);
-	if (general.text_len < NuNC.NUN_MAX_TXT_CHR) then
-		cUpper = general.text_len;
-	else
-		cUpper = NuNC.NUN_MAX_TXT_CHR;
-	end
-
 	if (saveLvl == "Realm") then
-		NuNDataRNotes[local_player.currentNote.general][locals.txtTxt] = strsub(general.text, 1, NuNC.NUN_MAX_TXT_CHR);
-		for i = 1, NuNC.NUN_MAX_ADD_TXT, 1 do
-			cLower = NuNC.NUN_MAX_TXT_CHR * i;
-			txtIndex = locals.txtTxt .. i;
-			if (general.text_len > cLower) then
-				cLower = cLower + 1;
-				cUpper = NuNC.NUN_MAX_TXT_CHR * (i + 1);
-				if (general.text_len < cUpper) then
-					cUpper = general.text_len;
-				end
-				NuNDataRNotes[local_player.currentNote.general][txtIndex] = strsub(general.text, cLower, cUpper);
-			else
-				NuNDataRNotes[local_player.currentNote.general][txtIndex] = "";
-			end
-		end
+		NuNDataRNotes[local_player.currentNote.general][locals.txtTxt] = general.text;
 		NuNDataRNotes[local_player.currentNote.general].lastChanged = NuNF.NuN_GetComparitiveDate(NuNDataRNotes[
 		local_player.currentNote.general]);
 	else
-		NuNDataANotes[local_player.currentNote.general][locals.txtTxt] = strsub(general.text, 1, NuNC.NUN_MAX_TXT_CHR);
-		for i = 1, NuNC.NUN_MAX_ADD_TXT, 1 do
-			cLower = NuNC.NUN_MAX_TXT_CHR * i;
-			txtIndex = locals.txtTxt .. i;
-			if (general.text_len > cLower) then
-				cLower = cLower + 1;
-				cUpper = NuNC.NUN_MAX_TXT_CHR * (i + 1);
-				if (general.text_len < cUpper) then
-					cUpper = general.text_len;
-				end
-				NuNDataANotes[local_player.currentNote.general][txtIndex] = strsub(general.text, cLower, cUpper);
-			else
-				NuNDataANotes[local_player.currentNote.general][txtIndex] = "";
-			end
-		end
+		NuNDataANotes[local_player.currentNote.general][locals.txtTxt] = general.text;
 		NuNDataANotes[local_player.currentNote.general].lastChanged = NuNF.NuN_GetComparitiveDate(NuNDataANotes[
 		local_player.currentNote.general]);
 	end
@@ -8879,9 +8824,9 @@ function NuN_TextWarning(box, tLabel)
 	else
 		oLabel:SetText(lenTxtL .. " / " .. NuNC.NUN_MAX_TXT_LIM);
 	end
-	if (lenTxtL > NuNC.NUN_MAX_TXT_LIM) then
-		StaticPopup_Show("NUN_NOTELIMIT_EXCEEDED");
-	end
+	-- if (lenTxtL > NuNC.NUN_MAX_TXT_LIM) then
+	-- 	-- StaticPopup_Show("NUN_NOTELIMIT_EXCEEDED");
+	-- end
 end
 
 function NuN_ToggleToolTips()
@@ -11113,6 +11058,39 @@ function NuNScaleFrameShow()
 	else
 		NuN_ScaleFrame:Show();
 	end
+end
+
+function NuNMerge(notes)
+	for idx, value in pairs(notes) do
+		-- get player notes
+		local tmpNote = value.txt;
+		if (tmpNote) then
+			for i = 1, NuNC.NUN_MAX_ADD_TXT, 1 do
+				if (value["txt" .. i]) then
+					tmpNote = tmpNote .. value["txt" .. i];
+					-- Delete txtN field
+					value["txt" .. i] = nil;
+				end
+			end
+			-- Save combined note
+			notes[idx].txt = tmpNote;
+		end
+	end
+end
+
+function NuNMergeNotes()
+	-- loop through all NuNDataPlayers
+	-- if the player has a note, then
+	-- get note
+	NuNMerge(locals.NuNDataPlayers)
+
+	-- loop through account notes and merge them
+	-- get account notes
+	NuNMerge(NuNDataANotes)
+
+	-- loop through realm notes and merge them
+	-- get realm notes
+	NuNMerge(NuNDataRNotes)
 end
 
 function NuNFrameScaleSlider_OnShow(self)

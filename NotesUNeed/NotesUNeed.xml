@@ -497,7 +497,6 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
-		<TitleRegion setAllPoints="true" />
 		<HitRectInsets>
 			<AbsInset left="0" right="44" top="0" bottom="13" />
 		</HitRectInsets>
@@ -928,7 +927,7 @@
 							</Layer>
 						</Layers>
 						<ScrollChild>
-							<EditBox autoFocus="false" name="NuNText" letters="10010" multiLine="true" setAllPoints="true">
+							<EditBox autoFocus="false" name="NuNText" multiLine="true" setAllPoints="true">
 								<Size>
 									<AbsDimension x="541" y="234" />
 								</Size>
@@ -2126,7 +2125,6 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
-		<TitleRegion setAllPoints="true" />
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString name="NuNOptionsGuildCheckBoxLabel" inherits="GameFontHighlightSmall" text="NUN_AUTO_GUILD">
@@ -3476,7 +3474,6 @@
 		<Anchors>
 			<Anchor point="CENTER" />
 		</Anchors>
-		<TitleRegion setAllPoints="true" />
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString name="NuNChatNoteTitleLabel" inherits="GameFontHighlight" text="NUN_CHAT_NOTETITLE_LABEL">
@@ -3882,7 +3879,6 @@
 		<Anchors>
 			<Anchor point="CENTER" />
 		</Anchors>
-		<TitleRegion setAllPoints="true" />
 		<Layers>
 			<Layer level="BACKGROUND">
 				<FontString name="NuNConflictLabel1" inherits="GameFontNormal" text="NUN_CONFLICT_LABEL1">
@@ -3997,7 +3993,6 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
-		<TitleRegion setAllPoints="true" />
 		<HitRectInsets>
 			<AbsInset left="0" right="35" top="0" bottom="75" />
 		</HitRectInsets>
@@ -4123,6 +4118,41 @@
 					</OnClick>
 					<OnEnter>
 						NuN_DisplayTooltip(self,"NUN_TT_SCALE_TXT");
+					</OnEnter>
+					<OnLeave>
+						NuN_Tooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="NuNSearchFrameMergeButton" inherits="UIPanelButtonTemplate">
+				<Size>
+					<AbsDimension x="24" y="24" />
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="NuNSearchFrameScaleButton" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="4" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer>
+						<Texture name="NuNSearchFrameScaleIcon" file="Interface\AddOns\NotesUNeed\Artwork\NuNScale">
+							<Size>
+								<AbsDimension x="16" y="16" />
+							</Size>
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick>
+						NuNMergeNotes();
+					</OnClick>
+					<OnEnter>
+						NuN_DisplayTooltip(self,"NUN_TT_MERGE_TXT");
 					</OnEnter>
 					<OnLeave>
 						NuN_Tooltip:Hide();
@@ -4770,7 +4800,6 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
-		<TitleRegion setAllPoints="true" />
 		<HitRectInsets>
 			<AbsInset left="0" right="44" top="0" bottom="13" />
 		</HitRectInsets>
@@ -5002,7 +5031,7 @@
 					</OnLeave>
 				</Scripts>
 			</CheckButton>
-			<Button enabled="true" name="NuNNPCTargetButton" inherits="NuNButtonTemplate" hidden="true" text="NUN_NPC_TARGET">
+			<Button name="NuNNPCTargetButton" inherits="NuNButtonTemplate" hidden="true" text="NUN_NPC_TARGET">
 				<Anchors>
 					<Anchor point="CENTER" relativePoint="BOTTOMLEFT">
 						<Offset>
@@ -5539,7 +5568,7 @@
 							</Layer>
 						</Layers>
 						<ScrollChild>
-							<EditBox text="NUN_BOILERPLATE" name="NuNGNoteTextScroll" letters="10010" multiLine="true" autoFocus="false">
+							<EditBox name="NuNGNoteTextScroll" multiLine="true" autoFocus="false">
 								<Size>
 									<AbsDimension x="541" y="234" />
 								</Size>
@@ -5556,7 +5585,7 @@
 									</OnTextChanged>
 									<OnCursorChanged>
 										ScrollingEdit_OnCursorChanged(self, x, y, w, h);
-																				<!-- BUG: This is getting called extra times when selecting from the end of the content, causing the start position of the selecting being off by one. This is causing the color picker to delete characters -->
+										<!-- BUG: This is getting called extra times when selecting from the end of the content, causing the start position of the selecting being off by one. This is causing the color picker to delete characters -->
 										if ( NuNGNoteTextScroll.cPosStart == "RecordNext" ) then
 											NuNGNoteTextScroll.cPosStart = NuNGNoteTextScroll:GetCursorPosition();
 										end
@@ -5596,7 +5625,7 @@
 						</ScrollChild>
 					</ScrollFrame>
 					<!-- Buttons for Saving and Cancelling -->
-					<Button enabled="false" name="NuNGNoteButtonSaveNote" inherits="NuNButtonTemplate" text="NUN_SAVE">
+					<Button name="NuNGNoteButtonSaveNote" inherits="NuNButtonTemplate" text="NUN_SAVE">
 						<Anchors>
 							<Anchor point="CENTER" relativePoint="BOTTOMRIGHT">
 								<Offset>
@@ -5763,7 +5792,6 @@
 				</Offset>
 			</Anchor>
 		</Anchors>
-		<TitleRegion setAllPoints="true" />
 		<Frames>
 			<!-- RESEARCH - How to properly build frames -->
 			<!-- FIXME -->
