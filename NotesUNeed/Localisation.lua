@@ -40,6 +40,7 @@ NUN_SEARCH                  = "Search";
 NUN_CLOSE                   = "Close";
 NUN_SEARCH_CRITERIA         = "Search for : ";
 NUN_GOBACK                  = "Back";
+NUN_MERGE                   = "Merge";
 NUN_NOTE_NAME               = "<Contact/Note Name>";                        -- must be Capitalised when searching for Contacts, else use given case for General Note search
 NUN_NOTE                    = "-g <Note Title>";
 NUN_CC                      = "-ca <Contact Name>  OR  -ch <Contact Name>"; -- must Capitalise

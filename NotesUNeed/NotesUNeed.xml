@@ -4124,9 +4124,9 @@
 					</OnLeave>
 				</Scripts>
 			</Button>
-			<Button name="NuNSearchFrameMergeButton" inherits="UIPanelButtonTemplate">
+			<Button name="NuNSearchFrameMergeButton" inherits="UIPanelButtonTemplate" text="NUN_MERGE">
 				<Size>
-					<AbsDimension x="24" y="24" />
+					<AbsDimension x="64" y="24" />
 				</Size>
 				<Anchors>
 					<Anchor point="RIGHT" relativeTo="NuNSearchFrameScaleButton" relativePoint="LEFT">
@@ -4135,18 +4135,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Layers>
-					<Layer>
-						<Texture name="NuNSearchFrameScaleIcon" file="Interface\AddOns\NotesUNeed\Artwork\NuNScale">
-							<Size>
-								<AbsDimension x="16" y="16" />
-							</Size>
-							<Anchors>
-								<Anchor point="CENTER" />
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
 				<Scripts>
 					<OnClick>
 						NuNMergeNotes();
