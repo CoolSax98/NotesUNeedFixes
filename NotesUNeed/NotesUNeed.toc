@@ -1,7 +1,7 @@
-## Interface: 100100 
-## Title: Notes'U'Need |c0000FF00(v10.00.100100)|r
-## Version: 10.00.100100
-## X-Curse-Packaged-Version: NotesUNeed_v10.00
+## Interface: 110000 
+## Title: Notes'U'Need |c0000FF00(v10.00.110000)|r
+## Version: 11.00.110000
+## X-Curse-Packaged-Version: NotesUNeed_v11.00
 ## X-Curse-Project-Name: NotesUNeed
 ## X-Curse-Project-ID: notes-uneed
 ## X-Curse-Repository-ID: wow/notes-uneed/mainline

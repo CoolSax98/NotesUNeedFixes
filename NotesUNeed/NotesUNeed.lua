@@ -395,7 +395,7 @@ local pairs, ipairs, next, type = pairs, ipairs, next, type
 	====================================================================]]
 local GetTime, GetCursorPosition = GetTime, GetCursorPosition;
 local GetFriendInfo = C_FriendList.GetFriendInfo;
-local GetMouseFocus, GetCurrentKeyBoardFocus = GetMouseFocus, GetCurrentKeyBoardFocus;
+local GetMouseFoci, GetCurrentKeyBoardFocus = GetMouseFoci, GetCurrentKeyBoardFocus;
 local GetNumIgnores = C_FriendList.GetNumIgnores;
 local GetIgnoreName = C_FriendList.GetIgnoreName;
 local MouseIsOver, IsAltKeyDown = MouseIsOver, IsAltKeyDown;
@@ -9618,13 +9618,15 @@ function NuN_GameTooltip_OnShow(self, tTip)
 	local pRating;
 
 	-- focus will be the name of the UI element the mouse is hovering over, or WorldFrame if the user is hovering over the world viewport
-	local focus = GetMouseFocus();
-	if (focus) then
-		focus = focus:GetName();
-		if ((focus) and (strfind(focus, "AlphaMapNotesPOI"))) then
-			return;
-		end
-	end
+	-- FIXME: commenting this out for now. GetMouseFoci now returns a ScriptRegion where GetMouseFocus returned a Frame.
+	-- TODO: need to figure out how this works now.
+	-- local focus = GetMouseFoci();
+	-- if (focus) then
+	-- 	focus = focus:GetName();
+	-- 	if ((focus) and (strfind(focus, "AlphaMapNotesPOI"))) then
+	-- 		return;
+	-- 	end
+	-- end
 
 	if (not tTip) then
 		tTip = GameTooltip;
@@ -13083,7 +13085,8 @@ function NuN_SetupRatings(initialSetup)
 		end
 		UnitPopupMenus["FRIEND"][insertIndex] = "NUN_POPUP";
 
-		hooksecurefunc("UnitPopup_ShowMenu", NuNNew_UnitPopup_ShowMenu); -- 5.40
+		-- // FIXME - Seems to be broken in 11.0 - Replaced with UnitPopup_OpenMenu
+		hooksecurefunc("UnitPopup_OpenMenu", NuNNew_UnitPopup_ShowMenu); -- 5.40
 	end
 end
 
@@ -13096,9 +13099,12 @@ userData:		used differently by all the code that actually passes a value for thi
 
 original signature:
 UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
+
+Changed in 11.0:
+UnitPopup_OpenMenu(which, contextData)
 --]]
-NuNNew_UnitPopup_ShowMenu = function( --[[table]] dropdownMenu, --[[string]] frame_tag, --[[string]] unit_tag,
-	--[[string]] u_name, --[[int]] userData)
+-- TODO update function documentation
+NuNNew_UnitPopup_ShowMenu = function(which, contextData)
 	--[[
 nun_msgf("dropdownMenu:%s  (%s)   frame_tag:%s  unit_tag:%s  u_name:%s  userdata:%s  UIDROPDOWNMENU_MENU_VALUE:%s   UIDROPDOWNMENU_INIT_MENU:%s    UIDROPDOWNMENU_MENU_LEVEL:%s",
 	tostring(dropdownMenu.name), type(dropdownMenu), tostring(frame_tag), tostring(unit_tag), tostring(u_name), tostring(userData),

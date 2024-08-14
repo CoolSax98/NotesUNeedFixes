@@ -1,5 +1,5 @@
 NUN_ADDON_NAME                   = "NotesUNeed";
-NUN_VERSION                      = "v" .. GetAddOnMetadata(NUN_ADDON_NAME, "Version");
+NUN_VERSION                      = "v" .. C_AddOns.GetAddOnMetadata(NUN_ADDON_NAME, "Version");
 NuNC                             = {};
 
 local NuNC                       = NuNC;
