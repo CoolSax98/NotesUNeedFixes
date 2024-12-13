@@ -9717,6 +9717,7 @@ orgevo: I'm not really sure exactly what case this code was trying to handle, bu
 		end
 		-- if we have a string in the tooltip, and we have a character, realm, or account note for this particular string, display it.
 		if (locals.ttName ~= nil and
+					(locals.ttName ~= locals.player_Name) and
 					(locals.NuNDataPlayers[locals.ttName] or NuNDataRNotes[locals.ttName] or NuNDataANotes[locals.ttName])) then
 			anchorBy, anchorTo = NuN_GetTipAnchor(tTip);
 			NuN_Tooltip:Hide();
@@ -9749,6 +9750,7 @@ orgevo: I'm not really sure exactly what case this code was trying to handle, bu
 
 		-- if we have a string in the tooltip, and we have a character, realm, or account note for this particular string, display it.
 		if (locals.ttName ~= nil and
+					(locals.ttName ~= locals.player_Name) and
 					(locals.NuNDataPlayers[locals.ttName] or NuNDataRNotes[locals.ttName] or NuNDataANotes[locals.ttName])) then
 			NuN_State.NuN_Fade = false;
 			NuN_Tooltip:ClearLines();
