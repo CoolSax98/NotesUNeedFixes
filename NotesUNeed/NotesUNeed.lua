@@ -12455,24 +12455,31 @@ end
 NuN_GetTipAnchor = function(theTT)
 	local anchorBy, anchorTo;
 	local x1, y1 = theTT:GetCenter();
-	local x2, y2 = UIParent:GetCenter();
 
-	if (theTT == ShoppingTooltip1) then
-		anchorBy = "TOPLEFT";
-		anchorTo = "TOPRIGHT";
-		return anchorBy, anchorTo;
-	elseif (theTT == ShoppingTooltip2) then
-		anchorBy = "TOPLEFT";
-		anchorTo = "BOTTOMLEFT";
-		return anchorBy, anchorTo;
+	-- For shopping (comparison) tooltips, determine direction based on where
+	-- the shopping tooltip sits relative to GameTooltip, so the NuN note tooltip
+	-- continues the chain outward (away from GameTooltip).
+	local isShoppingTip = (theTT == ShoppingTooltip1 or theTT == ShoppingTooltip2);
+	local refX, refY;
+	if isShoppingTip and GameTooltip and GameTooltip:IsVisible() then
+		refX, refY = GameTooltip:GetCenter();
+	end
+	if not refX or not refY then
+		refX, refY = UIParent:GetCenter();
+		isShoppingTip = false; -- fall back to standard screen-center logic
 	end
 
 	if ((not x1) or (not y1)) then
 		anchorBy = "BOTTOMRIGHT";
 		anchorTo = "BOTTOMLEFT";
-	else
-		if (y1 > y2) then
-			if (x1 > x2) then
+	elseif isShoppingTip then
+		-- For shopping tooltips, go AWAY from GameTooltip (continue the chain outward).
+		-- Horizontal: if shopping is left of GameTooltip, NuN goes further left; if right, further right.
+		-- Vertical: align top edges if shopping is above GameTooltip, bottom edges if below.
+		local goLeft = (x1 < refX);
+		local alignTop = (y1 >= refY);
+		if alignTop then
+			if goLeft then
 				anchorBy = "TOPRIGHT";
 				anchorTo = "TOPLEFT";
 			else
@@ -12480,7 +12487,26 @@ NuN_GetTipAnchor = function(theTT)
 				anchorTo = "TOPRIGHT";
 			end
 		else
-			if (x1 > x2) then
+			if goLeft then
+				anchorBy = "BOTTOMRIGHT";
+				anchorTo = "BOTTOMLEFT";
+			else
+				anchorBy = "BOTTOMLEFT";
+				anchorTo = "BOTTOMRIGHT";
+			end
+		end
+	else
+		-- Standard logic: position based on screen center (go away from center).
+		if (y1 > refY) then
+			if (x1 > refX) then
+				anchorBy = "TOPRIGHT";
+				anchorTo = "TOPLEFT";
+			else
+				anchorBy = "TOPLEFT";
+				anchorTo = "TOPRIGHT";
+			end
+		else
+			if (x1 > refX) then
 				anchorBy = "BOTTOMRIGHT";
 				anchorTo = "BOTTOMLEFT";
 			else
@@ -14464,104 +14490,105 @@ function NuN_ColorPickerOkay()
 	NuN_ColorPickerOkayMask:Hide();
 end
 
+-- Scan text from position 1 up to `endPos` and return the colour code (e.g. "|cffRRGGBB" or "|cnXXX")
+-- that is currently "open" (started but not closed by |r) at that position, or nil if none.
+function NuNF.NuN_FindActiveColour(text, endPos)
+	local activeColour = nil;
+	local pos = 1;
+	while pos <= endPos do
+		local pipePos = strfind(text, "|", pos, true);
+		if (not pipePos) or (pipePos > endPos) then
+			break;
+		end
+		local nextChar = strsub(text, pipePos + 1, pipePos + 1);
+		if (nextChar == "c") or (nextChar == "C") then
+			-- Found a colour open tag — extract the full code
+			if strsub(text, pipePos + 1, pipePos + 2) == "cn" or strsub(text, pipePos + 1, pipePos + 2) == "CN" then
+				-- New format |cnXXX — extends to next |
+				local nextPipe = strfind(text, "|", pipePos + 3, true);
+				if nextPipe then
+					activeColour = strsub(text, pipePos, nextPipe - 1);
+					pos = nextPipe;
+				else
+					activeColour = strsub(text, pipePos);
+					break;
+				end
+			else
+				-- Old format |cAArrggbb — always 10 characters
+				activeColour = strsub(text, pipePos, pipePos + 9);
+				pos = pipePos + 10;
+			end
+		elseif (nextChar == "r") or (nextChar == "R") then
+			-- Colour close tag — no colour is active
+			activeColour = nil;
+			pos = pipePos + 2;
+		else
+			pos = pipePos + 1;
+		end
+	end
+	return activeColour;
+end
+
 -- Function to apply chosen colour to text *!*
 function NuNF.NuN_ColourPicked(eBox, toColour)
 	local textToColour = NuNF.NuN_GetSelectedText(eBox);
 
 	if (textToColour) then
-		-- Very basic colouring technique
-		--		textToColour = toColour .. textToColour .. "|r";
-		-- More advanced colouring technique
-		textToColour = NuNF.NuN_Colouriser(textToColour, toColour);
+		local fullText = eBox:GetText();
+		local tS, tE;
+		if eBox.cPosStart < eBox.cPosEnd then
+			tS = eBox.cPosStart;
+			tE = eBox.cPosEnd;
+		else
+			tS = eBox.cPosEnd;
+			tE = eBox.cPosStart;
+		end
+
+		-- Find what colour was active just before the selection starts
+		local preColour = NuNF.NuN_FindActiveColour(fullText, tS);
+		-- Find what colour is active at the end of the selection (scanning from start of text to selection end)
+		local postColour = NuNF.NuN_FindActiveColour(fullText, tE);
+
+		textToColour = NuNF.NuN_Colouriser(textToColour, toColour, preColour, postColour);
 		eBox:Insert(textToColour);
 	end
 end
 
--- Try my best to ensure all selected text that is not already "colourised" is NOW colourised...
--- I can't guarantee it, as I don't exhaustively look for colour tags that are "in effect" BEFORE/AFTER the highlighted region... and I ain't going to either ;p This is pretty good for requirements
-function NuNF.NuN_Colouriser(textToColour, toColour)
-	local tF, tT, qTst = 0, 0, "";
-	local colouredText = "";
-	local nextString;
-	local openTag = false;
-	local col;
-	local txtLen = strlen(textToColour);
-
+-- Apply toColour to selected text, properly handling colour boundaries.
+-- preColour: the colour code active just before the selection (nil if none)
+-- postColour: the colour code active at the end of the selection (nil if none)
+function NuNF.NuN_Colouriser(textToColour, toColour, preColour, postColour)
+	-- Normalize escape sequences
 	textToColour = strgsub(textToColour, "\124\124", "|");
 	textToColour = strgsub(textToColour, "|C", "|c");
 	textToColour = strgsub(textToColour, "|R", "|r");
 
-	-- if wanting to replace the colouring of selected text that includes its own tag start and end, then do in one fell swoop...
-	if ((strsub(textToColour, 1, 2) == "|c") and (strsub(textToColour, txtLen - 1, txtLen) == "|r")) then
-		local ccLen = GetColorCodeLength(textToColour, 1);
-		colouredText = toColour .. strsub(textToColour, ccLen + 1);
-		return colouredText;
+	-- Strip all existing colour codes from the selected text
+	local stripped = strgsub(textToColour, "|c%x%x%x%x%x%x%x%x", "");   -- old |cffRRGGBB
+	stripped = strgsub(stripped, "|cn[^|]*", "");                          -- new |cnXXX
+	stripped = strgsub(stripped, "|r", "");                                -- close tags
+
+	-- If nothing remains after stripping, return empty
+	if stripped == "" then return ""; end
+
+	-- Build the replacement:
+	local result = "";
+
+	-- 1) If a colour was active before the selection, close it so our new colour starts clean
+	if preColour then
+		result = result .. "|r";
 	end
 
-	-- otherwise, iterate through the strlooking for 'clean' segments of text to colour in...
-	while (true) do
-		tT = strfind(textToColour, "|", tF + 1);
+	-- 2) Apply the new colour to the stripped text
+	result = result .. toColour .. stripped .. "|r";
 
-		if (not tT) then
-			nextString = strsub(textToColour, tF + 1);
-			if ((nextString) and (nextString ~= "")) then
-				if (openTag) then
-					col = "";
-				else
-					col = toColour;
-				end
-				colouredText = colouredText .. col .. nextString .. "|r";
-				openTag = false;
-			end
-			break
-			;
-		else
-			qTst = strsub(textToColour, tT, tT + 1);
-			if (qTst == "|r") then
-				nextString = strsub(textToColour, tF + 1, tT + 1);
-				if ((nextString) and (nextString ~= "")) then
-					colouredText = colouredText .. strsub(textToColour, tF + 1, tT + 1);
-				end
-				tF = tT + 1;
-			elseif (qTst == "|c") then
-				nextString = strsub(textToColour, tF + 1, tT - 1);
-				if ((nextString) and (nextString ~= "")) then
-					if (openTag) then
-						col = "";
-					else
-						col = toColour;
-					end
-					colouredText = colouredText .. col .. nextString .. "|r";
-					openTag = false;
-				end
-				tF = tT - 1;
-				tT = strfind(textToColour, "|r", tF + 1);
-				if (not tT) then
-					colouredText = colouredText .. strsub(textToColour, tF + 1);
-					break
-					;
-				else
-					colouredText = colouredText .. strsub(textToColour, tF + 1, tT + 1);
-					tF = tT + 1;
-				end
-			else
-				nextString = strsub(textToColour, tF + 1, tT);
-				if (openTag) then
-					col = "";
-				else
-					col = toColour;
-				end
-				colouredText = colouredText .. col .. nextString;
-				openTag = true;
-				tF = tT;
-			end
-		end
+	-- 3) If a colour was active at the end of the original selection, re-open it
+	--    so the text after the selection continues rendering in its original colour
+	if postColour then
+		result = result .. postColour;
 	end
 
-	-- final tidy up of any opening tags that we inserted, and have not already closed...
-	if (openTag) then colouredText = colouredText .. "|r"; end
-
-	return colouredText;
+	return result;
 end
 
 -- Functions to select custom Presets
