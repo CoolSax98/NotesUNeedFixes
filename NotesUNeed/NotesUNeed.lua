@@ -415,6 +415,8 @@ local NuN_AutoNote;
 local NuN_Update_Ignored;
 local NuN_UpdateNoteButton;
 local NuN_GetTipAnchor;
+local ExtractLinkKey;
+local BuildDisplayLink;
 
 --[[====================================================================
 	References to external objects we've created
@@ -2538,9 +2540,37 @@ function NuNF.NuN_InitialiseSavedVariables()
 	locals.questHistory.Title = locals.player_Name;
 	NuNQuestHistory = NuNData[locals.questHistory.Realm].QuestHistory[locals.questHistory.Tag];
 
-	-- One-time migration: re-key hyperlink-based notes from full-link keys to type:id keys
+	-- One-time migration: re-key hyperlink-based notes from full-link keys to type:id keys.
+	-- Links with valid IDs (e.g., |Hitem:12345|h) become canonical "type:id" keys with a displayLink.
+	-- Links with missing or zero IDs (e.g., unowned battlepets with |Hbattlepet:0|h or |Hbattlepet::::::::|h)
+	-- fall back to using the display name as a plain-text key.
+	-- Collisions (e.g., item link + plain-text note with same name) are merged: the link note's text
+	-- is appended to the plain-text note if different, and the newer lastChanged is kept.
 	if (not NuNSettings.dataVersion) or (NuNSettings.dataVersion < 1) then
 		local migratedCount = 0;
+
+		-- Helper: merge the text from a source note into a destination note.
+		-- Appends source txt to dest txt if they differ. Keeps the newer lastChanged.
+		local function MergeNotes(destNote, srcNote)
+			if not destNote or not srcNote then return; end
+			-- Merge main txt field
+			if srcNote.txt and srcNote.txt ~= "" and srcNote.txt ~= destNote.txt then
+				local destTxt = destNote.txt or "";
+				if destTxt ~= "" then
+					destNote.txt = destTxt .. "\n---\n" .. srcNote.txt;
+				else
+					destNote.txt = srcNote.txt;
+				end
+			end
+			-- Keep the newer lastChanged
+			if srcNote.lastChanged and destNote.lastChanged then
+				if srcNote.lastChanged > destNote.lastChanged then
+					destNote.lastChanged = srcNote.lastChanged;
+				end
+			elseif srcNote.lastChanged and not destNote.lastChanged then
+				destNote.lastChanged = srcNote.lastChanged;
+			end
+		end
 
 		-- Helper: migrate all notes in a given notes table
 		local function MigrateNotesTable(notesTable)
@@ -2548,24 +2578,55 @@ function NuNF.NuN_InitialiseSavedVariables()
 			local keysToMigrate = {};
 			for oldKey, noteData in pairs(notesTable) do
 				if type(oldKey) == "string" and strfind(oldKey, "|H", 1, true) then
-					local newKey = ExtractLinkKey(oldKey);
+					local newKey, isNameFallback = ExtractLinkKey(oldKey);
 					if newKey and newKey ~= oldKey then
-						keysToMigrate[#keysToMigrate + 1] = { oldKey = oldKey, newKey = newKey };
+						keysToMigrate[#keysToMigrate + 1] = {
+							oldKey = oldKey,
+							newKey = newKey,
+							isNameFallback = isNameFallback,
+						};
 					end
 				end
 			end
 			for _, entry in ipairs(keysToMigrate) do
-				if not notesTable[entry.newKey] then
-					notesTable[entry.newKey] = notesTable[entry.oldKey];
-					notesTable[entry.newKey].displayLink = BuildDisplayLink(entry.oldKey);
-					notesTable[entry.oldKey] = nil;
-					migratedCount = migratedCount + 1;
-				else
-					-- Conflict: both old and new key exist. Preserve the new key, set displayLink if missing.
-					if not notesTable[entry.newKey].displayLink then
-						notesTable[entry.newKey].displayLink = BuildDisplayLink(entry.oldKey);
+				local targetKey = entry.newKey;
+				local useNameFallback = entry.isNameFallback;
+
+				-- If the target key already exists (collision), try the display name as fallback
+				if notesTable[targetKey] then
+					local linkName = strmatch(entry.oldKey, "|h%[(.-)%]|h");
+					if linkName and linkName ~= "" then
+						if targetKey == linkName then
+							-- Target IS the display name and it's taken — merge into existing note
+							MergeNotes(notesTable[targetKey], notesTable[entry.oldKey]);
+							notesTable[entry.oldKey] = nil;
+							migratedCount = migratedCount + 1;
+							targetKey = nil; -- signal: already handled
+						elseif not notesTable[linkName] then
+							-- Display name is available — use it as the key
+							targetKey = linkName;
+							useNameFallback = true;
+						else
+							-- Both target key AND display name are taken — merge into display name note
+							MergeNotes(notesTable[linkName], notesTable[entry.oldKey]);
+							notesTable[entry.oldKey] = nil;
+							migratedCount = migratedCount + 1;
+							targetKey = nil; -- signal: already handled
+						end
+					else
+						-- Cannot extract a display name; leave under old key
+						targetKey = nil;
 					end
-					-- Remove the old key to avoid duplicates
+				end
+
+				if targetKey then
+					notesTable[targetKey] = notesTable[entry.oldKey];
+					if useNameFallback then
+						-- Plain-text key; preserve the original link as displayLink
+						notesTable[targetKey].displayLink = entry.oldKey;
+					else
+						notesTable[targetKey].displayLink = BuildDisplayLink(entry.oldKey);
+					end
 					notesTable[entry.oldKey] = nil;
 					migratedCount = migratedCount + 1;
 				end
@@ -2582,7 +2643,7 @@ function NuNF.NuN_InitialiseSavedVariables()
 			end
 		end
 
-		-- Migrate itmIndex entries: values that are old full-link keys need to point to type:id keys
+		-- Migrate itmIndex entries: values that are old full-link keys need to point to new keys
 		if NuNData[locals.itmIndex_dbKey] then
 			for simpleName, oldValue in pairs(NuNData[locals.itmIndex_dbKey]) do
 				if type(oldValue) == "string" and strfind(oldValue, "|H", 1, true) then
@@ -2610,23 +2671,31 @@ function NuNF.NUN_InitializeDelayedHooks()
 	HandleModifiedItemClick = NuN_HandleModifiedItemClick;
 
 	-- hook into the chat window hyperlink clicks
+	-- In modern WoW (11.x+), chat frames capture the OnHyperlinkClick handler at creation
+	-- time, so replacing the global ChatFrame_OnHyperlinkShow has no effect. Instead, we:
+	-- 1. Pre-hook SetItemRef to intercept NuN: custom links (prevents "unknown link type" errors)
+	-- 2. HookScript("OnHyperlinkClick") on each chat frame for modifier-key note creation
+	NuNHooks.NuNOriginal_SetItemRef = SetItemRef;
+	SetItemRef = NuN_SetItemRef_PreHook;
+
 	for _, frameName in pairs(CHAT_FRAMES) do
 		local frame = _G[frameName];
 		if frame then
-			-- this doesn't seem strictly necessary any longer...
-			--			frame:HookScript("OnHyperlinkClick", NuN_ChatFrameOnHyperlinkShow);
+			frame:HookScript("OnHyperlinkClick", NuN_OnHyperlinkClick_PostHook);
+			frame.NuNHooked = true;
 		end
 	end
 
-	-- for now, we only care about hyperlinks clicked in the chat window, for the purpose of auto-opening the note when the click the NotesUNeed tag we insert next to the player name in the chatbox
-	--	hooksecurefunc("SetItemRef", NuNNew_SetItemRef);
-
-	-- we need to get access to the those clicks before the game does, so that it doesn't throw errors about "unknown link type" when it sees our custom "H:NuN:" hyperlink
-	--	hooksecurefunc("ChatFrame_OnHyperlinkShow", NuN_OnHyperlinkShow);
-	-- ChatFrame_OnHyperlinkShow calls SetItemRef, but we need to intercept that call so that the user doesn't get an error if they click our chat tag
-	-- without using a modifier key
-	NuNHooks.NuNOriginal_OnHyperlinkShow = ChatFrame_OnHyperlinkShow;
-	ChatFrame_OnHyperlinkShow = NuN_ChatFrameOnHyperlinkShow;
+	-- Also hook dynamically created chat windows (e.g. whisper popouts)
+	hooksecurefunc("FCF_OpenTemporaryWindow", function(chatType)
+		for _, frameName in pairs(CHAT_FRAMES) do
+			local frame = _G[frameName];
+			if frame and not frame.NuNHooked then
+				frame:HookScript("OnHyperlinkClick", NuN_OnHyperlinkClick_PostHook);
+				frame.NuNHooked = true;
+			end
+		end
+	end);
 
 	-- this is actually a post-hook, in that we will not interfere with the normal operation of the game.  Unfortunately, since the World of Warcraft's hooksecurefunc() functionality
 	-- doesn't provide any way to determine what the original function's return value was, we have to pre-hook and call itselves.  If it returns false, then we'll attempt to process
@@ -6058,16 +6127,26 @@ end
 --- e.g., "|cff0070dd|Hitem:12345:0:0:...|h[Cool Sword]|h|r" -> "item:12345"
 --- e.g., "|cnIQ3|Hitem:12345:0:0:...|h[Cool Sword]|h|r" -> "item:12345"
 --- Also handles legacy full-link keys that were stored as note keys pre-migration.
+--- For links where the ID is missing or zero (e.g., unowned battlepets), falls back to
+--- extracting the display name from |h[Name]|h and returns it as a plain-text key.
 --- For links without a recognized type, returns nil.
 ---@param link string @The full WoW hyperlink string or legacy key.
----@return string|nil @The canonical key, or nil if not a recognized link type.
-local function ExtractLinkKey(link)
-	if not link or type(link) ~= "string" then return nil; end
+---@return string|nil @The canonical key (e.g., "item:12345"), the display name, or nil.
+---@return boolean @True if the returned key is a plain-text name fallback (ID was missing/zero).
+ExtractLinkKey = function(link)
+	if not link or type(link) ~= "string" then return nil, false; end
 	local linkType, linkId = strmatch(link, "|H(%a+):(%d+)");
-	if linkType and linkId then
-		return linkType .. ":" .. linkId;
+	if linkType and linkId and linkId ~= "0" then
+		return linkType .. ":" .. linkId, false;
 	end
-	return nil;
+	-- ID is missing, empty, or zero — fall back to the display name as a plain-text key
+	if strfind(link, "|H", 1, true) then
+		local linkName = strmatch(link, "|h%[(.-)%]|h");
+		if linkName and linkName ~= "" then
+			return linkName, true;
+		end
+	end
+	return nil, false;
 end
 
 --- Builds a simplified display link from a full WoW hyperlink.
@@ -6075,7 +6154,7 @@ end
 --- e.g., "|cnIQ3|Hitem:12345:0:0:0:0:0:0:0|h[Cool Sword]|h|r" -> "|cnIQ3|Hitem:12345|h[Cool Sword]|h|r"
 ---@param link string @The full WoW hyperlink string.
 ---@return string @The simplified display link with color codes preserved.
-local function BuildDisplayLink(link)
+BuildDisplayLink = function(link)
 	if not link or type(link) ~= "string" then return link; end
 	local colorPrefix = strmatch(link, "^(.-)|H");
 	local linkType, linkId = strmatch(link, "|H(%a+):(%d+)");
@@ -6121,9 +6200,15 @@ local function SimplifyHyperlink(link)
 	local linkType, linkId = strmatch(link, "|H(%a+):(%d+)");
 	local linkName = strmatch(link, "|h%[(.-)%]|h");
 
-	if not linkType or not linkId or not linkName then
+	if not linkName then
 		-- Not a recognized hyperlink format; return as-is
 		return link, strgsub(link, "^.*%[(.*)%].*$", "%1"), link;
+	end
+
+	if not linkType or not linkId or linkId == "0" then
+		-- Link has no valid ID (empty or zero) — use display name as a plain-text key.
+		-- This happens for unowned battlepets, certain currencies, etc.
+		return linkName, linkName, link;
 	end
 
 	local key = linkType .. ":" .. linkId;
@@ -6547,15 +6632,165 @@ function NuN_GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg
 	return arg2;
 end
 
--- we still have a problem; see, now whenever I shift+LMB in Auctioneer, for example, it doesn't quite like it used to.  It isn't broken...just turns out that you now
--- need to use the NotesUNeed activation keys in order to perform what used to work with the standard keys.  hmm.  wonder if that's really our fault...but anyway, assume it is.
--- what's up?  Doesn't happen for all programs, and different addons require different key combinations in order to e.g. place a link in the Auctioneer search window by interacting
--- with it (shift+clicking it, etc.)
+-- SetItemRef pre-hook: intercepts NuN: custom hyperlinks before WoW's SetItemRef
+-- sees them, preventing "unknown link type" errors. All other link types pass through
+-- to the original SetItemRef unmodified.
+function NuN_SetItemRef_PreHook(link, text, button)
+	nun_msgf(">>NuN_SetItemRef_PreHook - link:%s  text:%s  btn:%s", DecodeHyperlink(link), DecodeHyperlink(text), tostring(button));
+
+	-- Only intercept NuN: custom links; everything else passes through to the original
+	if (strsub(link, 1, 3) == "NuN") or (strsub(link, 1, 4) == ":NuN") then
+		if (NuNSettings[local_player.realmName].modifier == "on") then
+			if (receiptPending) and (locals.NuN_Receiving.type == "General") then
+				return; -- don't interfere with note receipt
+			end
+			local _name;
+			if (strsub(link, 1, 4) == ":NuN") then
+				_name = strsub(link, 6); -- skip ":NuN:"
+			else
+				_name = strsub(link, 5); -- skip "NuN:"
+			end
+			if (_name and (strlen(_name) > 0)) then
+				local uid = strfind(_name, ":");
+				if (uid) then
+					_name = strsub(_name, 1, uid - 1);
+				end
+				if (locals.NuNDataPlayers[_name]) then
+					NuN_ShowSavedNote(_name);
+				else
+					NuN_CreateContact(_name, local_player.factionName);
+				end
+				if (DEFAULT_CHAT_FRAME.editBox) then
+					ChatEdit_OnEscapePressed(DEFAULT_CHAT_FRAME.editBox);
+				end
+			end
+		end
+		-- Always return here for NuN: links — do NOT call original SetItemRef
+		return;
+	end
+
+	-- Not a NuN link — pass through to original SetItemRef
+	NuNHooks.NuNOriginal_SetItemRef(link, text, button);
+end
+
+-- Post-hook for chat frame OnHyperlinkClick: handles modifier-key note creation
+-- for player links and item/battlepet/currency links. Runs AFTER WoW's default
+-- handler has already processed the click (so tooltips are already visible).
+function NuN_OnHyperlinkClick_PostHook(chatframe, link, text, button)
+	nun_msgf(">>NuN_OnHyperlinkClick_PostHook - link:%s  text:%s  btn:%s", DecodeHyperlink(link), DecodeHyperlink(text), tostring(button));
+
+	if not (NuNSettings[local_player.realmName].modifier == "on") then
+		return;
+	end
+	if (receiptPending) and (locals.NuN_Receiving.type == "General") then
+		return;
+	end
+	-- NuN: links are already handled by SetItemRef pre-hook; skip them here
+	if (strsub(link, 1, 3) == "NuN") or (strsub(link, 1, 4) == ":NuN") then
+		return;
+	end
+
+	if (strsub(link, 1, 6) == "player" or strsub(link, 1, 9) == "HBNplayer") then
+		local _name;
+		if strsub(link, 1, 9) == "HBNplayer" then
+			-- BNet player links — currently unhandled, same as original code
+		else
+			_name = strsub(link, 8);
+		end
+		if (_name and (strlen(_name) > 0)) then
+			local uid = strfind(_name, ":");
+			if (uid) then
+				_name = strsub(_name, 1, uid - 1);
+			end
+			if (IsNuNModifierKeyDown(button)) then
+				if (locals.NuNDataPlayers[_name]) then
+					NuN_ShowSavedNote(_name);
+				else
+					NuN_CreateContact(_name, local_player.factionName);
+				end
+				if (DEFAULT_CHAT_FRAME.editBox) then
+					ChatEdit_OnEscapePressed(DEFAULT_CHAT_FRAME.editBox);
+				end
+			elseif (IsModifiedClick("CHATLINK")) then
+				local NuN_staticPopup = StaticPopup_Visible("ADD_IGNORE");
+				if (not NuN_staticPopup) then NuN_staticPopup = StaticPopup_Visible("ADD_IGNORE"); end
+				if (not NuN_staticPopup) then NuN_staticPopup = StaticPopup_Visible("ADD_MUTE"); end
+				if (not NuN_staticPopup) then NuN_staticPopup = StaticPopup_Visible("ADD_FRIEND"); end
+				if (not NuN_staticPopup) then NuN_staticPopup = StaticPopup_Visible("ADD_GUILDMEMBER"); end
+				if (not NuN_staticPopup) then NuN_staticPopup = StaticPopup_Visible("ADD_TEAMMEMBER"); end
+				if (not NuN_staticPopup) then NuN_staticPopup = StaticPopup_Visible("ADD_RAIDMEMBER"); end
+				if ((not NuN_staticPopup) and (not DEFAULT_CHAT_FRAME.editBox:IsVisible()) and (locals.NuNDataPlayers[_name])) then
+					locals.ttName = _name;
+					NuN_ClearPinnedTT();
+					NuN_PinnedTooltip:SetOwner(chatframe, "ANCHOR_RIGHT");
+					NuN_State.NuN_PinUpHeader = true;
+					NuN_PinnedTooltip.type = "Contact";
+					NuNSettings[local_player.realmName].pT = {};
+					NuNSettings[local_player.realmName].pT.type = "Contact";
+					NuNSettings[local_player.realmName].pT.name = locals.ttName;
+					NuNF.NuN_BuildTT(NuN_PinnedTooltip);
+					NuN_State.NuN_PinUpHeader = false;
+					NuN_PinnedTooltip:Show();
+				end
+			end
+		end
+	elseif (IsNuNModifierKeyDown(button)) then -- 5.60
+		local key, displayLink;
+		key, linkName, displayLink = SimplifyHyperlink(text);
+
+		if ((NuNGNoteFrame:IsVisible()) or (NuNFrame:IsVisible())) then
+			if (NuNGNoteFrame:IsVisible()) then
+				NuNGNoteTextScroll:Insert(displayLink or text); -- + v5.00.11200
+			elseif (NuNFrame:IsVisible()) then
+				NuNText:Insert(displayLink or text); -- + v5.00.11200
+			end
+		else
+			ConvertManualNoteToLinkNote(key, linkName, displayLink);
+			NuNGNoteFrame.fromQuest = nil;
+			if (NuNData[locals.itmIndex_dbKey][key]) then
+				key = (NuNData[locals.itmIndex_dbKey][key]);
+			end
+			if ((NuNDataRNotes[key]) or (NuNDataANotes[key])) then
+				local_player.currentNote.general = key;
+				UpdateDisplayLink(key, displayLink);
+				NuN_ShowSavedGNote();
+			else
+				-- New note creation: WoW's default handler has already run.
+				-- For standard items, ItemRefTooltip should be visible and we can
+				-- extract tooltip info. For battlepets/currencies/etc., WoW uses a
+				-- different tooltip widget, so ItemRefTooltip won't be visible.
+				if (ItemRefTooltip:IsVisible()) then
+					-- Standard item: extract tooltip info and create note
+					NuNF.NuN_GNoteFromItem(key, "ItemRefTooltip", displayLink);
+					ItemRefTooltip:Hide();
+				else
+					-- Battlepet/currency/other: tooltip not available via ItemRefTooltip.
+					-- Create the note directly with the info we already have.
+					local_player.currentNote.general = key;
+					local_player.currentNote.displayLink = displayLink;
+					contact.type = NuNGet_CommandID(NUN_NOTETYPES, "ITM");
+					NuN_ShowTitledGNote("");
+				end
+			end
+		end
+	end
+
+	-- Trigger NuN tooltip display if ItemRefTooltip is visible
+	-- (redundant with the XML OnShow hook but ensures immediate update)
+	if (ItemRefTooltip:IsVisible()) then
+		NuN_ItemRefTooltip_OnShow();
+	end
+
+	nun_msgf("<<NuN_OnHyperlinkClick_PostHook - link:%s  text:%s  btn:%s", DecodeHyperlink(link), DecodeHyperlink(text), tostring(button));
+end
+
+-- LEGACY: kept for reference but no longer used as the global ChatFrame_OnHyperlinkShow replacement.
+-- The hook is now split into NuN_SetItemRef_PreHook (for NuN: links) and
+-- NuN_OnHyperlinkClick_PostHook (for modifier-key note creation on chat frames).
+--[[ 
 function NuN_ChatFrameOnHyperlinkShow(chatframe, link, text, buttonName)
 	local processedByNuN = NuNNew_SetItemRef(chatframe, link, text, buttonName);
 	local chatFrame = chatframe;
-
-	-- debug output
 	if locals.NuNDebug and chatFrame == DEFAULT_CHAT_FRAME and locals.debugging_msg_hooks then
 		nun_msgf("NuN_ChatFrameOnHyperlinkShow - chatframe:%s   link:%s   text:%s    processedByNuN:%s",
 			tostring(chatframe), DecodeHyperlink(link), DecodeHyperlink(text), tostring(processedByNuN));
@@ -6563,11 +6798,11 @@ function NuN_ChatFrameOnHyperlinkShow(chatframe, link, text, buttonName)
 	if processedByNuN ~= true then
 		NuNHooks.NuNOriginal_OnHyperlinkShow(chatframe, link, text, buttonName);
 	end
-
 	if (ItemRefTooltip:IsVisible()) then
 		NuN_ItemRefTooltip_OnShow();
 	end
 end
+--]]
 
 function NuNNew_SetItemRef(self, link, text, btn)
 	nun_msgf(">>SetItemRef - link:%s  text:%s  btn:%s", DecodeHyperlink(link), DecodeHyperlink(text), tostring(btn));
