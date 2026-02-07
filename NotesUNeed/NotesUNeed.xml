@@ -940,10 +940,7 @@
 									<OnTextChanged>
 										ScrollingEdit_OnTextChanged(self, self:GetParent());
 										NuN_TextWarning(self, "NuNTextLabel");
-										if ( ColorPickerFrame:IsVisible() ) then
-											NuNFrame.NuN_CancelPresetColour(ColorPickerFrame.previousValues);
-											HideUIPanel(ColorPickerFrame);
-										end
+										NuN_DismissColorPicker();
 										NuNText.cPosStart = nil;
 										NuNText.cPosEnd = nil;
 									</OnTextChanged>
@@ -962,10 +959,7 @@
 									<OnShow>
 										NuNText.cPosStart = nil;
 										NuNText.cPosEnd = nil;
-										if ( ColorPickerFrame:IsVisible() ) then
-											NuNFrame.NuN_CancelPresetColour(ColorPickerFrame.previousValues);
-											HideUIPanel(ColorPickerFrame);
-										end
+										NuN_DismissColorPicker();
 										FauxScrollFrame_SetOffset(NuNScrollFrame, 0);
 									</OnShow>
 									<OnMouseDown>
@@ -5566,10 +5560,7 @@
 										NuN_TextWarning(self, "NuNGNoteTextLabel");
 										NuNGNoteTextScroll.cPosStart = nil;
 										NuNGNoteTextScroll.cPosEnd = nil;
-										if ( ColorPickerFrame:IsVisible() ) then
-											NuNFrame.NuN_CancelPresetColour(ColorPickerFrame.previousValues);
-											HideUIPanel(ColorPickerFrame);
-										end
+										NuN_DismissColorPicker();
 									</OnTextChanged>
 									<OnCursorChanged>
 										ScrollingEdit_OnCursorChanged(self, x, y, w, h);
@@ -5585,10 +5576,7 @@
 									<OnShow>
 										NuNGNoteTextScroll.cPosStart = nil;
 										NuNGNoteTextScroll.cPosEnd = nil;
-										if ( ColorPickerFrame:IsVisible() ) then
-											NuNFrame.NuN_CancelPresetColour(ColorPickerFrame.previousValues);
-											HideUIPanel(ColorPickerFrame);
-										end
+										NuN_DismissColorPicker();
 									</OnShow>
 									<OnMouseDown>
 										NuNGNoteTextScroll.cPosStart = "RecordNext";
@@ -6001,7 +5989,7 @@
 	<Frame name="NuN_TooltipControl1" parent="ShoppingTooltip1">
 		<Scripts>
 			<OnShow>
-        NuN_GameTooltip_OnShow(self);
+        NuN_ShoppingTooltip_OnShow();
 			</OnShow>
 			<OnHide>
 				NuN_GameTooltip_OnHide();
@@ -6011,7 +5999,7 @@
 	<Frame name="NuN_TooltipControl2" parent="ShoppingTooltip2">
 		<Scripts>
 			<OnShow>
-				NuN_GameTooltip_OnShow(self);
+				NuN_ShoppingTooltip_OnShow();
 			</OnShow>
 			<OnHide>
 				NuN_GameTooltip_OnHide();
@@ -6644,12 +6632,14 @@
 			</OnUpdate>
 		</Scripts>
 	</Frame>
-	<Frame name="NuN_ColorPickerOkayMask" setAllPoints="true" hidden="true" parent="ColorPickerOkayButton" enableMouse="true">
+	<Frame name="NuN_ColorPickerOkayMask" hidden="true" parent="UIParent" enableMouse="true">
 		<Scripts>
 			<OnMouseDown>
 				NuN_ColorPickerOkay();
 				HideUIPanel(ColorPickerFrame);
-				ColorPickerFrame.func();
+				if ( ColorPickerFrame.func ) then
+					ColorPickerFrame.func();
+				end
 				if ( ColorPickerFrame.opacityFunc ) then
 					ColorPickerFrame.opacityFunc();
 				end

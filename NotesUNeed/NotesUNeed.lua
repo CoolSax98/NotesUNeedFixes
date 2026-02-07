@@ -6219,25 +6219,19 @@ end
 -- REVIEW: Need to check these "Inspect" targets.
 function NuNF.RegisterModifier_InspectFrame(buttonName)
 	if (InspectPaperDollFrame) then
-		InspectHeadSlot:RegisterForClicks(buttonName .. "Up");
-		InspectNeckSlot:RegisterForClicks(buttonName .. "Up");
-		InspectShoulderSlot:RegisterForClicks(buttonName .. "Up");
-		InspectBackSlot:RegisterForClicks(buttonName .. "Up");
-		InspectChestSlot:RegisterForClicks(buttonName .. "Up");
-		InspectShirtSlot:RegisterForClicks(buttonName .. "Up");
-		InspectTabardSlot:RegisterForClicks(buttonName .. "Up");
-		InspectWristSlot:RegisterForClicks(buttonName .. "Up");
-		InspectHandsSlot:RegisterForClicks(buttonName .. "Up");
-		InspectWaistSlot:RegisterForClicks(buttonName .. "Up");
-		InspectLegsSlot:RegisterForClicks(buttonName .. "Up");
-		InspectFeetSlot:RegisterForClicks(buttonName .. "Up");
-		InspectFinger0Slot:RegisterForClicks(buttonName .. "Up");
-		InspectFinger1Slot:RegisterForClicks(buttonName .. "Up");
-		InspectTrinket0Slot:RegisterForClicks(buttonName .. "Up");
-		InspectTrinket1Slot:RegisterForClicks(buttonName .. "Up");
-		InspectMainHandSlot:RegisterForClicks(buttonName .. "Up");
-		InspectSecondaryHandSlot:RegisterForClicks(buttonName .. "Up");
-		InspectRangedSlot:RegisterForClicks(buttonName .. "Up");
+		local inspectSlots = {
+			"InspectHeadSlot", "InspectNeckSlot", "InspectShoulderSlot",
+			"InspectBackSlot", "InspectChestSlot", "InspectShirtSlot",
+			"InspectTabardSlot", "InspectWristSlot", "InspectHandsSlot",
+			"InspectWaistSlot", "InspectLegsSlot", "InspectFeetSlot",
+			"InspectFinger0Slot", "InspectFinger1Slot",
+			"InspectTrinket0Slot", "InspectTrinket1Slot",
+			"InspectMainHandSlot", "InspectSecondaryHandSlot",
+		};
+		for _, slotName in ipairs(inspectSlots) do
+			local frame = _G[slotName];
+			if frame then frame:RegisterForClicks(buttonName .. "Up"); end
+		end
 	end
 end
 
@@ -6368,10 +6362,19 @@ function NuNF.RegisterModifier_Main(buttonName)
 	-- if _G.SpellBookCompanionButton1 then
 	-- 	for i = 1, 12 do _G["SpellBookCompanionButton" .. i]:RegisterForClicks(buttonName .. "Up"); end
 	-- end
-	for i = 1, 7 do _G["TradePlayerItem" .. i .. "ItemButton"]:RegisterForClicks(buttonName .. "Up"); end
-	for i = 1, 7 do _G["TradeRecipientItem" .. i .. "ItemButton"]:RegisterForClicks(buttonName .. "Up"); end
+	for i = 1, 7 do
+		local frame = _G["TradePlayerItem" .. i .. "ItemButton"];
+		if frame then frame:RegisterForClicks(buttonName .. "Up"); end
+	end
+	for i = 1, 7 do
+		local frame = _G["TradeRecipientItem" .. i .. "ItemButton"];
+		if frame then frame:RegisterForClicks(buttonName .. "Up"); end
+	end
 	-- for i = 1, 7 do _G["BankFrameBag" .. i]:RegisterForClicks(buttonName .. "Up"); end
-	for i = 1, 13 do _G["ContainerFrame" .. i .. "PortraitButton"]:RegisterForClicks(buttonName .. "Up"); end
+	for i = 1, 13 do
+		local frame = _G["ContainerFrame" .. i .. "PortraitButton"];
+		if frame then frame:RegisterForClicks(buttonName .. "Up"); end
+	end
 
 	--	MinimapZoneTextButton:RegisterForClicks(buttonName .. "Up");
 	--	AzerothButton:RegisterForClicks(buttonName .. "Up");
@@ -9769,7 +9772,7 @@ end
 
 -- NotesUNeed tooltip shows alongside the game tooltip, rather than modifying the normal tooltip itself
 function NuN_GameTooltip_OnShow(self, tTip)
-	-- local storePinned = NuN_PinnedTooltip.type;
+	local storePinned = NuN_PinnedTooltip and NuN_PinnedTooltip.type;
 	local p1 = 1;
 	local strippedName = "";
 	local sNLen = 0;
@@ -9922,22 +9925,15 @@ orgevo: I'm not really sure exactly what case this code was trying to handle, bu
 			NuN_PinnedTooltip.type = storePinned;
 			NuN_Tooltip:SetScale(tTip:GetScale());
 			NuN_Tooltip:ClearAllPoints();
-			local num1 = ShoppingTooltip1:NumLines();
-			local num2 = ShoppingTooltip2:NumLines();
-			if (
-					num2 and (num2 > 0) and ShoppingTooltip2 and MerchantFrame and (MerchantFrame:IsVisible()) and
-					(MouseIsOver(MerchantFrame))) or
-				(
-					num2 and (num2 > 0) and ShoppingTooltip2 and AuctionFrame and (AuctionFrame:IsVisible()) and
-					(MouseIsOver(AuctionFrame))) then
+			-- Anchor past any visible shopping (comparison) tooltips so we don't overlap them
+			local num1 = ShoppingTooltip1 and ShoppingTooltip1:IsVisible() and ShoppingTooltip1:NumLines();
+			local num2 = ShoppingTooltip2 and ShoppingTooltip2:IsVisible() and ShoppingTooltip2:NumLines();
+			if num2 and (num2 > 0) then
 				anchorBy, anchorTo = NuN_GetTipAnchor(ShoppingTooltip2);
-				NuN_Tooltip:SetPoint(anchorBy, "ShoppingTooltip2", anchorTo, 0, 0);
-			elseif (num1 and (num1 > 0)) and
-				(ShoppingTooltip1 and MerchantFrame and (MerchantFrame:IsVisible()) and (MouseIsOver(MerchantFrame))) or
-				(num1 and (num1 > 0)) and
-				(ShoppingTooltip1 and AuctionFrame and (AuctionFrame:IsVisible()) and (MouseIsOver(AuctionFrame))) then
+				NuN_Tooltip:SetPoint(anchorBy, ShoppingTooltip2, anchorTo, 0, 0);
+			elseif num1 and (num1 > 0) then
 				anchorBy, anchorTo = NuN_GetTipAnchor(ShoppingTooltip1);
-				NuN_Tooltip:SetPoint(anchorBy, "ShoppingTooltip1", anchorTo, 0, 0);
+				NuN_Tooltip:SetPoint(anchorBy, ShoppingTooltip1, anchorTo, 0, 0);
 			else
 				anchorBy, anchorTo = NuN_GetTipAnchor(tTip);
 				NuN_Tooltip:SetPoint(anchorBy, tTip, anchorTo, 1, 0);
@@ -10190,6 +10186,27 @@ function NuN_GameTooltip_OnHide()
 	-- 	NuN_MapTooltip:ClearLines();
 	-- 	NuN_MapTooltip:Hide();
 	-- end
+end
+
+-- Re-anchor NuN_Tooltip when a ShoppingTooltip (comparison tooltip) appears.
+-- This prevents the NuN note tooltip from being overlapped by comparison tooltips
+-- that appear after NuN_Tooltip was already positioned.
+function NuN_ShoppingTooltip_OnShow()
+	if (not NuN_Tooltip) or (not NuN_Tooltip:IsVisible()) then
+		return;
+	end
+	-- Determine the outermost visible tooltip to anchor past
+	local anchorTo_tooltip = GameTooltip;
+	local num1 = ShoppingTooltip1 and ShoppingTooltip1:IsVisible() and ShoppingTooltip1:NumLines();
+	local num2 = ShoppingTooltip2 and ShoppingTooltip2:IsVisible() and ShoppingTooltip2:NumLines();
+	if num2 and (num2 > 0) then
+		anchorTo_tooltip = ShoppingTooltip2;
+	elseif num1 and (num1 > 0) then
+		anchorTo_tooltip = ShoppingTooltip1;
+	end
+	local anchorBy, anchorTo = NuN_GetTipAnchor(anchorTo_tooltip);
+	NuN_Tooltip:ClearAllPoints();
+	NuN_Tooltip:SetPoint(anchorBy, anchorTo_tooltip, anchorTo, 0, 0);
 end
 
 function NuN_TTCheckBox_OnClick(self, frameType)
@@ -13233,61 +13250,8 @@ function NuN_SetupRatings(initialSetup)
 		NUN_PR___ = NuNSettings.ratings[26];
 	end
 
-	UnitPopupMenus["NUN_POPUP"] = {}
-	-- UnitPopupButtons["NUN_POPUP"] = { text = NUN_POPUP_TITLE, dist = 0, nested = 1, notClickable = 1 };
-	if (initialSetup) then
-		local menuItemCount = getn(UnitPopupMenus["RAID"]) + 1;
-		local insertIndex = menuItemCount + 2;
-		if (UnitPopupMenus["RAID"][menuItemCount] == "CANCEL") then
-			UnitPopupMenus["RAID"][insertIndex] = "CANCEL";
-			insertIndex = menuItemCount;
-		end
-		UnitPopupMenus["RAID"][insertIndex] = "NUN_POPUP";
-
-
-		menuItemCount = getn(UnitPopupMenus["PARTY"]);
-		insertIndex = menuItemCount + 1;
-		if (UnitPopupMenus["PARTY"][menuItemCount] == "CANCEL") then
-			UnitPopupMenus["PARTY"][insertIndex] = "CANCEL";
-			insertIndex = menuItemCount;
-		end
-		UnitPopupMenus["PARTY"][insertIndex] = "NUN_POPUP";
-
-		menuItemCount = getn(UnitPopupMenus["FOCUS"]);
-		insertIndex = menuItemCount + 1;
-		if UnitPopupMenus["FOCUS"][menuItemCount] == "CANCEL" then
-			UnitPopupMenus["FOCUS"][insertIndex] = "CANCEL";
-			insertIndex = menuItemCount;
-		end
-		UnitPopupMenus["FOCUS"][insertIndex] = "NUN_POPUP";
-
-		menuItemCount = getn(UnitPopupMenus["PLAYER"]);
-		insertIndex = menuItemCount + 1;
-		if (UnitPopupMenus["PLAYER"][menuItemCount] == "CANCEL") then
-			UnitPopupMenus["PLAYER"][insertIndex] = "CANCEL";
-			insertIndex = menuItemCount;
-		end
-		UnitPopupMenus["PLAYER"][insertIndex] = "NUN_POPUP";
-
-		menuItemCount = getn(UnitPopupMenus["RAID_PLAYER"]);
-		insertIndex = menuItemCount + 1;
-		if (UnitPopupMenus["RAID_PLAYER"][menuItemCount] == "CANCEL") then
-			UnitPopupMenus["RAID_PLAYER"][insertIndex] = "CANCEL";
-			insertIndex = menuItemCount;
-		end
-		UnitPopupMenus["RAID_PLAYER"][insertIndex] = "NUN_POPUP";
-
-		menuItemCount = getn(UnitPopupMenus["FRIEND"]);
-		insertIndex = menuItemCount + 1;
-		if (UnitPopupMenus["FRIEND"][menuItemCount] == "CANCEL") then
-			UnitPopupMenus["FRIEND"][insertIndex] = "CANCEL";
-			insertIndex = menuItemCount;
-		end
-		UnitPopupMenus["FRIEND"][insertIndex] = "NUN_POPUP";
-
-		-- // FIXME - Seems to be broken in 11.0 - Replaced with UnitPopup_OpenMenu
-		hooksecurefunc("UnitPopup_OpenMenu", NuNNew_UnitPopup_ShowMenu); -- 5.40
-	end
+	-- NOTE: UnitPopupMenus was removed in WoW 11.0.
+	-- TODO: Rewrite this entire section to use the new WoW 11.0 Menu.ModifyMenu API.
 end
 
 --[[
@@ -14344,6 +14308,29 @@ function NuN_StripColorCode(txt)
 	return txt;
 end
 
+-- Safely dismiss the ColorPickerFrame, calling its cancel callback if present
+function NuN_DismissColorPicker()
+	if not ColorPickerFrame:IsVisible() then return false; end
+	if ColorPickerFrame.cancelFunc then
+		ColorPickerFrame.cancelFunc(ColorPickerFrame.previousValues);
+	end
+	HideUIPanel(ColorPickerFrame);
+	return true;
+end
+
+-- Show the OkayMask overlay on the color picker's OK button
+function NuN_ShowColorPickerOkayMask()
+	if not NuN_ColorPickerOkayMask then return; end
+	local okButton = ColorPickerFrame.Footer and ColorPickerFrame.Footer.OkayButton;
+	if okButton then
+		NuN_ColorPickerOkayMask:SetParent(okButton);
+		NuN_ColorPickerOkayMask:SetAllPoints(okButton);
+		NuN_ColorPickerOkayMask:SetFrameStrata("FULLSCREEN_DIALOG");
+		NuN_ColorPickerOkayMask:SetFrameLevel(okButton:GetFrameLevel() + 1);
+		NuN_ColorPickerOkayMask:Show();
+	end
+end
+
 function NuN_ColourText(noteType, fBttn, mBttn)
 	-- BUG: EditFrame is calls OnCursorChanged too many times when selecting from the end of the content some times.
 	local eBox = NuNGNoteTextScroll;
@@ -14375,12 +14362,7 @@ function NuN_ColourText(noteType, fBttn, mBttn)
 
 				-- or open the colour picker to choose a different preset colour
 			else
-				if (ColorPickerFrame:IsVisible()) then
-					if (ColorPickerFrame.cancelFunc) then
-						ColorPickerFrame.cancelFunc(ColorPickerFrame.previousValues);
-					end
-					HideUIPanel(ColorPickerFrame);
-				else
+				if not NuN_DismissColorPicker() then
 					NuNF.NuN_ChoosePresetColour(fBttn);
 				end
 			end
@@ -14428,12 +14410,7 @@ function NuN_ColourText(noteType, fBttn, mBttn)
 			-- the best option would be to store the colour change EVERY time, but I need to hook when the Actual OK button is clicked...
 			-- Gonna set up the Color Picker with a dummy .func() and monitor the Okay button instead
 			if (not fBttn.showCTags) then
-				if (ColorPickerFrame:IsVisible()) then
-					if (ColorPickerFrame.cancelFunc) then
-						ColorPickerFrame.cancelFunc(ColorPickerFrame.previousValues);
-					end
-					HideUIPanel(ColorPickerFrame);
-				else
+				if not NuN_DismissColorPicker() then
 					NuNF.NuN_ChooseTextColour(eBox, textToColour); -- REVIEW: textToColour is not defined as global
 				end
 			end
@@ -14452,15 +14429,20 @@ function NuNF.NuN_ChooseTextColour(eBox, textToColour)
 
 	ColorPickerFrame.eBox = eBox;
 	ColorPickerFrame.textToColour = textToColour;
-	ColorPickerFrame.hasOpacity = false;
-	ColorPickerFrame.func = NuNF.NuN_AcceptTextColour;
-	ColorPickerFrame.cancelFunc = NuNF.NuN_CancelTextColour;
-	ColorPickerFrame.previousValues = { col.r, col.g, col.b };
+
+	local info = {
+		swatchFunc = NuNF.NuN_AcceptTextColour,
+		cancelFunc = NuNF.NuN_CancelTextColour,
+		hasOpacity = false,
+		opacity = 1.0,
+		r = col.r,
+		g = col.g,
+		b = col.b,
+		previousValues = { col.r, col.g, col.b },
+	};
 	ColorPickerFrame:SetFrameStrata("FULLSCREEN_DIALOG");
-	ColorPickerFrame.opacity = 1.0;
-	ColorPickerFrame:SetColorRGB(col.r, col.g, col.b);
-	NuN_ColorPickerOkayMask:Show(); -- Intercept actual "accept the colour" clicks on the Okay button
-	ColorPickerFrame:Show();
+	NuN_ShowColorPickerOkayMask();
+	ColorPickerFrame:SetupColorPickerAndShow(info);
 end
 
 function NuNF.NuN_AcceptTextColour()
@@ -14588,14 +14570,19 @@ function NuNF.NuN_ChoosePresetColour(fBttn)
 	col.r, col.g, col.b = NuNF.NuN_HtoD(fBttn.preset);
 
 	ColorPickerFrame.fBttn = fBttn;
-	ColorPickerFrame.hasOpacity = false;
-	ColorPickerFrame.func = NuNF.NuN_AcceptPresetColour;
-	ColorPickerFrame.cancelFunc = NuNF.NuN_CancelPresetColour;
-	ColorPickerFrame.previousValues = { col.r, col.g, col.b };
+
+	local info = {
+		swatchFunc = NuNF.NuN_AcceptPresetColour,
+		cancelFunc = NuNF.NuN_CancelPresetColour,
+		hasOpacity = false,
+		opacity = 1.0,
+		r = col.r,
+		g = col.g,
+		b = col.b,
+		previousValues = { col.r, col.g, col.b },
+	};
 	ColorPickerFrame:SetFrameStrata("FULLSCREEN_DIALOG");
-	ColorPickerFrame.opacity = 1.0;
-	ColorPickerFrame:SetColorRGB(col.r, col.g, col.b);
-	ColorPickerFrame:Show();
+	ColorPickerFrame:SetupColorPickerAndShow(info);
 end
 
 function NuNF.NuN_AcceptPresetColour()
