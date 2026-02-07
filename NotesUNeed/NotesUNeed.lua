@@ -98,6 +98,12 @@ _G.NuNSettings = {}
 local NuNData = _G.NuNData;
 local NuNSettings = _G.NuNSettings;
 
+-- Forward declarations for local helper functions defined later in the file (~line 6000+).
+-- These are needed because some call sites (NuN_BuildTT, NuNGNote_WriteNote, etc.) appear
+-- before the function definitions. In Lua, local variables must be declared before use.
+local GetDisplayName;
+local IsLinkBasedKey;
+
 -- Duplicated deliberately here as well as localisation files as need to be able to access multiple versions from the code
 locals.enHeadings = {
 	"Guild : ",
@@ -4473,6 +4479,7 @@ function NuNGNote_WriteNote(noteName)
 		-- Index Item Links against Simple text names, so that Item Link note names can be looked up from Simple text names
 		if IsLinkBasedKey(local_player.currentNote.general) then
 			local itmDisplayLink = existingDisplayLink;
+			local simpleName;
 			if itmDisplayLink then
 				simpleName = NuNF.NuN_GetSimpleName(itmDisplayLink);
 			end
@@ -6005,7 +6012,7 @@ end
 --- Works with both old full-link keys (containing |H) and new type:id keys.
 ---@param key string @The note key to check.
 ---@return boolean @True if this is a hyperlink-based note key.
-local function IsLinkBasedKey(key)
+IsLinkBasedKey = function(key)
 	if not key or type(key) ~= "string" then return false; end
 	-- New canonical format: "type:id" where type is one of the known link types
 	if strmatch(key, "^item:%d+$") or strmatch(key, "^spell:%d+$") or
@@ -6058,7 +6065,7 @@ end
 --- For plain-text notes: returns the key itself.
 ---@param key string @The note key.
 ---@return string @The display string.
-local function GetDisplayName(key)
+GetDisplayName = function(key)
 	if not key or type(key) ~= "string" then return tostring(key); end
 	local note = NuNDataANotes[key] or NuNDataRNotes[key];
 	if note and note.displayLink then
@@ -8211,8 +8218,12 @@ function NuNSearch_Update()
 				else
 					typ = 1;
 				end
-				theNoteType:SetText(NUN_NOTETYPES[typ].Display);
-				if (NUN_NOTETYPES[typ].Command == "QST") then
+				if NUN_NOTETYPES[typ] then
+					theNoteType:SetText(NUN_NOTETYPES[typ].Display);
+				else
+					theNoteType:SetText("   ");
+				end
+				if (NUN_NOTETYPES[typ] and NUN_NOTETYPES[typ].Command == "QST") then
 					if (locals.NuNQuestLog[noteName]) then
 						locals.noteNameLabel:SetTextColor(0, 0.9, 0, 0.9);
 					elseif ((NuNQuestHistory[noteName]) and (NuNQuestHistory[noteName].abandoned)) then
@@ -8616,7 +8627,7 @@ function NuN_ShowTitledGNote(GNoteText)
 		NuNGNoteTextScroll:SetText(GNoteText);
 		NuNGNoteTextBox:Hide();
 		NuNGNoteTitleButton.noteKey = local_player.currentNote.general;
-		NuNGNoteTitleButtonText:SetText(GetDisplayName(local_player.currentNote.general));
+		NuNGNoteTitleButtonText:SetText(local_player.currentNote.displayLink or GetDisplayName(local_player.currentNote.general));
 		NuNGNoteTitleButton:Show();
 		if (not NuNSettings[local_player.realmName].bHave) then
 			NuNGNoteTextScroll:SetFocus();
@@ -9751,7 +9762,7 @@ function NuN_GNoteTitleSet()
 	local_player.currentNote.general = strgsub(local_player.currentNote.general, "||c", "|c");
 	local_player.currentNote.general = strgsub(local_player.currentNote.general, "||r", "|r");
 	NuNGNoteTitleButton.noteKey = local_player.currentNote.general;
-	NuNGNoteTitleButtonText:SetText(GetDisplayName(local_player.currentNote.general));
+	NuNGNoteTitleButtonText:SetText(local_player.currentNote.displayLink or GetDisplayName(local_player.currentNote.general));
 	NuNGNoteTextBox:Hide();
 	NuNGNoteTitleButton:Show();
 end
@@ -9892,8 +9903,9 @@ orgevo: I'm not really sure exactly what case this code was trying to handle, bu
 		end
 	else
 		locals.ttName = locals.currentTooltipTitleString;
-		if (NuNData[locals.itmIndex_dbKey][locals.ttName]) then
-			locals.ttName = (NuNData[locals.itmIndex_dbKey][locals.ttName]);
+		local itmIndexResult = NuNData[locals.itmIndex_dbKey][locals.ttName];
+		if (itmIndexResult) then
+			locals.ttName = itmIndexResult;
 		end
 
 		-- if we have a string in the tooltip, and we have a character, realm, or account note for this particular string, display it.
@@ -10124,9 +10136,11 @@ function NuN_ItemRefTooltip_OnShow()
 	locals.currentTooltipTitleString = ItemRefTooltipTextLeft1:GetText();
 	locals.ttName = locals.currentTooltipTitleString;
 
-	if (NuNData[locals.itmIndex_dbKey][locals.ttName]) then
-		locals.ttName = (NuNData[locals.itmIndex_dbKey][locals.ttName]);
+	local itmIndexResult = NuNData[locals.itmIndex_dbKey][locals.ttName];
+	if (itmIndexResult) then
+		locals.ttName = itmIndexResult;
 	end
+
 	if ((locals.ttName ~= nil) and ((NuNDataRNotes[locals.ttName]) or (NuNDataANotes[locals.ttName]))) then
 		NuN_PinnedTooltip.noteName = locals.ttName;
 		NuN_State.NuN_Fade = false;
