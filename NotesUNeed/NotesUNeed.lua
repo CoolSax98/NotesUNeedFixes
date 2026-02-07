@@ -414,8 +414,6 @@ local DEFAULT_CHAT_FRAME = DEFAULT_CHAT_FRAME;
 local NuN_AutoNote;
 local NuN_Update_Ignored;
 local NuN_UpdateNoteButton;
-local NuNNew_UnitPopup_OnClick;
-local NuNNew_UnitPopup_ShowMenu;
 local NuN_GetTipAnchor;
 
 --[[====================================================================
@@ -1184,19 +1182,17 @@ function NuNF.NuN_TestLeftTT(lftTxt)
 end
 
 function NuNF.NuN_CheckPartyByName(parmN)
-	local partym;
-	local numParty = GetNumGroupMembers();
-
-	-- TODO: GetPartyMember is not available in Retail.
-	-- for groupIndex = 1, numParty, 1 do
-	-- 	if (GetPartyMember(groupIndex)) then
-	-- 		partym = "party" .. groupIndex;
-	-- 		local lName = GetUnitName(partym, true);
-	-- 		if (lName == parmN) then
-	-- 			return partym;
-	-- 		end
-	-- 	end
-	-- end
+	-- In retail WoW, party members are "party1" through "party4".
+	-- GetPartyMember() was removed; use UnitExists() + GetUnitName() instead.
+	for groupIndex = 1, 4, 1 do
+		local partym = "party" .. groupIndex;
+		if UnitExists(partym) then
+			local lName = GetUnitName(partym, true);
+			if (lName == parmN) then
+				return partym;
+			end
+		end
+	end
 	return nil;
 end
 
@@ -1292,11 +1288,11 @@ local function migrateTalentsInfo(talents)
 	end
 end
 
-function NuNF.NuN_UnitInfo(unitTest, contactName, theUnitID) -- 5.60 Allow passing of the unitID
+function NuNF.NuN_UnitInfo(unitTest, contactName, theUnitID, guid) -- 5.60 Allow passing of the unitID; guid param added for GUID-based fallback
 	local unitInfoName;
 
-	--nun_msgf("NuN_UnitInfo   unitTest:%s   contactName:%s   theUnitID:%s", tostring(unitTest), tostring(contactName), tostring(theUnitID));
-	-- Try to fetch a valid unitI
+	--nun_msgf("NuN_UnitInfo   unitTest:%s   contactName:%s   theUnitID:%s   guid:%s", tostring(unitTest), tostring(contactName), tostring(theUnitID), tostring(guid));
+	-- Try to fetch a valid unitID
 	if (theUnitID ~= nil) then
 		-- if we were given the UnitID but not the contactName, it's possible we don't know it yet...
 		contactName = GetUnitName(theUnitID, true);
@@ -1304,7 +1300,7 @@ function NuNF.NuN_UnitInfo(unitTest, contactName, theUnitID) -- 5.60 Allow passi
 		local nameOnly, serverOnly = strmatch(contactName, "^([^-]+)-?(.*)");
 		--		nun_msgf("nameOnly:%s  serverOnly:%s", tostring(nameOnly), tostring(serverOnly));
 		if (nameOnly) then
-			-- if no unit ID specified, we assume that it's the target since we only want to allow a nil unit ID for the target.
+			-- if no unit ID specified, check target, focus, party, raid in that order
 			unitInfoName = GetUnitName("target", true);
 			if (unitInfoName and unitInfoName == contactName) then
 				theUnitID = "target";
@@ -1315,14 +1311,12 @@ function NuNF.NuN_UnitInfo(unitTest, contactName, theUnitID) -- 5.60 Allow passi
 				end
 			end
 
-			-- see if the name indicated by contactName corresponds to a party member
+			-- see if the name indicated by contactName corresponds to a party or raid member
 			if (theUnitID == nil) then
-				-- this will search contactName against the list of members in the player's party and return the unitID for the player, if found
 				theUnitID = NuNF.NuN_CheckPartyByName(contactName);
 			end
 
 			if (theUnitID == nil) then
-				-- same here for raid members.
 				theUnitID = NuNF.NuN_CheckRaidByName(contactName);
 			end
 		end
@@ -1331,13 +1325,11 @@ function NuNF.NuN_UnitInfo(unitTest, contactName, theUnitID) -- 5.60 Allow passi
 	--nun_msgf("NuN_UnitInfo   unitTest:%s   contactName:%s   theUnitID:%s    unitInfoName:%s",
 	--	tostring(unitTest), tostring(contactName), tostring(theUnitID), tostring(unitInfoName));
 
-	-- if not just testing, and have a unitID, then fetch info
+	-- if not just testing, and have a unitID, then fetch info from unit APIs
 	if ((not unitTest) and (theUnitID)) then
 		local lRace;
 		local lClass;
 		local lSex;
-		local lPvPRank;
-		local lPvPRankID;
 		local lgName;
 		local lgRank;
 		local lgRankIndex;
@@ -1400,6 +1392,40 @@ function NuNF.NuN_UnitInfo(unitTest, contactName, theUnitID) -- 5.60 Allow passi
 				if (text) then
 					NuNText:SetText(NuNText:GetText() .. "\n" .. text);
 				end
+			end
+		end
+
+	-- GUID-based fallback: no unit token resolved, but we have a GUID.
+	-- GetPlayerInfoByGUID returns class, race, and sex but NOT guild info.
+	-- Guild will be populated asynchronously by the /who query if the player is online.
+	elseif ((not unitTest) and (guid)) then
+		local localizedClass, englishClass, localizedRace, englishRace, gSex = GetPlayerInfoByGUID(guid);
+
+		if (localizedRace) then
+			contact.race = localizedRace;
+			locals.dropdownFrames.ddRace = NuNF.NuNGet_TableID(locals.Races, contact.race);
+			UIDropDownMenu_SetSelectedID(locals.NuNRaceDropDown, locals.dropdownFrames.ddRace);
+			UIDropDownMenu_SetText(locals.NuNRaceDropDown, contact.race);
+		end
+
+		if (localizedClass) then
+			contact.class = localizedClass;
+			locals.dropdownFrames.ddClass = NuNF.NuNGet_TableID(locals.Classes, contact.class);
+			UIDropDownMenu_SetSelectedID(locals.NuNClassDropDown, locals.dropdownFrames.ddClass);
+			UIDropDownMenu_SetText(locals.NuNClassDropDown, contact.class);
+		end
+
+		if (gSex) then
+			local lsexText;
+			if (gSex == 2) then
+				lsexText = NUN_MALE;
+			elseif (gSex == 3) then
+				lsexText = NUN_FEMALE;
+			end
+			if (lsexText) then
+				locals.dropdownFrames.ddSex = NuNF.NuNGet_TableID(NUN_SEXES, lsexText);
+				UIDropDownMenu_SetSelectedID(NuNDropDown_Sex, locals.dropdownFrames.ddSex);
+				UIDropDownMenu_SetText(NuNDropDown_Sex, lsexText);
 			end
 		end
 	end
@@ -3116,7 +3142,7 @@ function NuN_CmdLine(option, parm1, pList)
 			-- Enable Right Click Menu functionality
 		elseif (switch == "-righton") then
 			if (NuNSettings[local_player.realmName].rightClickMenu == false) then
-				NuN_SetupRatings(true);
+				NuN_SetupRatings();
 			end
 			NuNSettings[local_player.realmName].rightClickMenu = true;
 			NuN_Message(NUN_PRATING);
@@ -3124,7 +3150,7 @@ function NuN_CmdLine(option, parm1, pList)
 			-- Disable Right Click Menu functionality
 		elseif (switch == "-rightoff") then
 			NuNSettings[local_player.realmName].rightClickMenu = false;
-			ReloadUI();
+			NuN_Message("Right-click menu disabled.");
 
 			-- Create Alliance / Horde Contact Notes without validating Player exists
 		elseif ((switch == "-ca") or (switch == "-ch")) then
@@ -4713,7 +4739,7 @@ local function OnNotesUNeedFullyLoaded(self, ...)
 		NuNSettings[local_player.realmName].rightClickMenu = true;
 	end
 	if (NuNSettings[local_player.realmName].rightClickMenu == true) then
-		NuN_SetupRatings(true);
+		NuN_SetupRatings();
 	end
 
 	-- Variables loaded - GUILD ROSTER UPDATE
@@ -6851,7 +6877,7 @@ function NuNNew_ChatFrame_MessageEventHandler(chatframe, event, ...)
 		-- won't ignore more than 1 but shouldn't usually have > 1, and its only a chat message anyway so...
 	elseif (event == "CHAT_MSG_SYSTEM") then
 		if (type(arg1) == "string") then
-			if ((NuN_WhoReturnStruct.func) and (strfind(arg1, NuN_WhoReturnStruct.name))) then
+			if ((NuN_WhoReturnStruct.func) and (strfind(arg1, NuN_WhoReturnStruct.name, 1, true))) then
 				NuN_WhoReturnStruct.func(); -- 5.60
 				NuN_WhoReturnStruct.func = nil; -- 5.60
 				NuN_WhoReturnStruct.name = nil; -- 5.60
@@ -7360,19 +7386,24 @@ function NuN_Who()
 		NuN_suppressExtraWho = true;
 		C_FriendList.SendWho("n-" .. local_player.currentNote.unit); -- 5.60 "n-"..
 	elseif (NuN_WhoReturnStruct.func == NuN_Who) then          -- 5.60
-		local wName = nil;
-		local wGuildName = nil;
-		local wRace = nil;
-		local wClass = nil;
-		local wLevel = nil;
 		local bttnHeadingText1;
 		local bttnDetailText1;
-		local wZone = nil;
 
 		local n = C_FriendList.GetNumWhoResults();
 		for i = 1, n, 1 do
-			wName, wGuildName, wLevel, wRace, wClass, wZone = C_FriendList.GetWhoInfo(i); -- 5.60 merged double call
-			if (wName == local_player.currentNote.unit) then                     -- Not interested in Level / Zone
+			local info = C_FriendList.GetWhoInfo(i); -- returns WhoInfo table
+			if info and info.fullName == local_player.currentNote.unit then
+				-- fullGuildName includes a realm suffix (e.g. "My Guild-BoreanTundra").
+				-- Strip it: the realm is always the last hyphen-delimited component and
+				-- never contains hyphens itself, so matching the last "-word" is safe.
+				local wGuildName = info.fullGuildName;
+				if wGuildName and wGuildName ~= "" then
+					local nameOnly = strmatch(wGuildName, "^(.*)-[^-]+$");
+					if nameOnly and nameOnly ~= "" then
+						wGuildName = nameOnly;
+					end
+				end
+
 				if (wGuildName ~= nil) then
 					contact.guild = wGuildName;
 				end
@@ -7387,17 +7418,64 @@ function NuN_Who()
 						locals.bttnChanges[6] = wGuildName;
 					end
 				end
-				if (wClass ~= nil) then
-					contact.class = wClass;
+				if (info.classStr ~= nil) then
+					contact.class = info.classStr;
 					locals.dropdownFrames.ddClass = NuNF.NuNGet_TableID(locals.Classes, contact.class);
 					UIDropDownMenu_SetSelectedID(locals.NuNClassDropDown, locals.dropdownFrames.ddClass);
 					UIDropDownMenu_SetText(locals.NuNClassDropDown, contact.class);
 				end
-				if (wRace ~= nil) then
-					contact.race = wRace;
+				if (info.raceStr ~= nil) then
+					contact.race = info.raceStr;
 					locals.dropdownFrames.ddRace = NuNF.NuNGet_TableID(locals.Races, contact.race);
 					UIDropDownMenu_SetSelectedID(locals.NuNRaceDropDown, locals.dropdownFrames.ddRace);
 					UIDropDownMenu_SetText(locals.NuNRaceDropDown, contact.race);
+				end
+				if (info.gender) then
+					local lsexText;
+					if (info.gender == 2) then
+						lsexText = NUN_MALE;
+					elseif (info.gender == 3) then
+						lsexText = NUN_FEMALE;
+					end
+					if (lsexText) then
+						locals.dropdownFrames.ddSex = NuNF.NuNGet_TableID(NUN_SEXES, lsexText);
+						UIDropDownMenu_SetSelectedID(NuNDropDown_Sex, locals.dropdownFrames.ddSex);
+						UIDropDownMenu_SetText(NuNDropDown_Sex, lsexText);
+					end
+				end
+
+				-- Guild rank: /who doesn't return rank, but if the target is in our
+				-- guild we can look them up in the guild roster for rank info.
+				if wGuildName and wGuildName ~= "" then
+					local myGuild = GetGuildInfo("player");
+					if myGuild and myGuild == wGuildName then
+						-- GetGuildRosterInfo always returns "Name-Realm", but
+						-- local_player.currentNote.unit omits the realm for same-realm
+						-- players. Build a full name for comparison.
+						local rosterTarget = local_player.currentNote.unit;
+						if not strfind(rosterTarget, "-", 1, true) then
+							rosterTarget = rosterTarget .. "-" .. local_player.realmName;
+						end
+						local numMembers = GetNumGuildMembers();
+						for gi = 1, numMembers do
+							local mName, mRank, mRankIndex = GetGuildRosterInfo(gi);
+							if mName and mName == rosterTarget then
+								local bttnHeadingText2 = _G["NuNTitleButton2ButtonTextHeading"];
+								local bttnDetailText2 = _G["NuNInforButton2ButtonTextDetail"];
+								if bttnHeadingText2:GetText() == NUN_DFLTHEADINGS[2] then
+									local lgRankTxt;
+									if (mRankIndex == 0) then
+										lgRankTxt = "GM : " .. mRank;
+									else
+										lgRankTxt = mRankIndex .. " : " .. mRank;
+									end
+									bttnDetailText2:SetText(lgRankTxt);
+									locals.bttnChanges[7] = lgRankTxt;
+								end
+								break;
+							end
+						end
+					end
 				end
 
 				-- auto update existing notes - but not saving new notes automatically
@@ -8941,7 +9019,7 @@ function NuN_NewContact(unitType)
 	NuNF.NuN_UnitInfo(false, local_player.currentNote.unit, unitType);
 end
 
-function NuN_CreateContact(contactName, tFaction)
+function NuN_CreateContact(contactName, tFaction, guid)
 	if ((receiptPending) and (locals.NuN_Receiving.type == "Contact")) then
 		return;
 	end
@@ -8968,6 +9046,10 @@ function NuN_CreateContact(contactName, tFaction)
 	gNote = nil;
 	gOfficerNote = nil;
 	NuN_ShowNote();
+	-- Attempt to mine data: NuN_UnitInfo will try target/focus/party/raid by name,
+	-- then fall back to GUID-based mining (race, class, sex) if a guid was provided.
+	-- Guild info may still arrive asynchronously via the /who query from NuN_ShowNote.
+	NuNF.NuN_UnitInfo(false, contactName, nil, guid);
 end
 
 function NuN_TextWarning(box, tLabel)
@@ -13230,8 +13312,7 @@ function NuN_MassDelete()
 end
 
 -- Set up the Unit Right Click menu options for recording Player Rating : will create a note if necesary
-function NuN_SetupRatings(initialSetup)
-	local UnitPopupMenus = UnitPopupMenus;
+function NuN_SetupRatings()
 
 	-- Player specified ratings - MUST create Brand New arrays so that Originals are not corrupted by changes and are available to "Reset" the values
 	if (not NuNSettings.ratings) then
@@ -13276,151 +13357,192 @@ function NuN_SetupRatings(initialSetup)
 		NUN_PR___ = NuNSettings.ratings[26];
 	end
 
-	-- NOTE: UnitPopupMenus was removed in WoW 11.0.
-	-- TODO: Rewrite this entire section to use the new WoW 11.0 Menu.ModifyMenu API.
-end
+	-- WoW 11.0 Menu.ModifyMenu hook: Register once, check rightClickMenu at runtime
+	if not NuN_State.contextMenuHookRegistered then
+		NuN_State.contextMenuHookRegistered = true;
 
---[[
-dropdownMenu:	name of the frame that was clicked on (probably matches the name of unit)
-frame_tag:		vehicle, self, target, party, boss, etc.
-unit_tag:		party, arena, raid, pet#, etc.
-u_name			should always be the name of the unit clicked on (without the server name, if applicable)
-userData:		used differently by all the code that actually passes a value for this param.
+		-- All player-related menu tags we want to hook into.
+		-- Menu.ModifyMenu tags are "MENU_UNIT_" .. the tag registered with UnitPopupManager.
+		local menuTags = {
+			"MENU_UNIT_PLAYER",			-- right-click another player in the world
+			"MENU_UNIT_PARTY",			-- party member
+			"MENU_UNIT_RAID_PLAYER",	-- raid member
+			"MENU_UNIT_FRIEND",			-- friends list entry (online)
+			"MENU_UNIT_FRIEND_OFFLINE",	-- friends list entry (offline)
+			"MENU_UNIT_GUILD",			-- guild roster entry (online)
+			"MENU_UNIT_GUILD_OFFLINE",	-- guild roster entry (offline)
+			"MENU_UNIT_BN_FRIEND",		-- Battle.net friend (online)
+			"MENU_UNIT_BN_FRIEND_OFFLINE", -- Battle.net friend (offline)
+			"MENU_UNIT_COMMUNITIES_WOW_MEMBER",		-- communities member
+			"MENU_UNIT_COMMUNITIES_GUILD_MEMBER",	-- guild communities member
+			"MENU_UNIT_CHAT_ROSTER",	-- chat channel roster
+			"MENU_UNIT_ENEMY_PLAYER",	-- enemy player
+			"MENU_UNIT_TARGET",			-- generic target (can be a player)
+		};
 
-original signature:
-UnitPopup_ShowMenu (dropdownMenu, which, unit, name, userData)
+		for _, tag in ipairs(menuTags) do
+			Menu.ModifyMenu(tag, function(ownerRegion, rootDescription, contextData)
+				-- Check if feature is enabled at runtime (allows toggle without ReloadUI)
+				if not NuNSettings[local_player.realmName].rightClickMenu then
+					return;
+				end
 
-Changed in 11.0:
-UnitPopup_OpenMenu(which, contextData)
---]]
--- TODO update function documentation
-NuNNew_UnitPopup_ShowMenu = function(which, contextData)
-	--[[
-nun_msgf("dropdownMenu:%s  (%s)   frame_tag:%s  unit_tag:%s  u_name:%s  userdata:%s  UIDROPDOWNMENU_MENU_VALUE:%s   UIDROPDOWNMENU_INIT_MENU:%s    UIDROPDOWNMENU_MENU_LEVEL:%s",
-	tostring(dropdownMenu.name), type(dropdownMenu), tostring(frame_tag), tostring(unit_tag), tostring(u_name), tostring(userData),
-	tostring(UIDROPDOWNMENU_MENU_VALUE), tostring(UIDROPDOWNMENU_INIT_MENU.name), tostring(UIDROPDOWNMENU_MENU_LEVEL));
---]]
-	u_name = UIDROPDOWNMENU_INIT_MENU.name;
+				-- Extract the player name from contextData
+				local _name = contextData.name;
+				if not _name or _name == "" then return; end
 
-	if ("NUN_POPUP" == UIDROPDOWNMENU_MENU_VALUE) then
-		-- create the "Open Note" item and add it to the submenu at the first position
-		local info = UIDropDownMenu_CreateInfo();
-		info.text = NUN_POPUP_TOGGLE;
-		info.owner = UIDROPDOWN_MENU_VALUE;
-		info.checked = nil;
-		info.value = NUN_POPUP_TOGGLE;
-		info.func = NuNNew_UnitPopup_OnClick;
-		info.notCheckable = 1;
-		UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
+				-- Capture unit token and GUID for data mining
+				local unit = contextData.unit;
+				local guid = contextData.guid;
+				local server = contextData.server;
 
-		NuN_BuildPlayerRatingsSubmenu(NuNNew_UnitPopup_OnClick, u_name, UIDROPDOWNMENU_MENU_VALUE);
-	end
-end
+				-- Chat right-click: no guid in contextData, but lineID is available.
+				-- Use C_ChatInfo.GetChatLineSenderGUID to recover the GUID.
+				if not guid and contextData.lineID then
+					guid = C_ChatInfo.GetChatLineSenderGUID(contextData.lineID);
+				end
 
--- 5.60 Re-Written
-NuNNew_UnitPopup_OnClick = function(self)
-	local btn = self.value;
-	local NuN_PlayerRated = nil;
-	local rating = nil;
+				-- Handle cross-realm: append server name if different realm
+				if server and server ~= "" and server ~= local_player.realmName then
+					if unit then
+						local fullName = GetUnitName(unit, true);
+						if fullName then _name = fullName; end
+					else
+						_name = _name .. "-" .. server;
+					end
+				end
 
-	if (btn == NUN_POPUP_TOGGLE) then
-		-- open a NuN Note for the Player
-		rating = 99;
-	else
-		for i = 1, maxRatings, 1 do        -- 5.60 BETA.02	leave if no NuN button clicked
-			if (btn == NuNSettings.ratings[i]) then -- 5.60 BETA.02	leave if no NuN button clicked
-				NuN_PlayerRated = true;
-				rating = i;
-				break
-				;
-			end -- 5.60 BETA.02	leave if no NuN button clicked
-		end -- 5.60 BETA.02	leave if no NuN button clicked
-	end
+				-- Helper: apply clubMemberInfo enrichment after a note is created/displayed.
+				-- contextData from guild roster (MENU_UNIT_COMMUNITIES_GUILD_MEMBER) provides
+				-- a clubMemberInfo table with guild rank, notes, class, race, etc.
+				local function ApplyClubMemberInfo()
+					local cmi = contextData.clubMemberInfo;
+					if not cmi then return; end
 
-	if (not rating) then return; end
+					-- Guild name: clubMemberInfo doesn't carry the guild name directly,
+					-- but for COMMUNITIES_GUILD_MEMBER the target is in *our* guild.
+					local lgName = contextData.clubInfo and contextData.clubInfo.name;
+					if not lgName then
+						lgName = GetGuildInfo("player");
+					end
 
-	--nun_msgf("NuNNew_UnitPopup_OnClick - self:%s   btn:%s  NuN_PlayerRated:%s  rating:%s", tostring(self:GetName()), tostring(btn), tostring(NuN_PlayerRated), tostring(rating));
-	local dropdownFrame = UIDROPDOWNMENU_INIT_MENU;
-	if (type(dropdownFrame) == "string") then
-		dropdownFrame = _G[dropdownFrame];
-	end
-	local _name = dropdownFrame.name;
-	local server = dropdownFrame.server;
-	local unit = dropdownFrame.unit;
+					if lgName and lgName ~= "" then
+						contact.guild = lgName;
 
-	--nun_msgf("NuNNew_UnitPopup_OnClick - _name:%s   server:%s  unit:%s    GetUnitName():%s", tostring(_name), tostring(server), tostring(unit), tostring(GetUnitName(unit,true)));
-	if (server and server ~= "" and server ~= local_player.realmName) then
-		-- I'm gonna leave this old code in here, as a reminder.  The original behavior was simply to ignore players from other realms, mostly because there wasn't any clean way
-		-- to retrieve their info.  But what would be REALLY cool is if any notes you stored for players only other realms instantly became available as "current database" notes
-		-- if you decided to transfer to that server, and all the notes from this realm would be become sub-notes of the old realm.
-		--NuN_Message("NuN : Player " .. _name .. " from different Realm : " .. server);
-		--return;		-- Ignore for now...
+						local bttnHeadingText1 = _G["NuNTitleButton1ButtonTextHeading"];
+						local bttnDetailText1 = _G["NuNInforButton1ButtonTextDetail"];
+						local bttnHeadingText2 = _G["NuNTitleButton2ButtonTextHeading"];
+						local bttnDetailText2 = _G["NuNInforButton2ButtonTextDetail"];
 
+						if bttnHeadingText1:GetText() == NUN_DFLTHEADINGS[1] then
+							bttnDetailText1:SetText(lgName);
+							locals.bttnChanges[6] = lgName;
+						end
 
-		-- These days, we simply make sure that we have the name of the player, as Blizzard is deciding to format it (today), by grabbing a complete "Name + Realm" string from
-		-- the server, rather than attempting to assemble our own.
-		_name = GetUnitName(unit, true);
-	end
+						if cmi.guildRank and bttnHeadingText2:GetText() == NUN_DFLTHEADINGS[2] then
+							local lgRankTxt;
+							if cmi.guildRankOrder == 0 then
+								lgRankTxt = "GM : " .. cmi.guildRank;
+							else
+								lgRankTxt = (cmi.guildRankOrder or "?") .. " : " .. cmi.guildRank;
+							end
+							bttnDetailText2:SetText(lgRankTxt);
+							locals.bttnChanges[7] = lgRankTxt;
+						end
+					end
 
-	-- simplifies the readability of the "if" tests later on...
-	local leaveOpen = nil;
-	if ((not NuN_PlayerRated) or (IsAltKeyDown())) then
-		leaveOpen = true;
-	end
+					-- Guild note and officer note (for display in NuN's guild note fields)
+					if cmi.memberNote then
+						gNote = cmi.memberNote;
+					end
+					if cmi.officerNote then
+						gOfficerNote = cmi.officerNote;
+					end
+				end
 
-	-- if player note already exists
-	if (locals.NuNDataPlayers[_name]) then
-		if (unit) then
-			-- not currently updating existing notes with double checks of data
-			-- but if I want to, then this is the place to do it
+				-- Add divider and NuN section header
+				rootDescription:CreateDivider();
+				rootDescription:CreateTitle(NUN_POPUP_TITLE);
+
+				-- "Open Note" button
+				rootDescription:CreateButton(NUN_POPUP_TOGGLE, function()
+					if locals.NuNDataPlayers[_name] then
+						NuN_ShowSavedNote(_name);
+					elseif unit and unit == "target" then
+						NuN_FromTarget(false);
+					elseif unit then
+						NuN_NewContact(unit);
+					else
+						NuN_CreateContact(_name, local_player.factionName, guid);
+					end
+					ApplyClubMemberInfo();
+				end);
+
+				-- Player Rating submenu (only if ratings are configured)
+				if NuNSettings.ratings then
+					local ratingsMenu = rootDescription:CreateButton("Player Rating");
+					local currentRating = nil;
+					if locals.NuNDataPlayers[_name] and locals.NuNDataPlayers[_name].prating then
+						currentRating = locals.NuNDataPlayers[_name].prating;
+					end
+
+					for i = 1, maxRatings, 1 do
+						local ratingText = NuNSettings.ratings[i];
+						if ratingText then
+							local ratingIndex = i;
+							local ratingButton = ratingsMenu:CreateRadio(ratingText,
+								function() return currentRating == ratingIndex; end,
+								function()
+									-- Ensure note exists before assigning rating
+									if not locals.NuNDataPlayers[_name] then
+										if unit and unit == "target" then
+											NuN_FromTarget(true);
+										elseif unit then
+											NuN_NewContact(unit);
+											ApplyClubMemberInfo();
+											NuN_WriteNote();
+											HideNUNFrame();
+										else
+											NuN_CreateContact(_name, local_player.factionName, guid);
+											ApplyClubMemberInfo();
+											NuN_WriteNote();
+											HideNUNFrame();
+										end
+									end
+
+									-- Assign the rating
+									if locals.NuNDataPlayers[_name] then
+										locals.NuNDataPlayers[_name].prating = ratingIndex;
+										pRating = ratingIndex;
+
+										-- Update the UI if this player's note is currently open
+										if _name == local_player.currentNote.unit then
+											locals.dropdownFrames.ddPRating = ratingIndex;
+											contact.prating = NuNSettings.ratings[ratingIndex];
+											UIDropDownMenu_SetSelectedID(NuNDropDown_PlayerRating, ratingIndex);
+											UIDropDownMenu_SetText(NuNDropDown_PlayerRating, contact.prating);
+										end
+
+										-- BlackList integration
+										if BlackList then
+											NuN_BlackList(_name, ratingIndex);
+										end
+									end
+								end
+							);
+							-- Add tooltip text for the rating
+							if NuNSettings.ratingsT and NuNSettings.ratingsT[i] then
+								ratingButton:SetTooltip(function(tooltip, elementDescription)
+									GameTooltip_SetTitle(tooltip, ratingText);
+									GameTooltip_AddNormalLine(tooltip, NuNSettings.ratingsT[i]);
+								end);
+							end
+						end
+					end
+				end
+			end);
 		end
-		if (leaveOpen) then
-			NuN_ShowSavedNote(_name);
-		end
-
-		-- else have to create a note via some method
-	else
-		if (unit and unit == "target") then
-			if (leaveOpen) then
-				NuN_FromTarget(false);
-			else
-				NuN_FromTarget(true);
-			end
-		elseif (unit) then
-			NuN_NewContact(unit);
-			if (not leaveOpen) then
-				NuN_WriteNote();
-				HideNUNFrame();
-				NuN_Message(local_player.currentNote.unit .. NUN_AUTONOTED);
-			end
-		else
-			NuN_CreateContact(_name, local_player.factionName); -- fingers crossed not an opposing faction name ??? "target" taken care of above, but what about chat links ?
-			if (not leaveOpen) then
-				NuN_WriteNote();
-				HideNUNFrame();
-				NuN_Message(local_player.currentNote.unit .. NUN_AUTONOTED);
-			end
-		end
 	end
-
-	if (NuN_PlayerRated and rating ~= 99) then
-		if (locals.NuNDataPlayers[_name]) then
-			locals.NuNDataPlayers[_name].prating = rating;
-			pRating = rating;
-			--			NuN_Message("Updated player rating for " .. _name);
-		end
-		if (_name == local_player.currentNote.unit) then
-			locals.dropdownFrames.ddPRating = rating;
-			contact.prating = NuNSettings.ratings[locals.dropdownFrames.ddPRating];
-			UIDropDownMenu_SetSelectedID(NuNDropDown_PlayerRating, locals.dropdownFrames.ddPRating);
-			UIDropDownMenu_SetText(NuNDropDown_PlayerRating, contact.prating);
-		end
-		if (BlackList) then
-			NuN_BlackList(_name, rating);
-		end
-	end
-
-	DropDownList1:Hide();
 end
 
 function NuN_BlackList(_name, rating)
