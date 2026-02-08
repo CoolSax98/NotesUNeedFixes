@@ -19,4 +19,3 @@
 
 NotesUNeed.xml
 Modules.xml
-Bindings.xml
