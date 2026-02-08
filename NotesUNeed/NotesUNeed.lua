@@ -6661,7 +6661,7 @@ function NuN_SetItemRef_PreHook(link, text, button)
 					NuN_CreateContact(_name, local_player.factionName);
 				end
 				if (DEFAULT_CHAT_FRAME.editBox) then
-					ChatEdit_OnEscapePressed(DEFAULT_CHAT_FRAME.editBox);
+					DEFAULT_CHAT_FRAME.editBox:Hide();
 				end
 			end
 		end
@@ -6709,7 +6709,7 @@ function NuN_OnHyperlinkClick_PostHook(chatframe, link, text, button)
 					NuN_CreateContact(_name, local_player.factionName);
 				end
 				if (DEFAULT_CHAT_FRAME.editBox) then
-					ChatEdit_OnEscapePressed(DEFAULT_CHAT_FRAME.editBox);
+					DEFAULT_CHAT_FRAME.editBox:Hide();
 				end
 			elseif (IsModifiedClick("CHATLINK")) then
 				local NuN_staticPopup = StaticPopup_Visible("ADD_IGNORE");
@@ -6833,7 +6833,7 @@ function NuNNew_SetItemRef(self, link, text, btn)
 						NuN_CreateContact(_name, local_player.factionName);
 					end
 					if (DEFAULT_CHAT_FRAME.editBox) then
-						ChatEdit_OnEscapePressed(DEFAULT_CHAT_FRAME.editBox);
+						DEFAULT_CHAT_FRAME.editBox:Hide();
 					end
 					processed = true;
 				elseif (IsModifiedClick("CHATLINK")) then
