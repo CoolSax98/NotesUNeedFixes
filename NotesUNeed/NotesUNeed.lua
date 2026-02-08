@@ -8570,7 +8570,7 @@ function NuNSearchNote_OnEnter(bttnNote)
 	else
 		NuN_Tooltip:SetOwner(bttnNote, "ANCHOR_RIGHT");
 	end
-	locals.ttName = bttnNote:GetText();
+	locals.ttName = bttnNote.noteKey or bttnNote:GetText();
 	NuN_Tooltip:ClearLines();
 	if (bttnNote.type == "N") then
 		NuN_PinnedTooltip.type = "General";
