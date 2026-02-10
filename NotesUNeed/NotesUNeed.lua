@@ -10089,6 +10089,12 @@ end
 
 -- NotesUNeed tooltip shows alongside the game tooltip, rather than modifying the normal tooltip itself
 function NuN_GameTooltip_OnShow(self, tTip)
+	-- Skip tooltip processing during combat to avoid taint errors
+	-- Blizzard's secure tooltip system doesn't allow addon access during combat
+	if InCombatLockdown() then
+		return;
+	end
+
 	local storePinned = NuN_PinnedTooltip and NuN_PinnedTooltip.type;
 	local p1 = 1;
 	local strippedName = "";
@@ -12770,6 +12776,11 @@ function NuN_RunButton_OnClick()
 end
 
 NuN_GetTipAnchor = function(theTT)
+	-- Return default anchors during combat to avoid taint errors with secure tooltips
+	if InCombatLockdown() then
+		return "BOTTOMRIGHT", "BOTTOMLEFT";
+	end
+
 	local anchorBy, anchorTo;
 	local x1, y1 = theTT:GetCenter();
 
@@ -12793,8 +12804,16 @@ NuN_GetTipAnchor = function(theTT)
 		-- For shopping tooltips, go AWAY from GameTooltip (continue the chain outward).
 		-- Horizontal: if shopping is left of GameTooltip, NuN goes further left; if right, further right.
 		-- Vertical: align top edges if shopping is above GameTooltip, bottom edges if below.
-		local goLeft = (x1 < refX);
-		local alignTop = (y1 >= refY);
+		-- Use pcall to catch taint errors from secure tooltip coordinates
+		local success, goLeft = pcall(function() return x1 < refX end);
+		if not success then
+			-- Tainted values, use default anchors
+			return "BOTTOMRIGHT", "BOTTOMLEFT";
+		end
+		local success2, alignTop = pcall(function() return y1 >= refY end);
+		if not success2 then
+			return "BOTTOMRIGHT", "BOTTOMLEFT";
+		end
 		if alignTop then
 			if goLeft then
 				anchorBy = "TOPRIGHT";
@@ -12814,23 +12833,36 @@ NuN_GetTipAnchor = function(theTT)
 		end
 	else
 		-- Standard logic: position based on screen center (go away from center).
-		if (y1 > refY) then
-			if (x1 > refX) then
-				anchorBy = "TOPRIGHT";
-				anchorTo = "TOPLEFT";
+		-- Wrap comparisons in pcall to handle potential taint
+		local success, ret1, ret2 = pcall(function()
+			if (y1 > refY) then
+				if (x1 > refX) then
+					return "TOPRIGHT", "TOPLEFT";
+				else
+					return "TOPLEFT", "TOPRIGHT";
+				end
 			else
-				anchorBy = "TOPLEFT";
-				anchorTo = "TOPRIGHT";
+				if (x1 > refX) then
+					return "BOTTOMRIGHT", "BOTTOMLEFT";
+				else
+					return "BOTTOMLEFT", "BOTTOMRIGHT";
+				end
 			end
+		end);
+		if success and ret1 and ret2 then
+			anchorBy = ret1;
+			anchorTo = ret2;
 		else
-			if (x1 > refX) then
-				anchorBy = "BOTTOMRIGHT";
-				anchorTo = "BOTTOMLEFT";
-			else
-				anchorBy = "BOTTOMLEFT";
-				anchorTo = "BOTTOMRIGHT";
-			end
+			-- Tainted or invalid values, use defaults
+			anchorBy = "BOTTOMRIGHT";
+			anchorTo = "BOTTOMLEFT";
 		end
+	end
+
+	-- Final safety check - never return nil
+	if not anchorBy or not anchorTo then
+		anchorBy = "BOTTOMRIGHT";
+		anchorTo = "BOTTOMLEFT";
 	end
 
 	return anchorBy, anchorTo;
