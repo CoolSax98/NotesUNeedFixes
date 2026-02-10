@@ -1,10 +1,6 @@
-## Interface: 120000 
+## Interface: 120001 
 ## Title: Notes'U'Need |c0000FF00(v12.00.120000)|r
-## Version: 12.00.120000
-## X-Curse-Packaged-Version: NotesUNeed_v12.00
-## X-Curse-Project-Name: NotesUNeed
-## X-Curse-Project-ID: notes-uneed
-## X-Curse-Repository-ID: wow/notes-uneed/mainline
+## Version: 12.00.120001
 
 ## Notes: Notes Manager that allows you to track Friends, Ignores, Guild members, Quests, Items and generic notes
 ##  storing information like Professions, Guild, PvP ranks, real world contact information, and anything
