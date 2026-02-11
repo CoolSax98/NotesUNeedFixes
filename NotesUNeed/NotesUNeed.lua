@@ -10136,11 +10136,12 @@ function NuN_GameTooltip_OnShow(self, tTip)
 	if NuNSettings.ratings then
 		-- NuNSettings.ratings will be nil if this function is called before we've loaded our variables, such as when our cursor happens to hovering over
 		-- something that causes tooltip to be displayed as we're logging in.  (harmless error and can be ignored)
+		-- Wrap the comparison in pcall to handle tainted strings from secure tooltips
 		for idx, value in ipairs(NuNSettings.ratings) do
-			if (locals.currentTooltipTitleString == value) then
+			local success, isMatch = pcall(function() return locals.currentTooltipTitleString == value end);
+			if success and isMatch then
 				pRating = idx;
-				break
-				;
+				break;
 			end
 		end
 	end
