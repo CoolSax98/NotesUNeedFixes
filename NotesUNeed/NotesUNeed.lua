@@ -7380,7 +7380,7 @@ function NuNNew_ChatFrame_MessageEventHandler(chatframe, event, ...)
 					NuN_uCount = 0;
 					NuN_tCount = 0;
 					processedByNuN = true;
-					NuN_Message(NUN_RECEIVING_START .. NuN_Receiving.from);
+					NuN_Message(NUN_RECEIVING_START .. locals.NuN_Receiving.from);
 					locals.NuN_Receiving.log = arg1; -- NuN Creates a NuN Log type note recording the last 10 transmitted/received notes for tracking / debugging purposes
 					locals.NuN_Receiving.receivedKeys = {};
 					lastTextKey = "";
@@ -12893,16 +12893,16 @@ function NuN_CreateReceivedNote()
 					NuNGNote_WriteNote();
 					NuN_Message(NUN_SAVED_NOTIFY1 ..
 						"\"" .. local_player.currentNote.general .. "\"" .. NUN_SAVED_NOTIFY2);
-					NuN_Message(NUN_SAVED_NOTIFY3 .. "\"" .. NuN_Receiving.title .. "\"");
-				end
-				NuNGNoteFrame:Hide();
+				NuN_Message(NUN_SAVED_NOTIFY3 .. "\"" .. locals.NuN_Receiving.title .. "\"");
 			end
-			local_player.currentNote.general = locals.NuN_Receiving.title;
-			contact.type = locals.NuN_Receiving.subtype;
-			general.text = "";
-			local nL = "";
-			for idx, value in ipairs(locals.NuN_Receiving.text) do
-				general.text = general.text .. nL .. NuN_Receiving.text[idx];
+			NuNGNoteFrame:Hide();
+		end
+		local_player.currentNote.general = locals.NuN_Receiving.title;
+		contact.type = locals.NuN_Receiving.subtype;
+		general.text = "";
+		local nL = "";
+		for idx, value in ipairs(locals.NuN_Receiving.text) do
+			general.text = general.text .. nL .. locals.NuN_Receiving.text[idx];
 				nL = "\n";
 			end
 			NuN_ShowTitledGNote(general.text);
@@ -12912,9 +12912,9 @@ function NuN_CreateReceivedNote()
 				NuN_WriteNote();
 				HideNUNFrame();
 				NuN_Message(NUN_SAVED_NOTIFY1 .. "\"" .. local_player.currentNote.unit .. "\"" .. NUN_SAVED_NOTIFY2);
-				NuN_Message(NUN_SAVED_NOTIFY3 .. "\"" .. NuN_Receiving.title .. "\"");
-			end
-			NuN_ShowReceivedContact();
+			NuN_Message(NUN_SAVED_NOTIFY3 .. "\"" .. locals.NuN_Receiving.title .. "\"");
+		end
+		NuN_ShowReceivedContact();
 			if (locals.NuNDataPlayers[local_player.currentNote.unit]) then
 				NuN_SearchForNote("Text", local_player.currentNote.unit);
 				receiptPending = true;
@@ -12946,7 +12946,7 @@ function NuN_WriteReceiptLog()
 		locals.NuN_Receiving.log = "L?";
 	end
 	general.text = locals.NuN_Receiving.title ..
-		"\n" .. NuN_Receiving.prefix .. " : " .. NuNF.NuN_GetDateStamp() .. "\n\n" .. NuN_Receiving.log;
+		"\n" .. locals.NuN_Receiving.prefix .. " : " .. NuNF.NuN_GetDateStamp() .. "\n\n" .. locals.NuN_Receiving.log;
 
 	if (NuNSettings[local_player.realmName].dLevel) then
 		NuNDataANotes[local_player.currentNote.general] = {};
@@ -12980,7 +12980,7 @@ function NuN_ShowReceivedContact()
 	if (locals.NuN_Receiving.text) then
 		local nL = "";
 		for idx, value in ipairs(locals.NuN_Receiving.text) do
-			contact.text = contact.text .. nL .. NuN_Receiving.text[idx];
+			contact.text = contact.text .. nL .. locals.NuN_Receiving.text[idx];
 			nL = "\n";
 		end
 		local lenCheck = strlen(contact.text);
@@ -14200,7 +14200,7 @@ function NuN_MainUpdate(self, elapsed)
 		locals.NuN_Receiving.timer = locals.NuN_Receiving.timer + elapsed;
 		if (locals.NuN_Receiving.timer > receiptDeadline) then
 			if (locals.NuN_Receiving.version) then
-				NuN_Message(NUN_RECEIPT_EXPIRED .. NuN_Receiving.from); -- Final parts of the message didn't arrive in a reasonable amount of time, so gave up on receipt process
+				NuN_Message(NUN_RECEIPT_EXPIRED .. locals.NuN_Receiving.from); -- Final parts of the message didn't arrive in a reasonable amount of time, so gave up on receipt process
 				NuN_WriteReceiptLog();
 			end
 			locals.NuN_Receiving = {};
