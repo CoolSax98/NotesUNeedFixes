@@ -2839,6 +2839,10 @@ function NuNF.NuN_QuestLogButtons()
 end
 
 function NuNF.NuN_DtoH(r, g, b)
+	-- Guard against nil values to prevent arithmetic errors
+	if not r or not g or not b then
+		return "|c00FFFFFF";  -- Return white as default fallback
+	end
 	r = strformat("%.2X", (r * 255));
 	g = strformat("%.2X", (g * 255));
 	b = strformat("%.2X", (b * 255));
@@ -15015,6 +15019,14 @@ function NuNF.NuN_CancelPresetColour(col)
 end
 
 function NuNF.NuN_ApplyPresetColour(fBttn, r, g, b)
+	-- Guard against nil button or color values
+	if not fBttn then
+		return;
+	end
+	-- If any color component is nil, use default white color
+	if not r or not g or not b then
+		r, g, b = 1, 1, 1;
+	end
 	local hexVal = NuNF.NuN_DtoH(r, g, b);
 	local cKey = "cc";
 	if (fBttn.parentType == "General") then
