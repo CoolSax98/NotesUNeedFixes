@@ -2839,10 +2839,6 @@ function NuNF.NuN_QuestLogButtons()
 end
 
 function NuNF.NuN_DtoH(r, g, b)
-	-- Guard against nil values to prevent arithmetic errors
-	if not r or not g or not b then
-		return "|c00FFFFFF";  -- Return white as default fallback
-	end
 	r = strformat("%.2X", (r * 255));
 	g = strformat("%.2X", (g * 255));
 	b = strformat("%.2X", (b * 255));
@@ -14858,7 +14854,7 @@ function NuNF.NuN_ChooseTextColour(eBox, textToColour)
 		r = col.r,
 		g = col.g,
 		b = col.b,
-		previousValues = { col.r, col.g, col.b },
+		previousValues = { r = col.r, g = col.g, b = col.b },
 	};
 	ColorPickerFrame:SetFrameStrata("FULLSCREEN_DIALOG");
 	NuN_ShowColorPickerOkayMask();
@@ -15000,7 +14996,7 @@ function NuNF.NuN_ChoosePresetColour(fBttn)
 		r = col.r,
 		g = col.g,
 		b = col.b,
-		previousValues = { col.r, col.g, col.b },
+		previousValues = { r = col.r, g = col.g, b = col.b },
 	};
 	ColorPickerFrame:SetFrameStrata("FULLSCREEN_DIALOG");
 	ColorPickerFrame:SetupColorPickerAndShow(info);
@@ -15013,20 +15009,13 @@ end
 
 function NuNF.NuN_CancelPresetColour(col)
 	if (col) then
-		NuNF.NuN_ApplyPresetColour(ColorPickerFrame.fBttn, col[1], col[2], col[3]);
+		-- Use named keys (.r, .g, .b) as per modern ColorPickerFrame API
+		NuNF.NuN_ApplyPresetColour(ColorPickerFrame.fBttn, col.r, col.g, col.b);
 		ColorPickerFrame.fBttn = nil;
 	end
 end
 
 function NuNF.NuN_ApplyPresetColour(fBttn, r, g, b)
-	-- Guard against nil button or color values
-	if not fBttn then
-		return;
-	end
-	-- If any color component is nil, use default white color
-	if not r or not g or not b then
-		r, g, b = 1, 1, 1;
-	end
 	local hexVal = NuNF.NuN_DtoH(r, g, b);
 	local cKey = "cc";
 	if (fBttn.parentType == "General") then
