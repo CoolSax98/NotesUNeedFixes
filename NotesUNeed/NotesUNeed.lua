@@ -11894,7 +11894,7 @@ end
 -- When Noting a Merchant / Vendor, then NotesUNeed can note what they sell also
 function NuN_BuildShoppingList()
 	local listText = "";
-	local mName = MerchantNameText:GetText();
+	local mName = UnitName("npc");
 
 	if (mName == local_player.currentNote.general) then
 		local iPrice, iPriceTxt, iQuant, iNumAvail, iLink, iDiscard;
