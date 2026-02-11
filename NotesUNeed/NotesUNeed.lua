@@ -11905,16 +11905,21 @@ function NuN_BuildShoppingList()
 			if (iLink) then
 				listText = listText .. "\n" .. iLink;
 			end
-			iDiscard, iDiscard, iPrice, iQuant, iNumAvail = GetMerchantItemInfo(i);
-			if ((iQuant) and (iQuant > 1)) then
-				listText = listText .. " (" .. iQuant .. ") ";
-			end
-			if ((iPrice) and (iPrice > 0)) then
-				iPriceTxt = NuN_BuildMoneyString(iPrice);
-				listText = listText .. "   " .. iPriceTxt;
-			end
-			if ((iNumAvail) and (iNumAvail > 0)) then
-				listText = listText .. "        " .. NUN_LIMITED;
+			local itemInfo = C_MerchantFrame.GetItemInfo(i);
+			if itemInfo then
+				iPrice = itemInfo.price;
+				iQuant = itemInfo.stackCount;
+				iNumAvail = itemInfo.numAvailable;
+				if ((iQuant) and (iQuant > 1)) then
+					listText = listText .. " (" .. iQuant .. ") ";
+				end
+				if ((iPrice) and (iPrice > 0)) then
+					iPriceTxt = NuN_BuildMoneyString(iPrice);
+					listText = listText .. "   " .. iPriceTxt;
+				end
+				if ((iNumAvail) and (iNumAvail > 0)) then
+					listText = listText .. "        " .. NUN_LIMITED;
+				end
 			end
 		end
 	end
