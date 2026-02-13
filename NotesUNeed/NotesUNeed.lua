@@ -9082,7 +9082,12 @@ function GeneralNote_OnLeave(editbox, motion)
 end
 
 function GeneralNote_OnTitleLostFocus(editbox)
-	NuNGNoteTitleButtonText:SetText(GetDisplayName(local_player.currentNote.general));
+	local text = editbox:GetText();
+	if (text and text ~= "" and not NuNGNoteFrame.fromQuest) then
+		NuN_GNoteTitleSet();
+	else
+		NuNGNoteTitleButtonText:SetText(GetDisplayName(local_player.currentNote.general));
+	end
 	NuNGNoteTextBox:Hide();
 	NuNGNoteTitleButton:Show();
 end
