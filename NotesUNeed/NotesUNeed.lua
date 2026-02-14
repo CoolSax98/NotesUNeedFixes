@@ -1190,7 +1190,8 @@ function NuNF.NuN_CheckPartyByName(parmN)
 		local partym = "party" .. groupIndex;
 		if UnitExists(partym) then
 			local lName = GetUnitName(partym, true);
-			if (lName == parmN) then
+			-- WoW 12.0 Secret Values: skip secret names (e.g. mind-controlled NPCs)
+			if (not issecretvalue or not issecretvalue(lName)) and (lName == parmN) then
 				return partym;
 			end
 		end
@@ -1205,7 +1206,8 @@ function NuNF.NuN_CheckRaidByName(parmN)
 
 	for raidIndex = 1, numRaid, 1 do
 		lclName = GetRaidRosterInfo(raidIndex);
-		if (lclName == parmN) then
+		-- WoW 12.0 Secret Values: skip secret names
+		if (not issecretvalue or not issecretvalue(lclName)) and (lclName == parmN) then
 			raidm = "raid" .. raidIndex;
 			return raidm;
 		end
@@ -1298,17 +1300,25 @@ function NuNF.NuN_UnitInfo(unitTest, contactName, theUnitID, guid) -- 5.60 Allow
 	if (theUnitID ~= nil) then
 		-- if we were given the UnitID but not the contactName, it's possible we don't know it yet...
 		contactName = GetUnitName(theUnitID, true);
+		-- WoW 12.0 Secret Values: unit name is secret for restricted units (e.g. raid bosses).
+		if issecretvalue and issecretvalue(contactName) then
+			return;
+		end
 	elseif (contactName ~= nil) then
+		-- WoW 12.0 Secret Values: contactName itself could be secret if passed from tainted code.
+		if issecretvalue and issecretvalue(contactName) then
+			return;
+		end
 		local nameOnly, serverOnly = strmatch(contactName, "^([^-]+)-?(.*)");
 		--		nun_msgf("nameOnly:%s  serverOnly:%s", tostring(nameOnly), tostring(serverOnly));
 		if (nameOnly) then
 			-- if no unit ID specified, check target, focus, party, raid in that order
 			unitInfoName = GetUnitName("target", true);
-			if (unitInfoName and unitInfoName == contactName) then
+			if (unitInfoName and (not issecretvalue or not issecretvalue(unitInfoName)) and unitInfoName == contactName) then
 				theUnitID = "target";
 			else
 				unitInfoName = GetUnitName("focus", true);
-				if (unitInfoName and unitInfoName == contactName) then
+				if (unitInfoName and (not issecretvalue or not issecretvalue(unitInfoName)) and unitInfoName == contactName) then
 					theUnitID = "focus";
 				end
 			end
@@ -1329,6 +1339,11 @@ function NuNF.NuN_UnitInfo(unitTest, contactName, theUnitID, guid) -- 5.60 Allow
 
 	-- if not just testing, and have a unitID, then fetch info from unit APIs
 	if ((not unitTest) and (theUnitID)) then
+		-- WoW 12.0 Secret Values: skip unit identity queries for restricted units.
+		if C_Secrets and C_Secrets.ShouldUnitIdentityBeSecret and C_Secrets.ShouldUnitIdentityBeSecret(theUnitID) then
+			return;
+		end
+
 		local lRace;
 		local lClass;
 		local lSex;
@@ -1401,6 +1416,10 @@ function NuNF.NuN_UnitInfo(unitTest, contactName, theUnitID, guid) -- 5.60 Allow
 	-- GetPlayerInfoByGUID returns class, race, and sex but NOT guild info.
 	-- Guild will be populated asynchronously by the /who query if the player is online.
 	elseif ((not unitTest) and (guid)) then
+		-- WoW 12.0 Secret Values: GUID may be secret for restricted units.
+		if issecretvalue and issecretvalue(guid) then
+			return;
+		end
 		local localizedClass, englishClass, localizedRace, englishRace, gSex = GetPlayerInfoByGUID(guid);
 
 		if (localizedRace) then
@@ -1438,6 +1457,11 @@ end
 -- 5.60 New function for updating background database information based on unitID
 function NuNF.NuN_UnitInfoDB(lMember, lUnit)
 	if (not locals.NuNDataPlayers[lMember]) then
+		return;
+	end
+
+	-- WoW 12.0 Secret Values: skip unit identity queries for restricted units.
+	if C_Secrets and C_Secrets.ShouldUnitIdentityBeSecret and C_Secrets.ShouldUnitIdentityBeSecret(lUnit) then
 		return;
 	end
 
@@ -3492,6 +3516,12 @@ function NuN_CheckTarget(arg1)
 
 	if (UnitExists("target")) then                                                -- 20200
 		local chkName = GetUnitName("target", true);                              -- 20200
+		-- WoW 12.0 Secret Values: unit name is secret for restricted units (e.g. raid bosses).
+		-- Secret values cannot be used as table keys or compared, so treat as no valid target.
+		if issecretvalue and issecretvalue(chkName) then
+			NuN_Message("Cannot identify target: unit identity is restricted in this instance.");
+			return "";
+		end
 		if ((UnitPlayerControlled("target")) and (UnitIsUnit("player", "target"))) then -- 20200
 			local_player.currentNote.unit = locals.player_Name;                   -- 20200
 			result = "S";                                                         -- 20200
@@ -4689,6 +4719,8 @@ function NuNNew_BLRemovePlayer(__, player, ...)
 	local _name;
 	if (player == "target") then
 		_name = GetUnitName("target", true);
+		-- WoW 12.0 Secret Values: target name may be secret for restricted units
+		if issecretvalue and issecretvalue(_name) then return; end
 	else
 		_name = player;
 	end
@@ -9222,6 +9254,11 @@ function NuN_NewContact(unitType)
 	if (not unit) then
 		return;
 	end
+	-- WoW 12.0 Secret Values: unit name is secret for restricted units (e.g. raid bosses).
+	if issecretvalue and issecretvalue(unit) then
+		NuN_Message("Cannot identify target: unit identity is restricted in this instance.");
+		return;
+	end
 	local_player.currentNote.unit = GetUnitName(unitType, true);
 
 	local Friendly;
@@ -9323,6 +9360,12 @@ end
 function NuN_NPCInfo(funcToCall, autoHide)
 	local text = GetUnitName("target", true);
 
+	-- WoW 12.0 Secret Values: bail if target name is secret (raid boss, etc.)
+	if issecretvalue and issecretvalue(text) then
+		NPCInfo_Proceed = nil;
+		return nil;
+	end
+
 	if (not NPCInfo_Proceed) then
 		if ((text) and (text ~= "") and (funcToCall)) then
 			GameTooltip:ClearLines();
@@ -9346,6 +9389,15 @@ function NuN_NPCInfo(funcToCall, autoHide)
 		NPCclsXtra = UnitClassification("target");
 		NPCtype = UnitCreatureType("target");
 		NPCsex = UnitSex("target");
+
+		-- WoW 12.0 Secret Values: all unit identity APIs return secrets for restricted units.
+		-- Secret values cannot be compared or passed to string functions, so bail out.
+		if issecretvalue and (issecretvalue(NPClvl) or issecretvalue(NPCcls)
+				or issecretvalue(NPCclsXtra) or issecretvalue(NPCtype) or issecretvalue(NPCsex)) then
+			NPCInfo_Proceed = nil;
+			return nil;
+		end
+
 		if (NPClvl ~= nil) then
 			if (NPClvl == -1) then
 				NPCInfo = NUN_LEVEL .. " : ??     ";
@@ -10045,6 +10097,11 @@ function NuN_FFButton_Down()
 		local tstValue = NuN_CheckTarget();
 		if (UnitInRaid("target")) then
 			local_player.currentNote.unit = GetUnitName("target", true);
+			-- WoW 12.0 Secret Values: unit name may be secret for restricted units
+			if issecretvalue and issecretvalue(local_player.currentNote.unit) then
+				local_player.currentNote.unit = nil;
+				return;
+			end
 			if (locals.NuNDataPlayers[local_player.currentNote.unit]) then
 				NuN_ShowSavedNote(local_player.currentNote.unit);
 			else
@@ -10138,6 +10195,12 @@ function NuN_GameTooltip_OnShow(self, tTip)
 		return;
 	end
 
+	-- WoW 12.0 Secret Values: tooltip text for restricted units (e.g. raid bosses) returns
+	-- secret values that cannot be used as table keys or compared. Bail out early.
+	if issecretvalue and issecretvalue(locals.currentTooltipTitleString) then
+		return;
+	end
+
 	if NuNSettings.ratings then
 		-- NuNSettings.ratings will be nil if this function is called before we've loaded our variables, such as when our cursor happens to hovering over
 		-- something that causes tooltip to be displayed as we're logging in.  (harmless error and can be ignored)
@@ -10186,16 +10249,22 @@ orgevo: I'm not really sure exactly what case this code was trying to handle, bu
 		local typ = "Nil";
 		if (UnitExists("mouseover")) then
 			locals.ttName = GetUnitName("mouseover");
-			NuN_State.NuN_Fade = true;
-			if (UnitIsPlayer("mouseover")) then
-				typ = "Contact";
-				if (not locals.NuNDataPlayers[locals.ttName]) then
-					locals.ttName = nil;
-				end
+			-- WoW 12.0 Secret Values: unit name may be secret for restricted units (e.g. raid bosses).
+			-- Secret values cannot be used as table keys, so skip note lookup.
+			if issecretvalue and issecretvalue(locals.ttName) then
+				locals.ttName = nil;
 			else
-				typ = "General";
-				if ((not NuNDataRNotes[locals.ttName]) and (not NuNDataANotes[locals.ttName])) then
-					locals.ttName = nil;
+				NuN_State.NuN_Fade = true;
+				if (UnitIsPlayer("mouseover")) then
+					typ = "Contact";
+					if (not locals.NuNDataPlayers[locals.ttName]) then
+						locals.ttName = nil;
+					end
+				else
+					typ = "General";
+					if ((not NuNDataRNotes[locals.ttName]) and (not NuNDataANotes[locals.ttName])) then
+						locals.ttName = nil;
+					end
 				end
 			end
 		else
@@ -10235,6 +10304,13 @@ orgevo: I'm not really sure exactly what case this code was trying to handle, bu
 		end
 	else
 		locals.ttName = locals.currentTooltipTitleString;
+		-- WoW 12.0 Secret Values: defensive check in case tooltip title acquired a secret aspect
+		-- between the top-of-function check and here (e.g. ElvUI unit frame tooltip processing).
+		if issecretvalue and issecretvalue(locals.ttName) then
+			NuN_Tooltip:ClearLines();
+			NuN_Tooltip:Hide();
+			return;
+		end
 		local itmIndexResult = NuNData[locals.itmIndex_dbKey][locals.ttName];
 		if (itmIndexResult) then
 			locals.ttName = itmIndexResult;
@@ -11562,6 +11638,9 @@ function NuN_NPCTarget()
 	local chkName = GetUnitName("target", true);
 	local npcText = "";
 
+	-- WoW 12.0 Secret Values: target name may be secret for restricted units
+	if issecretvalue and issecretvalue(chkName) then return; end
+
 	if ((chkName) and (not UnitPlayerControlled("target"))) then
 		NPCInfo_Proceed = nil;
 		NuN_NPCInfo(NuN_NPCGetText);
@@ -11825,10 +11904,12 @@ function NuN_ProcessParty()
 	for i = 1, lMembers, 1 do
 		lUnit = lGroupType .. i;
 		lMember = GetUnitName(lUnit, true);
-		if ((lMember == UNKNOWN) or (lMember == UNKNOWNOBJECT)) then -- 5.60 "Unknown Entity"
-			return;
-		end
-		if (lMember) then
+		-- WoW 12.0 Secret Values: skip members with secret identity (cannot use as table key or compare)
+		if not (issecretvalue and issecretvalue(lMember)) then
+			if ((lMember == UNKNOWN) or (lMember == UNKNOWNOBJECT)) then -- 5.60 "Unknown Entity"
+				return;
+			end
+			if (lMember) then
 			partyA[lMember] = {};
 			partyA[lMember].pos = i;
 			if (not NuNData[local_player.realmName][NuNC.NUN_PARTIES][locals.player_Name][lMember]) then
@@ -11863,6 +11944,7 @@ function NuN_ProcessParty()
 				NuNF.NuN_UnitInfoDB(lMember, lUnit); -- 5.60 Auto-populate some data
 			end
 		end
+		end -- WoW 12.0: close secret value guard
 	end
 
 	for idx, value in pairs(NuNData[local_player.realmName][NuNC.NUN_PARTIES][locals.player_Name]) do
@@ -12076,6 +12158,10 @@ function NuN_MapNote(MNType, MNxtra1, MNxtra2, MNColour)
 	local MNLine1, MNLine2, MNAuthor, NuN_Reaction;
 	local MNName;
 	local tName = GetUnitName("target", true);
+	-- WoW 12.0 Secret Values: target name may be secret for restricted units
+	if issecretvalue and issecretvalue(tName) then
+		return;
+	end
 	if ((MNType == "Target") and (tName) and (not UnitPlayerControlled("target"))) then
 		NuN_Reaction = UnitReaction("player", "target");
 		if (not MNColour) then
@@ -13665,9 +13751,14 @@ function NuN_SetupRatings()
 					return;
 				end
 
-				-- Extract the player name from contextData
-				local _name = contextData.name;
-				if not _name or _name == "" then return; end
+			-- Extract the player name from contextData
+			local _name = contextData.name;
+
+			-- WoW 12.0 Secret Values: contextData.name may be secret for restricted units.
+			-- Must check BEFORE any boolean test or comparison on _name.
+			if issecretvalue and issecretvalue(_name) then return; end
+
+			if not _name or _name == "" then return; end
 
 				-- Capture unit token and GUID for data mining
 				local unit = contextData.unit;
@@ -13684,7 +13775,10 @@ function NuN_SetupRatings()
 				if server and server ~= "" and server ~= local_player.realmName then
 					if unit then
 						local fullName = GetUnitName(unit, true);
-						if fullName then _name = fullName; end
+						-- WoW 12.0 Secret Values: skip if unit name is secret.
+						if fullName and (not issecretvalue or not issecretvalue(fullName)) then
+							_name = fullName;
+						end
 					else
 						_name = _name .. "-" .. server;
 					end
@@ -15321,8 +15415,12 @@ function NuNNew_AddFriend(...)
 		_name = GetFriendInfo(_name);
 	elseif ((_name) and (_name == "target")) then
 		_name = GetUnitName(_name, true);
+		-- WoW 12.0 Secret Values: target name may be secret for restricted units
+		if issecretvalue and issecretvalue(_name) then return; end
 	elseif ((type(_name) == "string") and (_name == "")) then
 		_name = GetUnitName("target", true);
+		-- WoW 12.0 Secret Values: target name may be secret for restricted units
+		if issecretvalue and issecretvalue(_name) then return; end
 	end
 
 	if (not locals.NuN_FriendIgnoreActivity) then
@@ -15456,8 +15554,12 @@ function NuNNew_DelIgnore(...)
 		_name = GetIgnoreName(_name);
 	elseif ((_name) and (_name == "target")) then
 		_name = GetUnitName(_name, true);
+		-- WoW 12.0 Secret Values: target name may be secret for restricted units
+		if issecretvalue and issecretvalue(_name) then return; end
 	elseif ((type(_name) == "string") and (_name == "")) then
 		_name = GetUnitName("target", true);
+		-- WoW 12.0 Secret Values: target name may be secret for restricted units
+		if issecretvalue and issecretvalue(_name) then return; end
 	end
 
 	if (not locals.NuN_FriendIgnoreActivity) then
@@ -15504,8 +15606,12 @@ function NuNNew_AddOrDelIgnore(...)
 		_name = GetIgnoreName(_name);
 	elseif ((_name) and (_name == "target")) then
 		_name = GetUnitName(_name, true);
+		-- WoW 12.0 Secret Values: target name may be secret for restricted units
+		if issecretvalue and issecretvalue(_name) then return; end
 	elseif ((type(_name) == "string") and (_name == "")) then
 		_name = GetUnitName("target", true);
+		-- WoW 12.0 Secret Values: target name may be secret for restricted units
+		if issecretvalue and issecretvalue(_name) then return; end
 	end
 
 	if (not locals.NuN_FriendIgnoreActivity) then
