@@ -4565,7 +4565,12 @@ function NuNGNote_WriteNote(noteName)
 		end
 
 		-- Preserve displayLink from existing note before we overwrite the note table
-		local existingDisplayLink = local_player.currentNote.displayLink;
+		-- Only use currentNote.displayLink if the note key is actually link-based;
+		-- otherwise a stale displayLink from a previously deleted item note could leak through.
+		local existingDisplayLink = nil;
+		if IsLinkBasedKey(local_player.currentNote.general) then
+			existingDisplayLink = local_player.currentNote.displayLink;
+		end
 		if not existingDisplayLink then
 			local existingNote = NuNDataANotes[local_player.currentNote.general] or NuNDataRNotes[local_player.currentNote.general];
 			if existingNote and existingNote.displayLink then
@@ -7838,6 +7843,8 @@ function NuNGNote_Delete(noRefresh)
 		elseif (NuNDataANotes[c_note]) then
 			NuNDataANotes[c_note] = nil;
 		end
+		-- Clear stale displayLink so it doesn't contaminate the next note saved
+		local_player.currentNote.displayLink = nil;
 		if (NuN_GTTCheckBox:GetChecked()) then
 			NuN_ClearPinnedTT();
 		end
@@ -12106,7 +12113,7 @@ function NuN_DeleteNote(dType)
 		if (NuNGNoteFrame.fromQuest) then
 			NuNcDeleteLabel:SetText(NuNC.NUN_QUEST_NOTE .. " :\n" .. local_player.currentNote.general);
 		else
-			NuNcDeleteLabel:SetText(NUN_GENERAL_TXT .. " :\n" .. local_player.currentNote.general);
+			NuNcDeleteLabel:SetText(NUN_GENERAL_TXT .. " :\n" .. (local_player.currentNote.displayLink or GetDisplayName(local_player.currentNote.general)));
 		end
 		NuNcDeleteFrame:Show();
 		NuNGNoteTextScroll:ClearFocus();
