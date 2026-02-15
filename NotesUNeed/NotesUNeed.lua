@@ -4693,6 +4693,10 @@ function NuNGNote_WriteNote(noteName)
 		NuNGNoteTitleButtonText:SetText(GetDisplayName(local_player.currentNote.general));
 		NuNGNoteTextBox:Hide();
 		NuNGNoteTitleButton:Show();
+		-- Disable title rename for link-based notes (key format should not be editable)
+		if IsLinkBasedKey(local_player.currentNote.general) then
+			NuNGNoteTitleButton:Disable();
+		end
 		NuNGNoteHeader:SetText(NuNC.NUN_SAVED_NOTE);
 
 		if (NuN_SaveReport) then
@@ -6146,11 +6150,10 @@ end
 ---@return boolean @True if this is a hyperlink-based note key.
 IsLinkBasedKey = function(key)
 	if not key or type(key) ~= "string" then return false; end
-	-- New canonical format: "type:id" where type is one of the known link types
-	if strmatch(key, "^item:%d+$") or strmatch(key, "^spell:%d+$") or
-		strmatch(key, "^achievement:%d+$") or strmatch(key, "^battlepet:%d+$") or
-		strmatch(key, "^currency:%d+$") or strmatch(key, "^talent:%d+$") or
-		strmatch(key, "^enchant:%d+$") then
+	-- Canonical format: "type:id" (e.g. item:12345, spell:67890, mount:111)
+	-- or "type:subtype:id" for journal links (e.g. journal:1:2685).
+	-- Generic pattern covers all current and future WoW link types.
+	if strmatch(key, "^%a+:%d+$") or strmatch(key, "^%a+:%d+:%d+$") then
 		return true;
 	end
 	-- Legacy full-link format (for pre-migration data)
@@ -6174,6 +6177,15 @@ ExtractLinkKey = function(link)
 	if not link or type(link) ~= "string" then return nil, false; end
 	local linkType, linkId = strmatch(link, "|H(%a+):(%d+)");
 	if linkType and linkId and linkId ~= "0" then
+		-- Journal links use journal:journalType:journalID — the first number alone
+		-- is just the subtype (0=Instance, 1=Encounter, 2=Section) and is shared
+		-- across all entries of that subtype. Include the second number as the unique ID.
+		if linkType == "journal" then
+			local journalId = strmatch(link, "|Hjournal:%d+:(%d+)");
+			if journalId then
+				return "journal:" .. linkId .. ":" .. journalId, false;
+			end
+		end
 		return linkType .. ":" .. linkId, false;
 	end
 	-- ID is missing, empty, or zero — fall back to the display name as a plain-text key
@@ -6197,6 +6209,13 @@ BuildDisplayLink = function(link)
 	local linkType, linkId = strmatch(link, "|H(%a+):(%d+)");
 	local suffix = strmatch(link, "(|h%[.-%]|h|r)$");
 	if colorPrefix and linkType and linkId and suffix then
+		-- Journal links need type:subtype:journalID to be a unique, clickable link
+		if linkType == "journal" then
+			local journalId = strmatch(link, "|Hjournal:%d+:(%d+)");
+			if journalId then
+				return colorPrefix .. "|H" .. linkType .. ":" .. linkId .. ":" .. journalId .. suffix;
+			end
+		end
 		return colorPrefix .. "|H" .. linkType .. ":" .. linkId .. suffix;
 	end
 	return link;
@@ -6250,6 +6269,16 @@ local function SimplifyHyperlink(link)
 
 	local key = linkType .. ":" .. linkId;
 	local displayLink = BuildDisplayLink(link);
+
+	-- Journal links: include the second numeric param as the unique identifier.
+	-- journal:1 is just "Encounter" subtype — the encounterID is the second param.
+	if linkType == "journal" then
+		local journalId = strmatch(link, "|Hjournal:%d+:(%d+)");
+		if journalId then
+			key = "journal:" .. linkId .. ":" .. journalId;
+			displayLink = BuildDisplayLink(link);
+		end
+	end
 
 	-- For battlepet, the simplified display link may not work with GameTooltip:SetHyperlink(),
 	-- so we preserve the full original link as the display link.
