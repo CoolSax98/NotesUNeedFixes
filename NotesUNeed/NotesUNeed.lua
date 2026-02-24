@@ -653,9 +653,7 @@ StaticPopupDialogs["NUN_CHANGE_RATING_ONE"] = {
 				UIDropDownMenu_SetText(NuNDropDown_PlayerRating, text);
 			end
 			NuNSettings.ratings[chosenRating] = text;
-			if (NuNSettings[local_player.realmName].rightClickMenu == true) then
-				NuN_SetupRatings();
-			end
+			NuN_SetupRatings();
 			local r = 0;
 			if (NuN_BLCheckBox:GetChecked()) then
 				r = 1;
@@ -677,9 +675,7 @@ StaticPopupDialogs["NUN_CHANGE_RATING_ONE"] = {
 				UIDropDownMenu_SetText(NuNDropDown_PlayerRating, text);
 			end
 			NuNSettings.ratings[chosenRating] = text;
-			if (NuNSettings[local_player.realmName].rightClickMenu == true) then
-				NuN_SetupRatings();
-			end
+			NuN_SetupRatings();
 			local r = 0;
 			if (NuN_BLCheckBox:GetChecked()) then
 				r = 1;
@@ -3232,19 +3228,6 @@ function NuN_CmdLine(option, parm1, pList)
 		elseif (switch == "-tt") then
 			NuN_ToggleToolTips();
 
-			-- Enable Right Click Menu functionality
-		elseif (switch == "-righton") then
-			if (NuNSettings[local_player.realmName].rightClickMenu == false) then
-				NuN_SetupRatings();
-			end
-			NuNSettings[local_player.realmName].rightClickMenu = true;
-			NuN_Message(NUN_PRATING);
-
-			-- Disable Right Click Menu functionality
-		elseif (switch == "-rightoff") then
-			NuNSettings[local_player.realmName].rightClickMenu = false;
-			NuN_Message("Right-click menu disabled.");
-
 			-- Create Alliance / Horde Contact Notes without validating Player exists
 		elseif ((switch == "-ca") or (switch == "-ch")) then
 			if ((receiptPending) and (locals.NuN_Receiving.type == "Contact")) then
@@ -4844,13 +4827,8 @@ local function OnNotesUNeedFullyLoaded(self, ...)
 	-- MapNotes related functions linking NuN to Map Notes
 	NuN_IndexAll();
 
-	-- Unit Right Click Menu changes
-	if (NuNSettings[local_player.realmName].rightClickMenu == nil) then
-		NuNSettings[local_player.realmName].rightClickMenu = true;
-	end
-	if (NuNSettings[local_player.realmName].rightClickMenu == true) then
-		NuN_SetupRatings();
-	end
+	-- Initialize player rating variables
+	NuN_SetupRatings();
 
 	-- Variables loaded - GUILD ROSTER UPDATE
 	-- Ensure Guild Roster Update, if the guild UI is loaded already; otherwise, do this when that addon loads
@@ -13711,7 +13689,7 @@ function NuN_MassDelete()
 	--	end
 end
 
--- Set up the Unit Right Click menu options for recording Player Rating : will create a note if necesary
+-- Initialize player rating variables from saved settings (or defaults)
 function NuN_SetupRatings()
 
 	-- Player specified ratings - MUST create Brand New arrays so that Originals are not corrupted by changes and are available to "Reset" the values
@@ -13755,201 +13733,6 @@ function NuN_SetupRatings()
 		NUN_PR_TWOSTAR = NuNSettings.ratings[24];
 		NUN_PR_ONESTAR = NuNSettings.ratings[25];
 		NUN_PR___ = NuNSettings.ratings[26];
-	end
-
-	-- WoW 11.0 Menu.ModifyMenu hook: Register once, check rightClickMenu at runtime
-	if not NuN_State.contextMenuHookRegistered then
-		NuN_State.contextMenuHookRegistered = true;
-
-		-- All player-related menu tags we want to hook into.
-		-- Menu.ModifyMenu tags are "MENU_UNIT_" .. the tag registered with UnitPopupManager.
-		local menuTags = {
-			"MENU_UNIT_PLAYER",			-- right-click another player in the world
-			"MENU_UNIT_PARTY",			-- party member
-			"MENU_UNIT_RAID_PLAYER",	-- raid member
-			"MENU_UNIT_FRIEND",			-- friends list entry (online)
-			"MENU_UNIT_FRIEND_OFFLINE",	-- friends list entry (offline)
-			"MENU_UNIT_GUILD",			-- guild roster entry (online)
-			"MENU_UNIT_GUILD_OFFLINE",	-- guild roster entry (offline)
-			"MENU_UNIT_BN_FRIEND",		-- Battle.net friend (online)
-			"MENU_UNIT_BN_FRIEND_OFFLINE", -- Battle.net friend (offline)
-			"MENU_UNIT_COMMUNITIES_WOW_MEMBER",		-- communities member
-			"MENU_UNIT_COMMUNITIES_GUILD_MEMBER",	-- guild communities member
-			"MENU_UNIT_CHAT_ROSTER",	-- chat channel roster
-			"MENU_UNIT_ENEMY_PLAYER",	-- enemy player
-			"MENU_UNIT_TARGET",			-- generic target (can be a player)
-		};
-
-		for _, tag in ipairs(menuTags) do
-			Menu.ModifyMenu(tag, function(ownerRegion, rootDescription, contextData)
-				-- Check if feature is enabled at runtime (allows toggle without ReloadUI)
-				if not NuNSettings[local_player.realmName].rightClickMenu then
-					return;
-				end
-
-			-- Extract the player name from contextData
-			local _name = contextData.name;
-
-			-- WoW 12.0 Secret Values: contextData.name may be secret for restricted units.
-			-- Must check BEFORE any boolean test or comparison on _name.
-			if issecretvalue and issecretvalue(_name) then return; end
-
-			if not _name or _name == "" then return; end
-
-				-- Capture unit token and GUID for data mining
-				local unit = contextData.unit;
-				local guid = contextData.guid;
-				local server = contextData.server;
-
-				-- Chat right-click: no guid in contextData, but lineID is available.
-				-- Use C_ChatInfo.GetChatLineSenderGUID to recover the GUID.
-				if not guid and contextData.lineID then
-					guid = C_ChatInfo.GetChatLineSenderGUID(contextData.lineID);
-				end
-
-				-- Handle cross-realm: append server name if different realm
-				if server and server ~= "" and server ~= local_player.realmName then
-					if unit then
-						local fullName = GetUnitName(unit, true);
-						-- WoW 12.0 Secret Values: skip if unit name is secret.
-						if fullName and (not issecretvalue or not issecretvalue(fullName)) then
-							_name = fullName;
-						end
-					else
-						_name = _name .. "-" .. server;
-					end
-				end
-
-				-- Helper: apply clubMemberInfo enrichment after a note is created/displayed.
-				-- contextData from guild roster (MENU_UNIT_COMMUNITIES_GUILD_MEMBER) provides
-				-- a clubMemberInfo table with guild rank, notes, class, race, etc.
-				local function ApplyClubMemberInfo()
-					local cmi = contextData.clubMemberInfo;
-					if not cmi then return; end
-
-					-- Guild name: clubMemberInfo doesn't carry the guild name directly,
-					-- but for COMMUNITIES_GUILD_MEMBER the target is in *our* guild.
-					local lgName = contextData.clubInfo and contextData.clubInfo.name;
-					if not lgName then
-						lgName = GetGuildInfo("player");
-					end
-
-					if lgName and lgName ~= "" then
-						contact.guild = lgName;
-
-						local bttnHeadingText1 = _G["NuNTitleButton1ButtonTextHeading"];
-						local bttnDetailText1 = _G["NuNInforButton1ButtonTextDetail"];
-						local bttnHeadingText2 = _G["NuNTitleButton2ButtonTextHeading"];
-						local bttnDetailText2 = _G["NuNInforButton2ButtonTextDetail"];
-
-						if bttnHeadingText1:GetText() == NUN_DFLTHEADINGS[1] then
-							bttnDetailText1:SetText(lgName);
-							locals.bttnChanges[6] = lgName;
-						end
-
-						if cmi.guildRank and bttnHeadingText2:GetText() == NUN_DFLTHEADINGS[2] then
-							local lgRankTxt;
-							if cmi.guildRankOrder == 0 then
-								lgRankTxt = "GM : " .. cmi.guildRank;
-							else
-								lgRankTxt = (cmi.guildRankOrder or "?") .. " : " .. cmi.guildRank;
-							end
-							bttnDetailText2:SetText(lgRankTxt);
-							locals.bttnChanges[7] = lgRankTxt;
-						end
-					end
-
-					-- Guild note and officer note (for display in NuN's guild note fields)
-					if cmi.memberNote then
-						gNote = cmi.memberNote;
-					end
-					if cmi.officerNote then
-						gOfficerNote = cmi.officerNote;
-					end
-				end
-
-				-- Add divider and NuN section header
-				rootDescription:CreateDivider();
-				rootDescription:CreateTitle(NUN_POPUP_TITLE);
-
-				-- "Open Note" button
-				rootDescription:CreateButton(NUN_POPUP_TOGGLE, function()
-					if locals.NuNDataPlayers[_name] then
-						NuN_ShowSavedNote(_name);
-					elseif unit and unit == "target" then
-						NuN_FromTarget(false);
-					elseif unit then
-						NuN_NewContact(unit);
-					else
-						NuN_CreateContact(_name, local_player.factionName, guid);
-					end
-					ApplyClubMemberInfo();
-				end);
-
-				-- Player Rating submenu (only if ratings are configured)
-				if NuNSettings.ratings then
-					local ratingsMenu = rootDescription:CreateButton("Player Rating");
-					local currentRating = nil;
-					if locals.NuNDataPlayers[_name] and locals.NuNDataPlayers[_name].prating then
-						currentRating = locals.NuNDataPlayers[_name].prating;
-					end
-
-					for i = 1, maxRatings, 1 do
-						local ratingText = NuNSettings.ratings[i];
-						if ratingText then
-							local ratingIndex = i;
-							local ratingButton = ratingsMenu:CreateRadio(ratingText,
-								function() return currentRating == ratingIndex; end,
-								function()
-									-- Ensure note exists before assigning rating
-									if not locals.NuNDataPlayers[_name] then
-										if unit and unit == "target" then
-											NuN_FromTarget(true);
-										elseif unit then
-											NuN_NewContact(unit);
-											ApplyClubMemberInfo();
-											NuN_WriteNote();
-											HideNUNFrame();
-										else
-											NuN_CreateContact(_name, local_player.factionName, guid);
-											ApplyClubMemberInfo();
-											NuN_WriteNote();
-											HideNUNFrame();
-										end
-									end
-
-									-- Assign the rating
-									if locals.NuNDataPlayers[_name] then
-										locals.NuNDataPlayers[_name].prating = ratingIndex;
-										pRating = ratingIndex;
-
-										-- Update the UI if this player's note is currently open
-										if _name == local_player.currentNote.unit then
-											locals.dropdownFrames.ddPRating = ratingIndex;
-											contact.prating = NuNSettings.ratings[ratingIndex];
-											UIDropDownMenu_SetSelectedID(NuNDropDown_PlayerRating, ratingIndex);
-											UIDropDownMenu_SetText(NuNDropDown_PlayerRating, contact.prating);
-										end
-
-										-- BlackList integration
-										if BlackList then
-											NuN_BlackList(_name, ratingIndex);
-										end
-									end
-								end
-							);
-							-- Add tooltip text for the rating
-							if NuNSettings.ratingsT and NuNSettings.ratingsT[i] then
-								ratingButton:SetTooltip(function(tooltip, elementDescription)
-									GameTooltip_SetTitle(tooltip, ratingText);
-									GameTooltip_AddNormalLine(tooltip, NuNSettings.ratingsT[i]);
-								end);
-							end
-						end
-					end
-				end
-			end);
-		end
 	end
 end
 
