@@ -2693,10 +2693,13 @@ function NuNF.NUN_InitializeDelayedHooks()
 	-- hook into the chat window hyperlink clicks
 	-- In modern WoW (11.x+), chat frames capture the OnHyperlinkClick handler at creation
 	-- time, so replacing the global ChatFrame_OnHyperlinkShow has no effect. Instead, we:
-	-- 1. Pre-hook SetItemRef to intercept NuN: custom links (prevents "unknown link type" errors)
-	-- 2. HookScript("OnHyperlinkClick") on each chat frame for modifier-key note creation
-	NuNHooks.NuNOriginal_SetItemRef = SetItemRef;
-	SetItemRef = NuN_SetItemRef_PreHook;
+	-- 1. HookScript("OnHyperlinkClick") on each chat frame for ALL NuN hyperlink handling
+	--    (NuN: custom links, modifier-key note creation, etc.)
+	-- 2. hooksecurefunc SetItemRef for debug logging only (does NOT replace the global,
+	--    to avoid tainting the secure execution context for context menus)
+	hooksecurefunc("SetItemRef", function(link, text, button)
+		nun_msgf(">>SetItemRef(post-hook) - link:%s  text:%s  btn:%s", DecodeHyperlink(link), DecodeHyperlink(text), tostring(button));
+	end);
 
 	for _, frameName in pairs(CHAT_FRAMES) do
 		local frame = _G[frameName];
@@ -6676,47 +6679,6 @@ function NuN_GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg
 	return arg2;
 end
 
--- SetItemRef pre-hook: intercepts NuN: custom hyperlinks before WoW's SetItemRef
--- sees them, preventing "unknown link type" errors. All other link types pass through
--- to the original SetItemRef unmodified.
-function NuN_SetItemRef_PreHook(link, text, button)
-	nun_msgf(">>NuN_SetItemRef_PreHook - link:%s  text:%s  btn:%s", DecodeHyperlink(link), DecodeHyperlink(text), tostring(button));
-
-	-- Only intercept NuN: custom links; everything else passes through to the original
-	if (strsub(link, 1, 3) == "NuN") or (strsub(link, 1, 4) == ":NuN") then
-		if (NuNSettings[local_player.realmName].modifier == "on") then
-			if (receiptPending) and (locals.NuN_Receiving.type == "General") then
-				return; -- don't interfere with note receipt
-			end
-			local _name;
-			if (strsub(link, 1, 4) == ":NuN") then
-				_name = strsub(link, 6); -- skip ":NuN:"
-			else
-				_name = strsub(link, 5); -- skip "NuN:"
-			end
-			if (_name and (strlen(_name) > 0)) then
-				local uid = strfind(_name, ":");
-				if (uid) then
-					_name = strsub(_name, 1, uid - 1);
-				end
-				if (locals.NuNDataPlayers[_name]) then
-					NuN_ShowSavedNote(_name);
-				else
-					NuN_CreateContact(_name, local_player.factionName);
-				end
-				if (DEFAULT_CHAT_FRAME.editBox) then
-					DEFAULT_CHAT_FRAME.editBox:Hide();
-				end
-			end
-		end
-		-- Always return here for NuN: links — do NOT call original SetItemRef
-		return;
-	end
-
-	-- Not a NuN link — pass through to original SetItemRef
-	NuNHooks.NuNOriginal_SetItemRef(link, text, button);
-end
-
 -- Post-hook for chat frame OnHyperlinkClick: handles modifier-key note creation
 -- for player links and item/battlepet/currency links. Runs AFTER WoW's default
 -- handler has already processed the click (so tooltips are already visible).
@@ -6729,8 +6691,28 @@ function NuN_OnHyperlinkClick_PostHook(chatframe, link, text, button)
 	if (receiptPending) and (locals.NuN_Receiving.type == "General") then
 		return;
 	end
-	-- NuN: links are already handled by SetItemRef pre-hook; skip them here
+	-- NuN: custom links — handle directly here (no longer intercepted by SetItemRef pre-hook)
 	if (strsub(link, 1, 3) == "NuN") or (strsub(link, 1, 4) == ":NuN") then
+		local _name;
+		if (strsub(link, 1, 4) == ":NuN") then
+			_name = strsub(link, 6); -- skip ":NuN:"
+		else
+			_name = strsub(link, 5); -- skip "NuN:"
+		end
+		if (_name and (strlen(_name) > 0)) then
+			local uid = strfind(_name, ":");
+			if (uid) then
+				_name = strsub(_name, 1, uid - 1);
+			end
+			if (locals.NuNDataPlayers[_name]) then
+				NuN_ShowSavedNote(_name);
+			else
+				NuN_CreateContact(_name, local_player.factionName);
+			end
+			if (DEFAULT_CHAT_FRAME.editBox) then
+				DEFAULT_CHAT_FRAME.editBox:Hide();
+			end
+		end
 		return;
 	end
 
@@ -6829,8 +6811,7 @@ function NuN_OnHyperlinkClick_PostHook(chatframe, link, text, button)
 end
 
 -- LEGACY: kept for reference but no longer used as the global ChatFrame_OnHyperlinkShow replacement.
--- The hook is now split into NuN_SetItemRef_PreHook (for NuN: links) and
--- NuN_OnHyperlinkClick_PostHook (for modifier-key note creation on chat frames).
+-- All NuN hyperlink handling is now done via NuN_OnHyperlinkClick_PostHook (HookScript on each chat frame).
 --[[ 
 function NuN_ChatFrameOnHyperlinkShow(chatframe, link, text, buttonName)
 	local processedByNuN = NuNNew_SetItemRef(chatframe, link, text, buttonName);
