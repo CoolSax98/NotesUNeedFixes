@@ -2682,6 +2682,21 @@ function NuNF.NuN_InitialiseSavedVariables()
 	end
 end
 
+-- Hook the CommunitiesFrame chat message frame (guild chat in J panel).
+-- This frame is NOT in the CHAT_FRAMES list and is created by the load-on-demand
+-- Blizzard_Communities addon, so we must hook it when it becomes available.
+-- Safe to call multiple times — will only hook once.
+function NuNF.NuN_HookCommunitiesChat()
+	if CommunitiesFrame and CommunitiesFrame.Chat and CommunitiesFrame.Chat.MessageFrame then
+		local msgFrame = CommunitiesFrame.Chat.MessageFrame;
+		if not msgFrame.NuNHooked then
+			msgFrame:HookScript("OnHyperlinkClick", NuN_OnHyperlinkClick_PostHook);
+			msgFrame.NuNHooked = true;
+			nun_msgf("NuN: Hooked CommunitiesFrame.Chat.MessageFrame for OnHyperlinkClick");
+		end
+	end
+end
+
 function NuNF.NUN_InitializeDelayedHooks()
 	--[[
 	rather than hooking container frames only, hook the underlying function that handles modified clicks for all ItemButtonTemplate-derived frame types...
@@ -2698,7 +2713,7 @@ function NuNF.NUN_InitializeDelayedHooks()
 	-- 2. hooksecurefunc SetItemRef for debug logging only (does NOT replace the global,
 	--    to avoid tainting the secure execution context for context menus)
 	hooksecurefunc("SetItemRef", function(link, text, button)
-		nun_msgf(">>SetItemRef(post-hook) - link:%s  text:%s  btn:%s", DecodeHyperlink(link), DecodeHyperlink(text), tostring(button));
+		nun_msgf(">>SetItemRef(post-hook) - link:%s  text:%s  btn:%s", tostring(link), tostring(text), tostring(button));
 	end);
 
 	for _, frameName in pairs(CHAT_FRAMES) do
@@ -2719,6 +2734,10 @@ function NuNF.NUN_InitializeDelayedHooks()
 			end
 		end
 	end);
+
+	-- Hook CommunitiesFrame chat (guild chat in J panel) — this is NOT in CHAT_FRAMES.
+	-- Blizzard_Communities is a load-on-demand addon, so the frame may not exist yet.
+	NuNF.NuN_HookCommunitiesChat();
 
 	-- this is actually a post-hook, in that we will not interfere with the normal operation of the game.  Unfortunately, since the World of Warcraft's hooksecurefunc() functionality
 	-- doesn't provide any way to determine what the original function's return value was, we have to pre-hook and call itselves.  If it returns false, then we'll attempt to process
@@ -5055,6 +5074,9 @@ function NuN_OnEvent(self, event, ...)
 		elseif (arg1 == "Prat-3.0") then
 			nun_msgf(" .. registering prat chat filters.");
 			NuN_RegisterChatFilter();
+		elseif (arg1 == "Blizzard_Communities") then
+			-- CommunitiesFrame just became available — hook its chat for alt-click support
+			NuNF.NuN_HookCommunitiesChat();
 		end
 		-- REMOVE: This is no longer needed
 		-- Get Delayed Who Event information on players
@@ -6720,7 +6742,11 @@ function NuN_OnHyperlinkClick_PostHook(chatframe, link, text, button)
 		local _name;
 		if strsub(link, 1, 9) == "HBNplayer" then
 			-- BNet player links — currently unhandled, same as original code
+		elseif strsub(link, 1, 16) == "playerCommunity:" then
+			-- Community (guild) chat links: "playerCommunity:Name-Realm:clubId:streamId:epoch"
+			_name = strsub(link, 17); -- skip "playerCommunity:"
 		else
+			-- Standard player links: "player:Name-Realm:..."
 			_name = strsub(link, 8);
 		end
 		if (_name and (strlen(_name) > 0)) then
