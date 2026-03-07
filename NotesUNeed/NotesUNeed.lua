@@ -2069,6 +2069,9 @@ function NuNF.NuN_GetSimpleName(cmplxName)
 	posE = strfind(cmplxName, "]|h");
 	if (posB ~= nil) and (posE ~= nil) and (posB < posE) then
 		smplName = strsub(cmplxName, (posB + 3), (posE - 1));
+		-- Strip atlas texture markup (e.g., crafting quality icons) so the
+		-- returned name matches what GameTooltipTextLeft1:GetText() returns.
+		smplName = strgsub(smplName, "%s*|A.-|a", "");
 		return smplName
 	else
 		return nil;
@@ -2680,6 +2683,31 @@ function NuNF.NuN_InitialiseSavedVariables()
 			print("NotesUNeed: Migrated " .. migratedCount .. " note(s) to new key format.");
 		end
 	end
+
+	-- v2: Strip atlas texture markup (e.g., crafting quality icons) from itmIndex keys.
+	-- Prior versions stored keys like "Item Name |A:Professions-ChatIcon-Quality-Tier3:0:0|a"
+	-- but tooltip GetText() returns just "Item Name", causing lookup mismatches.
+	if (not NuNSettings.dataVersion or NuNSettings.dataVersion < 2) then
+		if NuNData[locals.itmIndex_dbKey] then
+			local fixups = {};
+			for oldKey, value in pairs(NuNData[locals.itmIndex_dbKey]) do
+				if type(oldKey) == "string" and strfind(oldKey, "|A", 1, true) then
+					local newKey = strgsub(oldKey, "%s*|A.-|a", "");
+					if newKey ~= oldKey and newKey ~= "" then
+						fixups[#fixups + 1] = { old = oldKey, new = newKey, val = value };
+					end
+				end
+			end
+			for _, fix in ipairs(fixups) do
+				NuNData[locals.itmIndex_dbKey][fix.old] = nil;
+				NuNData[locals.itmIndex_dbKey][fix.new] = fix.val;
+			end
+			if #fixups > 0 then
+				print("NotesUNeed: Cleaned " .. #fixups .. " item index key(s) with embedded quality icons.");
+			end
+		end
+		NuNSettings.dataVersion = 2;
+	end
 end
 
 -- Hook the CommunitiesFrame chat message frame (guild chat in J panel).
@@ -2779,6 +2807,18 @@ function NuNF.NUN_InitializeDelayedHooks()
 	if NuNHooks.NuNOriginal_OpenCalendar ~= nil then
 		OpenCalendar = NuNHooks.NuNOriginal_OpenCalendar;
 		NuNHooks.NuNOriginal_OpenCalendar = nil;
+	end
+
+	-- Modern tooltip hook: TooltipDataProcessor fires every time tooltip content changes,
+	-- even when the tooltip stays visible (e.g., hovering between recipes in the professions
+	-- window, auction house items, etc.). The XML child frame OnShow only fires when the
+	-- tooltip first appears, missing all subsequent content updates.
+	if TooltipDataProcessor and Enum and Enum.TooltipDataType then
+		TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, function(tooltip, data)
+			if tooltip == GameTooltip and not InCombatLockdown() then
+				NuN_GameTooltip_OnShow(NuN_TooltipControl, tooltip);
+			end
+		end);
 	end
 end
 
@@ -6287,6 +6327,13 @@ end
 local function SimplifyHyperlink(link)
 	local linkType, linkId = strmatch(link, "|H(%a+):(%d+)");
 	local linkName = strmatch(link, "|h%[(.-)%]|h");
+
+	-- Strip atlas texture markup (e.g., crafting quality icons like |A:Professions-ChatIcon-Quality-Tier3:0:0|a)
+	-- from the link name. These icons are embedded in hyperlink text but NOT returned by FontString:GetText(),
+	-- so keeping them would cause itmIndex key mismatches on tooltip lookup.
+	if linkName then
+		linkName = strgsub(linkName, "%s*|A.-|a", "");
+	end
 
 	if not linkName then
 		-- Not a recognized hyperlink format; return as-is
@@ -10335,15 +10382,35 @@ orgevo: I'm not really sure exactly what case this code was trying to handle, bu
 			NuN_PinnedTooltip.type = storePinned;
 			NuN_Tooltip:SetScale(tTip:GetScale());
 			NuN_Tooltip:ClearAllPoints();
-			-- Anchor past any visible shopping (comparison) tooltips so we don't overlap them
+			-- Anchor past any visible shopping (comparison) tooltips so we don't overlap them.
+			-- When dual-wielding, both ShoppingTooltip1 and ShoppingTooltip2 are visible.
+			-- We need to anchor to the outermost one (farthest from GameTooltip) so the
+			-- NuN tooltip extends the chain rather than overlapping.
 			local num1 = ShoppingTooltip1 and ShoppingTooltip1:IsVisible() and ShoppingTooltip1:NumLines();
 			local num2 = ShoppingTooltip2 and ShoppingTooltip2:IsVisible() and ShoppingTooltip2:NumLines();
-			if num2 and (num2 > 0) then
-				anchorBy, anchorTo = NuN_GetTipAnchor(ShoppingTooltip2);
-				NuN_Tooltip:SetPoint(anchorBy, ShoppingTooltip2, anchorTo, 0, 0);
+			local anchorTarget = nil;
+			if (num1 and num1 > 0) and (num2 and num2 > 0) then
+				-- Both visible (dual-wield): pick the one farthest from GameTooltip
+				local gtX = select(1, tTip:GetCenter()) or 0;
+				local s1X = select(1, ShoppingTooltip1:GetCenter()) or 0;
+				local s2X = select(1, ShoppingTooltip2:GetCenter()) or 0;
+				local success, result = pcall(function()
+					if math.abs(s1X - gtX) >= math.abs(s2X - gtX) then
+						return ShoppingTooltip1;
+					else
+						return ShoppingTooltip2;
+					end
+				end);
+				anchorTarget = success and result or ShoppingTooltip2;
+			elseif num2 and (num2 > 0) then
+				anchorTarget = ShoppingTooltip2;
 			elseif num1 and (num1 > 0) then
-				anchorBy, anchorTo = NuN_GetTipAnchor(ShoppingTooltip1);
-				NuN_Tooltip:SetPoint(anchorBy, ShoppingTooltip1, anchorTo, 0, 0);
+				anchorTarget = ShoppingTooltip1;
+			end
+			if anchorTarget then
+				anchorBy, anchorTo = NuN_GetTipAnchor(anchorTarget);
+				NuN_Tooltip:SetPoint(anchorBy, anchorTarget, anchorTo, 0, 0);
+				NuN_Tooltip:SetFrameLevel(anchorTarget:GetFrameLevel() + 1);
 			else
 				anchorBy, anchorTo = NuN_GetTipAnchor(tTip);
 				NuN_Tooltip:SetPoint(anchorBy, tTip, anchorTo, 1, 0);
@@ -10605,11 +10672,24 @@ function NuN_ShoppingTooltip_OnShow()
 	if (not NuN_Tooltip) or (not NuN_Tooltip:IsVisible()) then
 		return;
 	end
-	-- Determine the outermost visible tooltip to anchor past
+	-- Determine the outermost visible shopping tooltip to anchor past.
+	-- When dual-wielding, both are visible — pick the one farthest from GameTooltip.
 	local anchorTo_tooltip = GameTooltip;
 	local num1 = ShoppingTooltip1 and ShoppingTooltip1:IsVisible() and ShoppingTooltip1:NumLines();
 	local num2 = ShoppingTooltip2 and ShoppingTooltip2:IsVisible() and ShoppingTooltip2:NumLines();
-	if num2 and (num2 > 0) then
+	if (num1 and num1 > 0) and (num2 and num2 > 0) then
+		local gtX = select(1, GameTooltip:GetCenter()) or 0;
+		local s1X = select(1, ShoppingTooltip1:GetCenter()) or 0;
+		local s2X = select(1, ShoppingTooltip2:GetCenter()) or 0;
+		local success, result = pcall(function()
+			if math.abs(s1X - gtX) >= math.abs(s2X - gtX) then
+				return ShoppingTooltip1;
+			else
+				return ShoppingTooltip2;
+			end
+		end);
+		anchorTo_tooltip = success and result or ShoppingTooltip2;
+	elseif num2 and (num2 > 0) then
 		anchorTo_tooltip = ShoppingTooltip2;
 	elseif num1 and (num1 > 0) then
 		anchorTo_tooltip = ShoppingTooltip1;
@@ -10617,6 +10697,10 @@ function NuN_ShoppingTooltip_OnShow()
 	local anchorBy, anchorTo = NuN_GetTipAnchor(anchorTo_tooltip);
 	NuN_Tooltip:ClearAllPoints();
 	NuN_Tooltip:SetPoint(anchorBy, anchorTo_tooltip, anchorTo, 0, 0);
+	-- Raise frame level above shopping tooltips so we render on top
+	if anchorTo_tooltip ~= GameTooltip then
+		NuN_Tooltip:SetFrameLevel(anchorTo_tooltip:GetFrameLevel() + 1);
+	end
 end
 
 function NuN_TTCheckBox_OnClick(self, frameType)
