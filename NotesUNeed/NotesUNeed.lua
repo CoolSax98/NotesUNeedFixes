@@ -4764,7 +4764,11 @@ function NuNGNote_WriteNote(noteName)
 		end
 		NuNGTTCheckBoxLabel:Show();
 		NuNGNoteTitleButton.noteKey = local_player.currentNote.general;
-		NuNGNoteTitleButtonText:SetText(GetDisplayName(local_player.currentNote.general));
+		local titleDisplay = local_player.currentNote.displayLink;
+		if titleDisplay then
+			titleDisplay = strgsub(titleDisplay, "%s*|A.-|a", "");
+		end
+		NuNGNoteTitleButtonText:SetText(titleDisplay or GetDisplayName(local_player.currentNote.general));
 		NuNGNoteTextBox:Hide();
 		NuNGNoteTitleButton:Show();
 		-- Disable title rename for link-based notes (key format should not be editable)
@@ -6280,6 +6284,12 @@ BuildDisplayLink = function(link)
 	local colorPrefix = strmatch(link, "^(.-)|H");
 	local linkType, linkId = strmatch(link, "|H(%a+):(%d+)");
 	local suffix = strmatch(link, "(|h%[.-%]|h|r)$");
+	-- Strip atlas markup (e.g., |A:Professions-ChatIcon-Quality-Tier3:0:0|a) from the
+	-- display name inside the brackets. Crafted items with quality ranks embed these
+	-- atlas texture references in the item name within the hyperlink.
+	if suffix then
+		suffix = strgsub(suffix, "%s*|A.-|a", "");
+	end
 	if colorPrefix and linkType and linkId and suffix then
 		-- Journal links need type:subtype:journalID to be a unique, clickable link
 		if linkType == "journal" then
@@ -6302,7 +6312,9 @@ GetDisplayName = function(key)
 	if not key or type(key) ~= "string" then return tostring(key); end
 	local note = NuNDataANotes[key] or NuNDataRNotes[key];
 	if note and note.displayLink then
-		return note.displayLink;
+		-- Strip atlas markup from stored displayLink values (legacy data may contain
+		-- crafted item quality icons like |A:Professions-ChatIcon-Quality-Tier3:0:0|a)
+		return strgsub(note.displayLink, "%s*|A.-|a", "");
 	end
 	return key;
 end
@@ -9027,7 +9039,11 @@ function NuN_ShowTitledGNote(GNoteText)
 		NuNGNoteTextScroll:SetText(GNoteText);
 		NuNGNoteTextBox:Hide();
 		NuNGNoteTitleButton.noteKey = local_player.currentNote.general;
-		NuNGNoteTitleButtonText:SetText(local_player.currentNote.displayLink or GetDisplayName(local_player.currentNote.general));
+		local titleDisplay = local_player.currentNote.displayLink;
+		if titleDisplay then
+			titleDisplay = strgsub(titleDisplay, "%s*|A.-|a", "");
+		end
+		NuNGNoteTitleButtonText:SetText(titleDisplay or GetDisplayName(local_player.currentNote.general));
 		NuNGNoteTitleButton:Show();
 		if (not NuNSettings[local_player.realmName].bHave) then
 			NuNGNoteTextScroll:SetFocus();
@@ -10196,7 +10212,11 @@ function NuN_GNoteTitleSet()
 	local_player.currentNote.general = strgsub(local_player.currentNote.general, "||c", "|c");
 	local_player.currentNote.general = strgsub(local_player.currentNote.general, "||r", "|r");
 	NuNGNoteTitleButton.noteKey = local_player.currentNote.general;
-	NuNGNoteTitleButtonText:SetText(local_player.currentNote.displayLink or GetDisplayName(local_player.currentNote.general));
+	local titleDisplay = local_player.currentNote.displayLink;
+	if titleDisplay then
+		titleDisplay = strgsub(titleDisplay, "%s*|A.-|a", "");
+	end
+	NuNGNoteTitleButtonText:SetText(titleDisplay or GetDisplayName(local_player.currentNote.general));
 	NuNGNoteTextBox:Hide();
 	NuNGNoteTitleButton:Show();
 end
@@ -12198,7 +12218,11 @@ function NuN_DeleteNote(dType)
 		if (NuNGNoteFrame.fromQuest) then
 			NuNcDeleteLabel:SetText(NuNC.NUN_QUEST_NOTE .. " :\n" .. local_player.currentNote.general);
 		else
-			NuNcDeleteLabel:SetText(NUN_GENERAL_TXT .. " :\n" .. (local_player.currentNote.displayLink or GetDisplayName(local_player.currentNote.general)));
+			local delDisplay = local_player.currentNote.displayLink;
+			if delDisplay then
+				delDisplay = strgsub(delDisplay, "%s*|A.-|a", "");
+			end
+			NuNcDeleteLabel:SetText(NUN_GENERAL_TXT .. " :\n" .. (delDisplay or GetDisplayName(local_player.currentNote.general)));
 		end
 		NuNcDeleteFrame:Show();
 		NuNGNoteTextScroll:ClearFocus();
