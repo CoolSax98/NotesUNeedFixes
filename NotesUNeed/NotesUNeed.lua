@@ -6411,13 +6411,17 @@ function NuNQuickNote.ProcessHyperlink(itemLink)
 		local sanitizedLink, linkName, displayLink = SimplifyHyperlink(itemLink)
 
 		if ((itemLink ~= nil) and (itemLink ~= "")) then
+			-- Strip atlas markup (e.g., crafting quality icons) from the link before
+			-- inserting into note text. Atlas markup like |A:...|a is embedded in
+			-- hyperlink text but doesn't render in plain EditBox display.
+			local cleanLink = strgsub(itemLink, "%s*|A.-|a", "");
 			if ((NuNGNoteFrame:IsVisible()) or (NuNFrame:IsVisible())) then
 				if (NuNGNoteFrame:IsVisible()) then
-					NuNGNoteTextScroll:Insert(itemLink); -- + v5.00.11200
+					NuNGNoteTextScroll:Insert(cleanLink); -- + v5.00.11200
 					StackSplitFrame:Hide();
 					return true;
 				elseif (NuNFrame:IsVisible()) then
-					NuNText:Insert(itemLink); -- + v5.00.11200
+					NuNText:Insert(cleanLink); -- + v5.00.11200
 					StackSplitFrame:Hide();
 					return true;
 				end
@@ -6684,12 +6688,15 @@ function NotesUNeed.SetLinkRef(linkText)
 	if linkText and (linkText ~= "") and NuNSettings and NuNSettings[local_player.realmName] and
 		NuNSettings[local_player.realmName].modifier and (NuNSettings[local_player.realmName].modifier == "on") and
 		((receiptPending == nil) or (locals.NuN_Receiving.type ~= "General")) then
+		-- Strip atlas markup (e.g., crafting quality icons) from the link before
+		-- inserting into note text.
+		local cleanLink = strgsub(linkText, "%s*|A.-|a", "");
 		if NuNGNoteFrame:IsVisible() then
 			-- add the link to the note
-			NuNGNoteTextScroll:Insert(linkText);
+			NuNGNoteTextScroll:Insert(cleanLink);
 			result = true;
 		elseif NuNFrame:IsVisible() then
-			NuNText:Insert(linkText);
+			NuNText:Insert(cleanLink);
 			result = true;
 		end
 	end
@@ -7000,48 +7007,17 @@ function NuNNew_SetItemRef(self, link, text, btn)
 	return processed;
 end
 
--- Review: This whole function may be redundant. When you mod-click on a item on the paperdoll, it triggers the ProcessHyperlink function already. This function doesn't seem to be useful any longer.
+-- This function is now a no-op. All paperdoll mod-click handling is done by the
+-- HandleModifiedItemClick post-hook (which calls NuNQuickNote.ProcessHyperlink).
+-- Blizzard's PaperDollItemSlotButton_OnModifiedClick calls HandleModifiedItemClick
+-- internally, so the post-hook fires first and handles both "note editor open"
+-- (insert link) and "no editor" (open/create note) cases.
+-- The old InspectFrame branch here was dead code: InspectFrame buttons use a
+-- separate Blizzard function (InspectPaperDollItemSlotButton_OnClick) that does
+-- NOT trigger this hook.
+-- We cannot unregister the hooksecurefunc, so the function must remain defined.
 function NuNNew_PaperDollItemSlotButton_OnModifiedClick(btn, mBttn)
-	if (NuNSettings[local_player.realmName].modifier == "on") then
-		local itmLink;
-
-		if ((receiptPending) and (locals.NuN_Receiving.type == "General")) then
-
-		elseif (IsNuNModifierKeyDown(mBttn)) then
-			if ((InspectFrame) and (InspectFrame:IsVisible())) then
-				itmLink = GetInventoryItemLink("target", btn:GetID());
-			else
-				itmLink = GetInventoryItemLink("player", btn:GetID());
-			end
-			if ((itmLink ~= nil) and (itmLink ~= "")) then
-				if ((NuNGNoteFrame:IsVisible()) or (NuNFrame:IsVisible())) then
-					if (NuNGNoteFrame:IsVisible()) then
-						NuNGNoteTextScroll:Insert(itmLink);
-						return;
-					elseif (NuNFrame:IsVisible()) then
-						NuNText:Insert(itmLink);
-						return;
-					end
-				else
-					NuNGNoteFrame.fromQuest = nil;
-					local key, linkName, displayLink = SimplifyHyperlink(itmLink);
-					if (key) then
-						if (NuNData[locals.itmIndex_dbKey][key]) then
-							key = (NuNData[locals.itmIndex_dbKey][key]);
-						end
-						if ((NuNDataRNotes[key]) or (NuNDataANotes[key])) then
-							UpdateDisplayLink(key, displayLink);
-							local_player.currentNote.general = key;
-							NuN_ShowSavedGNote();
-						else
-							NuNF.NuN_GNoteFromItem(key, "GameTooltip", displayLink);
-						end
-					end
-					return;
-				end
-			end
-		end
-	end
+	-- no-op: handled by HandleModifiedItemClick post-hook
 end
 
 --[[
