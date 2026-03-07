@@ -10733,15 +10733,18 @@ function NuN_ClearPinnedTT()
 end
 
 function NuN_CheckPinnedBox(tst)
-	if ((NuN_PinnedTooltip:IsVisible()) and (NuN_PinnedTooltip.noteName == tst)) then
-		return 1;
-	else
-		return 0;
-	end
+	-- Must return true/false (not 1/0) because Lua treats 0 as truthy,
+	-- so SetChecked(0) would incorrectly CHECK the checkbox.
+	return (NuN_PinnedTooltip:IsVisible()) and (NuN_PinnedTooltip.noteName == tst) or false;
 end
 
 function NuN_PinnedTT_OnClick()
-	local ttTitle = NuN_PinnedTooltipTextLeft2:GetText();
+	-- Use the stored canonical note name rather than reading the tooltip display text.
+	-- TextLeft2 contains the colorized hyperlink (from GetDisplayName) for link-based
+	-- notes, which doesn't match any key in the data tables. .noteName holds the
+	-- correct canonical key (e.g., "item:110609" or "Playername-Realm").
+	local ttTitle = NuN_PinnedTooltip.noteName;
+	if not ttTitle then return; end
 
 	if (NuN_PinnedTooltip.type == "Contact") then
 		if (locals.NuNDataPlayers[ttTitle]) then
