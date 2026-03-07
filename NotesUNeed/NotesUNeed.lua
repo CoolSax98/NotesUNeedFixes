@@ -2069,6 +2069,9 @@ function NuNF.NuN_GetSimpleName(cmplxName)
 	posE = strfind(cmplxName, "]|h");
 	if (posB ~= nil) and (posE ~= nil) and (posB < posE) then
 		smplName = strsub(cmplxName, (posB + 3), (posE - 1));
+		-- Strip atlas texture markup (e.g., crafting quality icons) so the
+		-- returned name matches what GameTooltipTextLeft1:GetText() returns.
+		smplName = strgsub(smplName, "%s*|A.-|a", "");
 		return smplName
 	else
 		return nil;
@@ -2680,6 +2683,31 @@ function NuNF.NuN_InitialiseSavedVariables()
 			print("NotesUNeed: Migrated " .. migratedCount .. " note(s) to new key format.");
 		end
 	end
+
+	-- v2: Strip atlas texture markup (e.g., crafting quality icons) from itmIndex keys.
+	-- Prior versions stored keys like "Item Name |A:Professions-ChatIcon-Quality-Tier3:0:0|a"
+	-- but tooltip GetText() returns just "Item Name", causing lookup mismatches.
+	if (not NuNSettings.dataVersion or NuNSettings.dataVersion < 2) then
+		if NuNData[locals.itmIndex_dbKey] then
+			local fixups = {};
+			for oldKey, value in pairs(NuNData[locals.itmIndex_dbKey]) do
+				if type(oldKey) == "string" and strfind(oldKey, "|A", 1, true) then
+					local newKey = strgsub(oldKey, "%s*|A.-|a", "");
+					if newKey ~= oldKey and newKey ~= "" then
+						fixups[#fixups + 1] = { old = oldKey, new = newKey, val = value };
+					end
+				end
+			end
+			for _, fix in ipairs(fixups) do
+				NuNData[locals.itmIndex_dbKey][fix.old] = nil;
+				NuNData[locals.itmIndex_dbKey][fix.new] = fix.val;
+			end
+			if #fixups > 0 then
+				print("NotesUNeed: Cleaned " .. #fixups .. " item index key(s) with embedded quality icons.");
+			end
+		end
+		NuNSettings.dataVersion = 2;
+	end
 end
 
 -- Hook the CommunitiesFrame chat message frame (guild chat in J panel).
@@ -2779,6 +2807,18 @@ function NuNF.NUN_InitializeDelayedHooks()
 	if NuNHooks.NuNOriginal_OpenCalendar ~= nil then
 		OpenCalendar = NuNHooks.NuNOriginal_OpenCalendar;
 		NuNHooks.NuNOriginal_OpenCalendar = nil;
+	end
+
+	-- Modern tooltip hook: TooltipDataProcessor fires every time tooltip content changes,
+	-- even when the tooltip stays visible (e.g., hovering between recipes in the professions
+	-- window, auction house items, etc.). The XML child frame OnShow only fires when the
+	-- tooltip first appears, missing all subsequent content updates.
+	if TooltipDataProcessor and Enum and Enum.TooltipDataType then
+		TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, function(tooltip, data)
+			if tooltip == GameTooltip and not InCombatLockdown() then
+				NuN_GameTooltip_OnShow(NuN_TooltipControl, tooltip);
+			end
+		end);
 	end
 end
 
@@ -4724,7 +4764,11 @@ function NuNGNote_WriteNote(noteName)
 		end
 		NuNGTTCheckBoxLabel:Show();
 		NuNGNoteTitleButton.noteKey = local_player.currentNote.general;
-		NuNGNoteTitleButtonText:SetText(GetDisplayName(local_player.currentNote.general));
+		local titleDisplay = local_player.currentNote.displayLink;
+		if titleDisplay then
+			titleDisplay = strgsub(titleDisplay, "%s*|A.-|a", "");
+		end
+		NuNGNoteTitleButtonText:SetText(titleDisplay or GetDisplayName(local_player.currentNote.general));
 		NuNGNoteTextBox:Hide();
 		NuNGNoteTitleButton:Show();
 		-- Disable title rename for link-based notes (key format should not be editable)
@@ -6240,6 +6284,12 @@ BuildDisplayLink = function(link)
 	local colorPrefix = strmatch(link, "^(.-)|H");
 	local linkType, linkId = strmatch(link, "|H(%a+):(%d+)");
 	local suffix = strmatch(link, "(|h%[.-%]|h|r)$");
+	-- Strip atlas markup (e.g., |A:Professions-ChatIcon-Quality-Tier3:0:0|a) from the
+	-- display name inside the brackets. Crafted items with quality ranks embed these
+	-- atlas texture references in the item name within the hyperlink.
+	if suffix then
+		suffix = strgsub(suffix, "%s*|A.-|a", "");
+	end
 	if colorPrefix and linkType and linkId and suffix then
 		-- Journal links need type:subtype:journalID to be a unique, clickable link
 		if linkType == "journal" then
@@ -6262,7 +6312,9 @@ GetDisplayName = function(key)
 	if not key or type(key) ~= "string" then return tostring(key); end
 	local note = NuNDataANotes[key] or NuNDataRNotes[key];
 	if note and note.displayLink then
-		return note.displayLink;
+		-- Strip atlas markup from stored displayLink values (legacy data may contain
+		-- crafted item quality icons like |A:Professions-ChatIcon-Quality-Tier3:0:0|a)
+		return strgsub(note.displayLink, "%s*|A.-|a", "");
 	end
 	return key;
 end
@@ -6287,6 +6339,13 @@ end
 local function SimplifyHyperlink(link)
 	local linkType, linkId = strmatch(link, "|H(%a+):(%d+)");
 	local linkName = strmatch(link, "|h%[(.-)%]|h");
+
+	-- Strip atlas texture markup (e.g., crafting quality icons like |A:Professions-ChatIcon-Quality-Tier3:0:0|a)
+	-- from the link name. These icons are embedded in hyperlink text but NOT returned by FontString:GetText(),
+	-- so keeping them would cause itmIndex key mismatches on tooltip lookup.
+	if linkName then
+		linkName = strgsub(linkName, "%s*|A.-|a", "");
+	end
 
 	if not linkName then
 		-- Not a recognized hyperlink format; return as-is
@@ -6352,13 +6411,17 @@ function NuNQuickNote.ProcessHyperlink(itemLink)
 		local sanitizedLink, linkName, displayLink = SimplifyHyperlink(itemLink)
 
 		if ((itemLink ~= nil) and (itemLink ~= "")) then
+			-- Strip atlas markup (e.g., crafting quality icons) from the link before
+			-- inserting into note text. Atlas markup like |A:...|a is embedded in
+			-- hyperlink text but doesn't render in plain EditBox display.
+			local cleanLink = strgsub(itemLink, "%s*|A.-|a", "");
 			if ((NuNGNoteFrame:IsVisible()) or (NuNFrame:IsVisible())) then
 				if (NuNGNoteFrame:IsVisible()) then
-					NuNGNoteTextScroll:Insert(itemLink); -- + v5.00.11200
+					NuNGNoteTextScroll:Insert(cleanLink); -- + v5.00.11200
 					StackSplitFrame:Hide();
 					return true;
 				elseif (NuNFrame:IsVisible()) then
-					NuNText:Insert(itemLink); -- + v5.00.11200
+					NuNText:Insert(cleanLink); -- + v5.00.11200
 					StackSplitFrame:Hide();
 					return true;
 				end
@@ -6625,12 +6688,15 @@ function NotesUNeed.SetLinkRef(linkText)
 	if linkText and (linkText ~= "") and NuNSettings and NuNSettings[local_player.realmName] and
 		NuNSettings[local_player.realmName].modifier and (NuNSettings[local_player.realmName].modifier == "on") and
 		((receiptPending == nil) or (locals.NuN_Receiving.type ~= "General")) then
+		-- Strip atlas markup (e.g., crafting quality icons) from the link before
+		-- inserting into note text.
+		local cleanLink = strgsub(linkText, "%s*|A.-|a", "");
 		if NuNGNoteFrame:IsVisible() then
 			-- add the link to the note
-			NuNGNoteTextScroll:Insert(linkText);
+			NuNGNoteTextScroll:Insert(cleanLink);
 			result = true;
 		elseif NuNFrame:IsVisible() then
-			NuNText:Insert(linkText);
+			NuNText:Insert(cleanLink);
 			result = true;
 		end
 	end
@@ -6941,48 +7007,17 @@ function NuNNew_SetItemRef(self, link, text, btn)
 	return processed;
 end
 
--- Review: This whole function may be redundant. When you mod-click on a item on the paperdoll, it triggers the ProcessHyperlink function already. This function doesn't seem to be useful any longer.
+-- This function is now a no-op. All paperdoll mod-click handling is done by the
+-- HandleModifiedItemClick post-hook (which calls NuNQuickNote.ProcessHyperlink).
+-- Blizzard's PaperDollItemSlotButton_OnModifiedClick calls HandleModifiedItemClick
+-- internally, so the post-hook fires first and handles both "note editor open"
+-- (insert link) and "no editor" (open/create note) cases.
+-- The old InspectFrame branch here was dead code: InspectFrame buttons use a
+-- separate Blizzard function (InspectPaperDollItemSlotButton_OnClick) that does
+-- NOT trigger this hook.
+-- We cannot unregister the hooksecurefunc, so the function must remain defined.
 function NuNNew_PaperDollItemSlotButton_OnModifiedClick(btn, mBttn)
-	if (NuNSettings[local_player.realmName].modifier == "on") then
-		local itmLink;
-
-		if ((receiptPending) and (locals.NuN_Receiving.type == "General")) then
-
-		elseif (IsNuNModifierKeyDown(mBttn)) then
-			if ((InspectFrame) and (InspectFrame:IsVisible())) then
-				itmLink = GetInventoryItemLink("target", btn:GetID());
-			else
-				itmLink = GetInventoryItemLink("player", btn:GetID());
-			end
-			if ((itmLink ~= nil) and (itmLink ~= "")) then
-				if ((NuNGNoteFrame:IsVisible()) or (NuNFrame:IsVisible())) then
-					if (NuNGNoteFrame:IsVisible()) then
-						NuNGNoteTextScroll:Insert(itmLink);
-						return;
-					elseif (NuNFrame:IsVisible()) then
-						NuNText:Insert(itmLink);
-						return;
-					end
-				else
-					NuNGNoteFrame.fromQuest = nil;
-					local key, linkName, displayLink = SimplifyHyperlink(itmLink);
-					if (key) then
-						if (NuNData[locals.itmIndex_dbKey][key]) then
-							key = (NuNData[locals.itmIndex_dbKey][key]);
-						end
-						if ((NuNDataRNotes[key]) or (NuNDataANotes[key])) then
-							UpdateDisplayLink(key, displayLink);
-							local_player.currentNote.general = key;
-							NuN_ShowSavedGNote();
-						else
-							NuNF.NuN_GNoteFromItem(key, "GameTooltip", displayLink);
-						end
-					end
-					return;
-				end
-			end
-		end
-	end
+	-- no-op: handled by HandleModifiedItemClick post-hook
 end
 
 --[[
@@ -8980,7 +9015,11 @@ function NuN_ShowTitledGNote(GNoteText)
 		NuNGNoteTextScroll:SetText(GNoteText);
 		NuNGNoteTextBox:Hide();
 		NuNGNoteTitleButton.noteKey = local_player.currentNote.general;
-		NuNGNoteTitleButtonText:SetText(local_player.currentNote.displayLink or GetDisplayName(local_player.currentNote.general));
+		local titleDisplay = local_player.currentNote.displayLink;
+		if titleDisplay then
+			titleDisplay = strgsub(titleDisplay, "%s*|A.-|a", "");
+		end
+		NuNGNoteTitleButtonText:SetText(titleDisplay or GetDisplayName(local_player.currentNote.general));
 		NuNGNoteTitleButton:Show();
 		if (not NuNSettings[local_player.realmName].bHave) then
 			NuNGNoteTextScroll:SetFocus();
@@ -10149,7 +10188,11 @@ function NuN_GNoteTitleSet()
 	local_player.currentNote.general = strgsub(local_player.currentNote.general, "||c", "|c");
 	local_player.currentNote.general = strgsub(local_player.currentNote.general, "||r", "|r");
 	NuNGNoteTitleButton.noteKey = local_player.currentNote.general;
-	NuNGNoteTitleButtonText:SetText(local_player.currentNote.displayLink or GetDisplayName(local_player.currentNote.general));
+	local titleDisplay = local_player.currentNote.displayLink;
+	if titleDisplay then
+		titleDisplay = strgsub(titleDisplay, "%s*|A.-|a", "");
+	end
+	NuNGNoteTitleButtonText:SetText(titleDisplay or GetDisplayName(local_player.currentNote.general));
 	NuNGNoteTextBox:Hide();
 	NuNGNoteTitleButton:Show();
 end
@@ -10335,15 +10378,35 @@ orgevo: I'm not really sure exactly what case this code was trying to handle, bu
 			NuN_PinnedTooltip.type = storePinned;
 			NuN_Tooltip:SetScale(tTip:GetScale());
 			NuN_Tooltip:ClearAllPoints();
-			-- Anchor past any visible shopping (comparison) tooltips so we don't overlap them
+			-- Anchor past any visible shopping (comparison) tooltips so we don't overlap them.
+			-- When dual-wielding, both ShoppingTooltip1 and ShoppingTooltip2 are visible.
+			-- We need to anchor to the outermost one (farthest from GameTooltip) so the
+			-- NuN tooltip extends the chain rather than overlapping.
 			local num1 = ShoppingTooltip1 and ShoppingTooltip1:IsVisible() and ShoppingTooltip1:NumLines();
 			local num2 = ShoppingTooltip2 and ShoppingTooltip2:IsVisible() and ShoppingTooltip2:NumLines();
-			if num2 and (num2 > 0) then
-				anchorBy, anchorTo = NuN_GetTipAnchor(ShoppingTooltip2);
-				NuN_Tooltip:SetPoint(anchorBy, ShoppingTooltip2, anchorTo, 0, 0);
+			local anchorTarget = nil;
+			if (num1 and num1 > 0) and (num2 and num2 > 0) then
+				-- Both visible (dual-wield): pick the one farthest from GameTooltip
+				local gtX = select(1, tTip:GetCenter()) or 0;
+				local s1X = select(1, ShoppingTooltip1:GetCenter()) or 0;
+				local s2X = select(1, ShoppingTooltip2:GetCenter()) or 0;
+				local success, result = pcall(function()
+					if math.abs(s1X - gtX) >= math.abs(s2X - gtX) then
+						return ShoppingTooltip1;
+					else
+						return ShoppingTooltip2;
+					end
+				end);
+				anchorTarget = success and result or ShoppingTooltip2;
+			elseif num2 and (num2 > 0) then
+				anchorTarget = ShoppingTooltip2;
 			elseif num1 and (num1 > 0) then
-				anchorBy, anchorTo = NuN_GetTipAnchor(ShoppingTooltip1);
-				NuN_Tooltip:SetPoint(anchorBy, ShoppingTooltip1, anchorTo, 0, 0);
+				anchorTarget = ShoppingTooltip1;
+			end
+			if anchorTarget then
+				anchorBy, anchorTo = NuN_GetTipAnchor(anchorTarget);
+				NuN_Tooltip:SetPoint(anchorBy, anchorTarget, anchorTo, 0, 0);
+				NuN_Tooltip:SetFrameLevel(anchorTarget:GetFrameLevel() + 1);
 			else
 				anchorBy, anchorTo = NuN_GetTipAnchor(tTip);
 				NuN_Tooltip:SetPoint(anchorBy, tTip, anchorTo, 1, 0);
@@ -10605,11 +10668,24 @@ function NuN_ShoppingTooltip_OnShow()
 	if (not NuN_Tooltip) or (not NuN_Tooltip:IsVisible()) then
 		return;
 	end
-	-- Determine the outermost visible tooltip to anchor past
+	-- Determine the outermost visible shopping tooltip to anchor past.
+	-- When dual-wielding, both are visible — pick the one farthest from GameTooltip.
 	local anchorTo_tooltip = GameTooltip;
 	local num1 = ShoppingTooltip1 and ShoppingTooltip1:IsVisible() and ShoppingTooltip1:NumLines();
 	local num2 = ShoppingTooltip2 and ShoppingTooltip2:IsVisible() and ShoppingTooltip2:NumLines();
-	if num2 and (num2 > 0) then
+	if (num1 and num1 > 0) and (num2 and num2 > 0) then
+		local gtX = select(1, GameTooltip:GetCenter()) or 0;
+		local s1X = select(1, ShoppingTooltip1:GetCenter()) or 0;
+		local s2X = select(1, ShoppingTooltip2:GetCenter()) or 0;
+		local success, result = pcall(function()
+			if math.abs(s1X - gtX) >= math.abs(s2X - gtX) then
+				return ShoppingTooltip1;
+			else
+				return ShoppingTooltip2;
+			end
+		end);
+		anchorTo_tooltip = success and result or ShoppingTooltip2;
+	elseif num2 and (num2 > 0) then
 		anchorTo_tooltip = ShoppingTooltip2;
 	elseif num1 and (num1 > 0) then
 		anchorTo_tooltip = ShoppingTooltip1;
@@ -10617,6 +10693,10 @@ function NuN_ShoppingTooltip_OnShow()
 	local anchorBy, anchorTo = NuN_GetTipAnchor(anchorTo_tooltip);
 	NuN_Tooltip:ClearAllPoints();
 	NuN_Tooltip:SetPoint(anchorBy, anchorTo_tooltip, anchorTo, 0, 0);
+	-- Raise frame level above shopping tooltips so we render on top
+	if anchorTo_tooltip ~= GameTooltip then
+		NuN_Tooltip:SetFrameLevel(anchorTo_tooltip:GetFrameLevel() + 1);
+	end
 end
 
 function NuN_TTCheckBox_OnClick(self, frameType)
@@ -12114,7 +12194,11 @@ function NuN_DeleteNote(dType)
 		if (NuNGNoteFrame.fromQuest) then
 			NuNcDeleteLabel:SetText(NuNC.NUN_QUEST_NOTE .. " :\n" .. local_player.currentNote.general);
 		else
-			NuNcDeleteLabel:SetText(NUN_GENERAL_TXT .. " :\n" .. (local_player.currentNote.displayLink or GetDisplayName(local_player.currentNote.general)));
+			local delDisplay = local_player.currentNote.displayLink;
+			if delDisplay then
+				delDisplay = strgsub(delDisplay, "%s*|A.-|a", "");
+			end
+			NuNcDeleteLabel:SetText(NUN_GENERAL_TXT .. " :\n" .. (delDisplay or GetDisplayName(local_player.currentNote.general)));
 		end
 		NuNcDeleteFrame:Show();
 		NuNGNoteTextScroll:ClearFocus();
