@@ -2698,12 +2698,27 @@ function NuNF.NuN_HookCommunitiesChat()
 end
 
 function NuNF.NUN_InitializeDelayedHooks()
-	--[[
-	rather than hooking container frames only, hook the underlying function that handles modified clicks for all ItemButtonTemplate-derived frame types...
-	hooksecurefunc("ContainerFrameItemButton_OnModifiedClick", NuNNew_ContainerFrameItemButton_OnModifiedClick);
-	--]]
-	NuNHooks.NuNOriginal_HandleModifiedItemClick = HandleModifiedItemClick;
-	HandleModifiedItemClick = NuN_HandleModifiedItemClick;
+	-- Post-hook HandleModifiedItemClick to intercept NuN modifier-key clicks on items.
+	-- Uses hooksecurefunc to avoid tainting the global (which would block protected
+	-- functions like SetNote, RemoveFromGuild, etc. from working later).
+	-- The original always runs first; for Alt+click (NuN's modifier), the original
+	-- is a no-op since Alt isn't a standard WoW item-click modifier (Shift/Ctrl are).
+	hooksecurefunc("HandleModifiedItemClick", function(itemLink)
+		if itemLink and itemLink ~= "" and NuNSettings and NuNSettings[local_player.realmName] and
+			NuNSettings[local_player.realmName].modifier and NuNSettings[local_player.realmName].modifier == "on" and
+			((receiptPending == nil) or (locals.NuN_Receiving.type ~= "General")) then
+			local mouseButton = GetMouseButtonClicked();
+			if mouseButton and IsNuNModifierKeyDown(mouseButton) then
+				NuNQuickNote.ProcessHyperlink(itemLink);
+			end
+			if locals.NuNDebug and locals.debugging_msg_hooks then
+				nun_msgf(
+					"HandleModifiedItemClick(post-hook) - general_note_open:%s  player_note_open:%s  original_link:%s  mouseButton:%s",
+					tostring(NuNGNoteFrame:IsVisible()), tostring(NuNFrame:IsVisible()), tostring(itemLink),
+					tostring(mouseButton));
+			end
+		end
+	end);
 
 	-- hook into the chat window hyperlink clicks
 	-- In modern WoW (11.x+), chat frames capture the OnHyperlinkClick handler at creation
@@ -2739,12 +2754,26 @@ function NuNF.NUN_InitializeDelayedHooks()
 	-- Blizzard_Communities is a load-on-demand addon, so the frame may not exist yet.
 	NuNF.NuN_HookCommunitiesChat();
 
-	-- this is actually a post-hook, in that we will not interfere with the normal operation of the game.  Unfortunately, since the World of Warcraft's hooksecurefunc() functionality
-	-- doesn't provide any way to determine what the original function's return value was, we have to pre-hook and call itselves.  If it returns false, then we'll attempt to process
-	-- the hyperlink text provided, if it exists.
-	--hooksecurefunc("ChatEdit_InsertLink", NotesUNeed.SetLinkRef);
-	NuNHooks.Orig_ChatEdit_InsertLink = ChatEdit_InsertLink;
-	ChatEdit_InsertLink = NotesUNeed.ChatEdit_InsertLink;
+	-- Post-hook ChatEdit_InsertLink to allow inserting links into open NuN note frames.
+	-- Uses hooksecurefunc to avoid tainting the global. The original runs first and
+	-- inserts into the chat editbox if one is active. Our post-hook then checks if a
+	-- NuN note frame is open and no chat editbox handled it, and inserts there instead.
+	hooksecurefunc("ChatEdit_InsertLink", function(linkText)
+		-- Only insert into a NuN note if no chat editbox is active (to avoid double-insertion).
+		-- ChatEdit_InsertLink returns true when it inserts into a chat editbox, but hooksecurefunc
+		-- doesn't give us the return value. Instead, check if any chat editbox has focus.
+		local chatEditBoxHandled = false;
+		for _, frameName in pairs(CHAT_FRAMES) do
+			local frame = _G[frameName];
+			if frame and frame.editBox and frame.editBox:IsShown() and frame.editBox:HasFocus() then
+				chatEditBoxHandled = true;
+				break;
+			end
+		end
+		if not chatEditBoxHandled then
+			NotesUNeed.SetLinkRef(linkText);
+		end
+	end);
 
 	-- restore the original OpenCalendar function, now that we're fully loaded.
 	if NuNHooks.NuNOriginal_OpenCalendar ~= nil then
@@ -6608,56 +6637,11 @@ function NotesUNeed.SetLinkRef(linkText)
 	return result;
 end
 
--- very basic hook for
-function NotesUNeed.ChatEdit_InsertLink(linkText, internalOrigin)
-	local result = false;
-	if not locals.linkRefInjectionMutex then
-		locals.linkRefInjectionMutex = true;
+-- REMOVED: NotesUNeed.ChatEdit_InsertLink — replaced by hooksecurefunc post-hook
+-- in NuNF.NUN_InitializeDelayedHooks() to avoid tainting the global function.
 
-		-- in this case, we let the game handle it first
-		result = NuNHooks.Orig_ChatEdit_InsertLink(linkText);
-		if locals.NuNDebug and locals.debugging_msg_hooks then
-			nun_msgf("NuN ChatEdit_InsertLink - linkText:%s  original_func_result:%s  internalOrigin:%s",
-				tostring(linkText),
-				tostring(result), tostring(internalOrigin));
-		end
-		if not result and internalOrigin ~= true then
-			result = NotesUNeed.SetLinkRef(linkText);
-		end
-		locals.linkRefInjectionMutex = nil;
-	end
-	return (result == true) or nil;
-end
-
--- REVIEW what is this
-function NuN_HandleModifiedItemClick(itemLink)
-	local bResult = false;
-
-	-- if the player wants NotesUNeed to check for modified item clicks for inserting hyperlinks
-	if itemLink and itemLink ~= "" and NuNSettings and NuNSettings[local_player.realmName] and
-		NuNSettings[local_player.realmName].modifier and NuNSettings[local_player.realmName].modifier == "on" and
-		((receiptPending == nil) or (locals.NuN_Receiving.type ~= "General")) then
-		-- determine which mouse button is being pressed
-		local mouseButton = GetMouseButtonClicked();
-
-		-- and the player is pressing that key combination
-		if mouseButton and IsNuNModifierKeyDown(mouseButton) then
-			--			local itemLink = itemLink;
-			bResult = NuNQuickNote.ProcessHyperlink(itemLink);
-		end
-
-		-- debug output
-		if locals.NuNDebug and locals.debugging_msg_hooks then
-			nun_msgf(
-				"NuN_HandleModifiedItemClick - general_note_open:%s    player_note_open:%s     original_link:%s    bResult:%s   mouseButton:%s   rawLink:%s"
-				,
-				tostring(NuNGNoteFrame:IsVisible()), tostring(NuNFrame:IsVisible()), itemLink, tostring(bResult),
-				tostring(mouseButton), DecodeHyperlink(itemLink));
-		end
-	end
-
-	return (bResult == true) or NuNHooks.NuNOriginal_HandleModifiedItemClick(itemLink);
-end
+-- REMOVED: NuN_HandleModifiedItemClick — replaced by hooksecurefunc post-hook
+-- in NuNF.NUN_InitializeDelayedHooks() to avoid tainting the global function.
 
 function NuNNew_ContainerFrameItemButton_OnModifiedClick(self, btn)
 	-- this is simply to allow all mouse buttons to be used
