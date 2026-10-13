@@ -1640,42 +1640,51 @@ function NuNF.NuN_SetSaveText(dText)
 	return dText;
 end
 
-function NuNF.NuN_GetCText(gLclName)
-	local txtIndex;
-	local catText;
+-- Older versions stored long notes split across txt, txt1 .. txtN.  Notes are now saved whole in txt, so
+-- the legacy txtN chunks must be removed on save, otherwise they get appended again on every load.
+-- Notes saved before that was done have txt = (original txt) .. (chunks) repeated one or more times, so
+-- strip any trailing copies of the chunk text before appending it once.
+function NuNF.NuN_JoinTextChunks(note)
+	local baseText = note[locals.txtTxt] or "";
+	local chunkText = "";
 
-	catText = "";
-	if (locals.NuNDataPlayers[gLclName][locals.txtTxt]) then
-		catText = locals.NuNDataPlayers[gLclName][locals.txtTxt];
-	end
 	for i = 1, NuNC.NUN_MAX_ADD_TXT, 1 do
-		txtIndex = locals.txtTxt .. i;
-		if (locals.NuNDataPlayers[gLclName][txtIndex]) then
-			catText = catText .. locals.NuNDataPlayers[gLclName][txtIndex];
+		local chunk = note[locals.txtTxt .. i];
+		if (chunk) then
+			chunkText = chunkText .. chunk;
 		end
 	end
+
+	local chunkLen = strlen(chunkText);
+	if (chunkLen > 0) then
+		while ((strlen(baseText) > chunkLen) and (strsub(baseText, -chunkLen) == chunkText)) do
+			baseText = strsub(baseText, 1, -chunkLen - 1);
+		end
+	end
+
+	return baseText .. chunkText;
+end
+
+function NuNF.NuN_ClearTextChunks(note)
+	for i = 1, NuNC.NUN_MAX_ADD_TXT, 1 do
+		note[locals.txtTxt .. i] = nil;
+	end
+end
+
+function NuNF.NuN_GetCText(gLclName)
+	local catText = NuNF.NuN_JoinTextChunks(locals.NuNDataPlayers[gLclName]);
 
 	catText = NuNF.NuN_GetDisplayText(catText);
 	return catText;
 end
 
 function NuNF.NuN_GetGText(gLclNote)
-	local txtIndex;
-	local catText;
+	local catText = "";
 
-	catText = "";
 	if ((NuNDataRNotes[gLclNote]) and (NuNDataRNotes[gLclNote][locals.txtTxt])) then
-		catText = NuNDataRNotes[gLclNote][locals.txtTxt];
+		catText = NuNF.NuN_JoinTextChunks(NuNDataRNotes[gLclNote]);
 	elseif ((NuNDataANotes[gLclNote]) and (NuNDataANotes[gLclNote][locals.txtTxt])) then
-		catText = NuNDataANotes[gLclNote][locals.txtTxt];
-	end
-	for i = 1, NuNC.NUN_MAX_ADD_TXT, 1 do
-		txtIndex = locals.txtTxt .. i;
-		if ((NuNDataRNotes[gLclNote]) and (NuNDataRNotes[gLclNote][txtIndex])) then
-			catText = catText .. NuNDataRNotes[gLclNote][txtIndex];
-		elseif ((NuNDataANotes[gLclNote]) and (NuNDataANotes[gLclNote][txtIndex])) then
-			catText = catText .. NuNDataANotes[gLclNote][txtIndex];
-		end
+		catText = NuNF.NuN_JoinTextChunks(NuNDataANotes[gLclNote]);
 	end
 
 	catText = NuNF.NuN_GetDisplayText(catText);
@@ -1691,6 +1700,7 @@ function NuNF.NuN_SetCText(sLclName)
 
 	contact.text = NuNF.NuN_SetSaveText(contact.text);
 	locals.NuNDataPlayers[sLclName][locals.txtTxt] = contact.text;
+	NuNF.NuN_ClearTextChunks(locals.NuNDataPlayers[sLclName]);
 	locals.NuNDataPlayers[sLclName].lastChanged = NuNF.NuN_GetComparitiveDate(locals.NuNDataPlayers[sLclName]);
 
 	contact.text = tmpText;
@@ -1706,10 +1716,12 @@ function NuNF.NuN_SetGText(saveLvl)
 	general.text = NuNF.NuN_SetSaveText(general.text);
 	if (saveLvl == "Realm") then
 		NuNDataRNotes[local_player.currentNote.general][locals.txtTxt] = general.text;
+		NuNF.NuN_ClearTextChunks(NuNDataRNotes[local_player.currentNote.general]);
 		NuNDataRNotes[local_player.currentNote.general].lastChanged = NuNF.NuN_GetComparitiveDate(NuNDataRNotes[
 		local_player.currentNote.general]);
 	else
 		NuNDataANotes[local_player.currentNote.general][locals.txtTxt] = general.text;
+		NuNF.NuN_ClearTextChunks(NuNDataANotes[local_player.currentNote.general]);
 		NuNDataANotes[local_player.currentNote.general].lastChanged = NuNF.NuN_GetComparitiveDate(NuNDataANotes[
 		local_player.currentNote.general]);
 	end
@@ -9268,7 +9280,7 @@ end
 
 --[[ Toggles the visibility of the border around the micro-frame (contains the quick-access buttons, for opening notes, creating new ones, etc.) --]]
 function NuN_UpdateMicroFrameBorder(self, deltaTime)
-	if (NuNMicroFrame:IsVisible() and MouseIsOver(NuNMicroFrame)) then
+	if (NuNMicroFrame:IsVisible() and NuNMicroFrame:IsMouseOver()) then
 		NuNMicroBorder:Show();
 	else
 		NuNMicroBorder:Hide();
@@ -9281,7 +9293,7 @@ function NuN_IsFrameInteractive(frame)
 	local isFrameInteractive = false;
 
 	if frame ~= nil and type(frame) == "table" then
-		isFrameInteractive = frame:IsVisible() and MouseIsOver(frame);
+		isFrameInteractive = frame:IsVisible() and frame:IsMouseOver();
 	end
 
 	return isFrameInteractive;
@@ -10291,9 +10303,9 @@ orgevo: I'm not really sure exactly what case this code was trying to handle, bu
 	--nun_msgf("NuN_GameToolTip_OnShow - focused:%s   tooltipCaption:%s   UnitName:%s", tostring(focus), tostring(locals.currentTooltipTitleString), tostring(GetUnitName("mouseover")));
 
 	if (UnitExists("mouseover") or
-			(RaidFrame:IsVisible() and MouseIsOver(RaidFrame)) or
-			(TargetFrame:IsVisible() and MouseIsOver(TargetFrame)) or
-			(FocusFrame:IsVisible() and MouseIsOver(FocusFrame))) then
+			(RaidFrame:IsVisible() and RaidFrame:IsMouseOver()) or
+			(TargetFrame:IsVisible() and TargetFrame:IsMouseOver()) or
+			(FocusFrame:IsVisible() and FocusFrame:IsMouseOver())) then
 		local typ = "Nil";
 		if (UnitExists("mouseover")) then
 			locals.ttName = GetUnitName("mouseover");
