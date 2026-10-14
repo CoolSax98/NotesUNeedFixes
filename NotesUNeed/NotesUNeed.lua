@@ -379,7 +379,7 @@ local GetFriendInfo = C_FriendList.GetFriendInfo;
 local GetMouseFoci, GetCurrentKeyBoardFocus = GetMouseFoci, GetCurrentKeyBoardFocus;
 local GetNumIgnores = C_FriendList.GetNumIgnores;
 local GetIgnoreName = C_FriendList.GetIgnoreName;
-local MouseIsOver, IsAltKeyDown = MouseIsOver, IsAltKeyDown;
+local IsAltKeyDown = IsAltKeyDown;
 local UnitAffectingCombat = UnitAffectingCombat;
 local UnitExists = UnitExists;
 local UnitName, UnitIsPlayer, GetUnitName = UnitName, UnitIsPlayer, GetUnitName;
@@ -7795,10 +7795,9 @@ function NuN_Who()
 					end
 				end
 
-				-- auto update existing notes - but not saving new notes automatically
-				if (locals.NuNDataPlayers[local_player.currentNote.unit]) then
-					NuN_WriteNote();
-				end
+				-- The /who details are only shown in the open note, and saved when the user saves it.  This used to
+				-- save existing notes here, which saved the note text even if the user then pressed Cancel, and
+				-- could save whatever note was open by the time the /who result arrived.
 			end
 		end
 	end -- 5.60
@@ -15886,7 +15885,7 @@ function NuN_InsertText(noteType, noteName, noteText, pos)
 			local tmpT = general.text;
 			local_player.currentNote.general = noteName;
 			general.text = fetchedText;
-			NuNF.NuN_SetCText(nLvl);
+			NuNF.NuN_SetGText(nLvl);
 			general.text = tmpT;
 			local_player.currentNote.general = tmpN;
 			return errorCode;
