@@ -379,7 +379,7 @@ local GetFriendInfo = C_FriendList.GetFriendInfo;
 local GetMouseFoci, GetCurrentKeyBoardFocus = GetMouseFoci, GetCurrentKeyBoardFocus;
 local GetNumIgnores = C_FriendList.GetNumIgnores;
 local GetIgnoreName = C_FriendList.GetIgnoreName;
-local MouseIsOver, IsAltKeyDown = MouseIsOver, IsAltKeyDown;
+local IsAltKeyDown = IsAltKeyDown;
 local UnitAffectingCombat = UnitAffectingCombat;
 local UnitExists = UnitExists;
 local UnitName, UnitIsPlayer, GetUnitName = UnitName, UnitIsPlayer, GetUnitName;
@@ -1640,42 +1640,114 @@ function NuNF.NuN_SetSaveText(dText)
 	return dText;
 end
 
-function NuNF.NuN_GetCText(gLclName)
-	local txtIndex;
-	local catText;
+-- Older versions stored long notes split across txt, txt1 .. txtN.  Notes are now saved whole in txt, but
+-- for a while the txtN chunks were left behind on save, so they were appended again on every load and the
+-- note grew by a copy of the chunk text each time it was saved.
+-- Loading still returns txt .. chunks, so the user always sees exactly what is stored.  Saving folds the
+-- chunks in to txt; if the text then contains the chunk text more than once, the chunk text is kept as
+-- note.legacyTail so the user can be asked whether the extra copies should be removed.  Nothing is removed
+-- without asking, as a genuine note can contain repeated text.
+local DUP_TEXT_MIN_CHARS = 20; -- ignore chunk text shorter than this (e.g. a few blank lines)
 
-	catText = "";
-	if (locals.NuNDataPlayers[gLclName][locals.txtTxt]) then
-		catText = locals.NuNDataPlayers[gLclName][locals.txtTxt];
-	end
+function NuNF.NuN_GetTextChunks(note)
+	local chunkText = "";
+
 	for i = 1, NuNC.NUN_MAX_ADD_TXT, 1 do
-		txtIndex = locals.txtTxt .. i;
-		if (locals.NuNDataPlayers[gLclName][txtIndex]) then
-			catText = catText .. locals.NuNDataPlayers[gLclName][txtIndex];
+		local chunk = note[locals.txtTxt .. i];
+		if (chunk) then
+			chunkText = chunkText .. chunk;
 		end
 	end
+
+	return chunkText;
+end
+
+function NuNF.NuN_JoinTextChunks(note)
+	return (note[locals.txtTxt] or "") .. NuNF.NuN_GetTextChunks(note);
+end
+
+-- the chunk text that may have been duplicated : the legacy chunks themselves, or what was kept of them on save
+function NuNF.NuN_GetDupEvidence(note)
+	local chunkText = NuNF.NuN_GetTextChunks(note);
+	if (chunkText == "") then
+		chunkText = note.legacyTail or "";
+	end
+	return chunkText;
+end
+
+local function IsTrivialDupText(tail)
+	return (strlen(strgsub(NuNF.NuN_GetDisplayText(tail), "%s", "")) < DUP_TEXT_MIN_CHARS);
+end
+
+-- returns how many times tail appears in text, and how many of those copies are at the very end of text
+local function CountDupCopies(text, tail)
+	local tailLen = strlen(tail);
+	local total, trailing = 0, 0;
+	local pos = 1;
+
+	while (true) do
+		local found = strfind(text, tail, pos, true);
+		if (not found) then
+			break;
+		end
+		total = total + 1;
+		pos = found + tailLen;
+	end
+
+	local textEnd = strlen(text);
+	while ((textEnd >= tailLen) and (strsub(text, textEnd - tailLen + 1, textEnd) == tail)) do
+		trailing = trailing + 1;
+		textEnd = textEnd - tailLen;
+	end
+
+	return total, trailing;
+end
+
+-- called after note.txt has been set on save : drop the legacy chunks, keeping their text only as evidence
+-- if the saved text still contains it more than once
+function NuNF.NuN_FoldTextChunks(note)
+	local tail = NuNF.NuN_GetDupEvidence(note);
+
+	for i = 1, NuNC.NUN_MAX_ADD_TXT, 1 do
+		note[locals.txtTxt .. i] = nil;
+	end
+	note.legacyTail = nil;
+
+	if ((tail ~= "") and (not IsTrivialDupText(tail)) and (CountDupCopies(note[locals.txtTxt] or "", tail) > 1)) then
+		note.legacyTail = tail;
+	end
+end
+
+-- returns nil, or a table describing the duplicated text in a note (all strings in saved format)
+function NuNF.NuN_FindDuplicatedText(note)
+	local tail = NuNF.NuN_GetDupEvidence(note);
+	if ((tail == "") or (IsTrivialDupText(tail))) then
+		return nil;
+	end
+
+	local text = NuNF.NuN_JoinTextChunks(note);
+	local total, trailing = CountDupCopies(text, tail);
+	if (total < 2) then
+		return nil;
+	end
+
+	return { text = text, tail = tail, total = total, trailing = trailing };
+end
+
+function NuNF.NuN_GetCText(gLclName)
+	local catText = NuNF.NuN_JoinTextChunks(locals.NuNDataPlayers[gLclName]);
 
 	catText = NuNF.NuN_GetDisplayText(catText);
 	return catText;
 end
 
 function NuNF.NuN_GetGText(gLclNote)
-	local txtIndex;
-	local catText;
+	local catText = "";
 
-	catText = "";
 	if ((NuNDataRNotes[gLclNote]) and (NuNDataRNotes[gLclNote][locals.txtTxt])) then
-		catText = NuNDataRNotes[gLclNote][locals.txtTxt];
+		catText = NuNF.NuN_JoinTextChunks(NuNDataRNotes[gLclNote]);
 	elseif ((NuNDataANotes[gLclNote]) and (NuNDataANotes[gLclNote][locals.txtTxt])) then
-		catText = NuNDataANotes[gLclNote][locals.txtTxt];
-	end
-	for i = 1, NuNC.NUN_MAX_ADD_TXT, 1 do
-		txtIndex = locals.txtTxt .. i;
-		if ((NuNDataRNotes[gLclNote]) and (NuNDataRNotes[gLclNote][txtIndex])) then
-			catText = catText .. NuNDataRNotes[gLclNote][txtIndex];
-		elseif ((NuNDataANotes[gLclNote]) and (NuNDataANotes[gLclNote][txtIndex])) then
-			catText = catText .. NuNDataANotes[gLclNote][txtIndex];
-		end
+		catText = NuNF.NuN_JoinTextChunks(NuNDataANotes[gLclNote]);
 	end
 
 	catText = NuNF.NuN_GetDisplayText(catText);
@@ -1691,6 +1763,7 @@ function NuNF.NuN_SetCText(sLclName)
 
 	contact.text = NuNF.NuN_SetSaveText(contact.text);
 	locals.NuNDataPlayers[sLclName][locals.txtTxt] = contact.text;
+	NuNF.NuN_FoldTextChunks(locals.NuNDataPlayers[sLclName]);
 	locals.NuNDataPlayers[sLclName].lastChanged = NuNF.NuN_GetComparitiveDate(locals.NuNDataPlayers[sLclName]);
 
 	contact.text = tmpText;
@@ -1706,15 +1779,147 @@ function NuNF.NuN_SetGText(saveLvl)
 	general.text = NuNF.NuN_SetSaveText(general.text);
 	if (saveLvl == "Realm") then
 		NuNDataRNotes[local_player.currentNote.general][locals.txtTxt] = general.text;
+		NuNF.NuN_FoldTextChunks(NuNDataRNotes[local_player.currentNote.general]);
 		NuNDataRNotes[local_player.currentNote.general].lastChanged = NuNF.NuN_GetComparitiveDate(NuNDataRNotes[
 		local_player.currentNote.general]);
 	else
 		NuNDataANotes[local_player.currentNote.general][locals.txtTxt] = general.text;
+		NuNF.NuN_FoldTextChunks(NuNDataANotes[local_player.currentNote.general]);
 		NuNDataANotes[local_player.currentNote.general].lastChanged = NuNF.NuN_GetComparitiveDate(NuNDataANotes[
 		local_player.currentNote.general]);
 	end
 
 	general.text = tmpText;
+end
+
+-- Duplicated text (see NuNF.NuN_FoldTextChunks) : when a note is opened, ask the user what to do about it
+local function GetNoteForDupCheck(noteType, noteName)
+	if (noteType == "Contact") then
+		return locals.NuNDataPlayers[noteName];
+	elseif ((NuNDataRNotes[noteName]) and (NuNDataRNotes[noteName][locals.txtTxt])) then
+		return NuNDataRNotes[noteName];
+	elseif ((NuNDataANotes[noteName]) and (NuNDataANotes[noteName][locals.txtTxt])) then
+		return NuNDataANotes[noteName];
+	end
+	return nil;
+end
+
+-- returns the edit box showing this note, if it is currently open
+local function GetOpenNoteEditBox(noteType, noteName)
+	if (noteType == "Contact") then
+		if ((NuNFrame:IsVisible()) and (local_player.currentNote.unit == noteName)) then
+			return NuNText;
+		end
+	elseif ((NuNGNoteFrame:IsVisible()) and (local_player.currentNote.general == noteName)) then
+		return NuNGNoteTextScroll;
+	end
+	return nil;
+end
+
+local function StoreNoteText(note, text)
+	note[locals.txtTxt] = text;
+	for i = 1, NuNC.NUN_MAX_ADD_TXT, 1 do
+		note[locals.txtTxt .. i] = nil;
+	end
+	note.legacyTail = nil;
+end
+
+-- remove the extra copies at the end of the note, keeping the previous text in note.preRepairTxt
+function NuNF.NuN_RepairDuplicatedText(data)
+	local note = GetNoteForDupCheck(data.noteType, data.noteName);
+	local dup = note and NuNF.NuN_FindDuplicatedText(note);
+	if ((not dup) or (dup.trailing < 2) or (dup.trailing ~= dup.total)) then
+		return;
+	end
+
+	local repaired = strsub(dup.text, 1, strlen(dup.text) - (dup.trailing - 1) * strlen(dup.tail));
+	note.preRepairTxt = dup.text;
+	StoreNoteText(note, repaired);
+	note.lastChanged = NuNF.NuN_GetComparitiveDate(note);
+
+	local editBox = GetOpenNoteEditBox(data.noteType, data.noteName);
+	if (editBox) then
+		editBox:SetText(NuNF.NuN_GetDisplayText(repaired));
+	end
+	NuN_Message(strformat(NUN_DUPTEXT_REPAIRED, data.displayName, dup.trailing - 1));
+end
+
+-- the user says the repeated text is genuine : store the note as it is, and stop asking
+function NuNF.NuN_KeepDuplicatedText(data)
+	local note = GetNoteForDupCheck(data.noteType, data.noteName);
+	if (note) then
+		StoreNoteText(note, NuNF.NuN_JoinTextChunks(note));
+	end
+end
+
+-- the copies are not all at the end (the note was edited after it grew), so select the first extra copy
+-- in the open note for the user to review
+function NuNF.NuN_ShowDuplicatedText(data)
+	local note = GetNoteForDupCheck(data.noteType, data.noteName);
+	local dup = note and NuNF.NuN_FindDuplicatedText(note);
+	local editBox = GetOpenNoteEditBox(data.noteType, data.noteName);
+	if ((not dup) or (not editBox)) then
+		return;
+	end
+
+	local first = strfind(dup.text, dup.tail, 1, true);
+	local second = strfind(dup.text, dup.tail, first + strlen(dup.tail), true);
+	-- positions in the edit box are in display format, which differs in length from the saved format
+	local hlStart = strlen(NuNF.NuN_GetDisplayText(strsub(dup.text, 1, second - 1)));
+	local hlEnd = strlen(NuNF.NuN_GetDisplayText(strsub(dup.text, 1, second + strlen(dup.tail) - 1)));
+	editBox:SetFocus();
+	editBox:SetCursorPosition(hlStart);
+	editBox:HighlightText(hlStart, hlEnd);
+end
+
+StaticPopupDialogs["NUN_DUPLICATED_TEXT"] = {
+	text = "%s",
+	button1 = NUN_DUPTEXT_REPAIR,
+	button2 = NUN_DUPTEXT_LATER,
+	button3 = NUN_DUPTEXT_KEEP,
+	OnAccept = function(self, data)
+		NuNF.NuN_RepairDuplicatedText(data);
+	end,
+	OnAlt = function(self, data)
+		NuNF.NuN_KeepDuplicatedText(data);
+	end,
+	showAlert = 1,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1,
+};
+
+StaticPopupDialogs["NUN_DUPLICATED_TEXT_EDITED"] = {
+	text = "%s",
+	button1 = NUN_DUPTEXT_SHOW,
+	button2 = NUN_DUPTEXT_LATER,
+	button3 = NUN_DUPTEXT_KEEP,
+	OnAccept = function(self, data)
+		NuNF.NuN_ShowDuplicatedText(data);
+	end,
+	OnAlt = function(self, data)
+		NuNF.NuN_KeepDuplicatedText(data);
+	end,
+	showAlert = 1,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = 1,
+};
+
+function NuNF.NuN_CheckDuplicatedText(noteType, noteName, displayName)
+	local note = GetNoteForDupCheck(noteType, noteName);
+	local dup = note and NuNF.NuN_FindDuplicatedText(note);
+	if (not dup) then
+		return;
+	end
+
+	local data = { noteType = noteType, noteName = noteName, displayName = displayName or noteName };
+	local tailLen = strlen(NuNF.NuN_GetDisplayText(dup.tail));
+	if ((dup.trailing >= 2) and (dup.trailing == dup.total)) then
+		StaticPopup_Show("NUN_DUPLICATED_TEXT", strformat(NUN_DUPTEXT_FOUND, data.displayName, tailLen, dup.total), nil, data);
+	else
+		StaticPopup_Show("NUN_DUPLICATED_TEXT_EDITED", strformat(NUN_DUPTEXT_EDITED, data.displayName, tailLen, dup.total), nil, data);
+	end
 end
 
 -- build the NotesUNeed tooltip based on the NotesUNeed note
@@ -3975,6 +4180,8 @@ function NuN_ShowNote()
 			NuN_Who(); -- 5.60
 		end
 
+		NuNF.NuN_CheckDuplicatedText("Contact", local_player.currentNote.unit);
+
 		FauxScrollFrame_SetOffset(NuNScrollFrame, 0);
 
 		-- One of the NuN Options controls whether the Text box gains focus automatically when you open a note
@@ -4652,6 +4859,14 @@ function NuNGNote_WriteNote(noteName)
 			end
 		end
 
+		-- Likewise keep any duplicated text evidence and repair backup (see NuNF.NuN_FoldTextChunks)
+		local existingDupEvidence, existingPreRepairTxt;
+		local dupCheckNote = GetNoteForDupCheck("General", local_player.currentNote.general);
+		if (dupCheckNote) then
+			existingDupEvidence = NuNF.NuN_GetDupEvidence(dupCheckNote);
+			existingPreRepairTxt = dupCheckNote.preRepairTxt;
+		end
+
 		if (NuN_GLevel_CheckBox:GetChecked()) then
 			saveLvl = "Account";
 			NuNDataANotes[local_player.currentNote.general] = {};
@@ -4669,6 +4884,13 @@ function NuNGNote_WriteNote(noteName)
 				NuNDataANotes[local_player.currentNote.general] = nil;
 			end
 		end
+
+		local savedNote = (saveLvl == "Account") and NuNDataANotes[local_player.currentNote.general] or
+			NuNDataRNotes[local_player.currentNote.general];
+		if ((existingDupEvidence) and (existingDupEvidence ~= "")) then
+			savedNote.legacyTail = existingDupEvidence;
+		end
+		savedNote.preRepairTxt = existingPreRepairTxt;
 
 		general.text = strgsub(general.text, "\124\124", "|");
 		general.text = strgsub(general.text, "|C", "|c");
@@ -7783,10 +8005,9 @@ function NuN_Who()
 					end
 				end
 
-				-- auto update existing notes - but not saving new notes automatically
-				if (locals.NuNDataPlayers[local_player.currentNote.unit]) then
-					NuN_WriteNote();
-				end
+				-- The /who details are only shown in the open note, and saved when the user saves it.  This used to
+				-- save existing notes here, which saved the note text even if the user then pressed Cancel, and
+				-- could save whatever note was open by the time the /who result arrived.
 			end
 		end
 	end -- 5.60
@@ -8986,6 +9207,9 @@ function NuN_ShowSavedGNote(nN)
 			NuN_GTTCheckBox:SetChecked(NuN_CheckPinnedBox(local_player.currentNote.general));
 		end
 		FauxScrollFrame_SetOffset(NuNGNoteScrollFrame, 0);
+
+		NuNF.NuN_CheckDuplicatedText("General", local_player.currentNote.general,
+			GetDisplayName(local_player.currentNote.general));
 	end
 end
 
@@ -9268,7 +9492,7 @@ end
 
 --[[ Toggles the visibility of the border around the micro-frame (contains the quick-access buttons, for opening notes, creating new ones, etc.) --]]
 function NuN_UpdateMicroFrameBorder(self, deltaTime)
-	if (NuNMicroFrame:IsVisible() and MouseIsOver(NuNMicroFrame)) then
+	if (NuNMicroFrame:IsVisible() and NuNMicroFrame:IsMouseOver()) then
 		NuNMicroBorder:Show();
 	else
 		NuNMicroBorder:Hide();
@@ -9281,7 +9505,7 @@ function NuN_IsFrameInteractive(frame)
 	local isFrameInteractive = false;
 
 	if frame ~= nil and type(frame) == "table" then
-		isFrameInteractive = frame:IsVisible() and MouseIsOver(frame);
+		isFrameInteractive = frame:IsVisible() and frame:IsMouseOver();
 	end
 
 	return isFrameInteractive;
@@ -10291,9 +10515,9 @@ orgevo: I'm not really sure exactly what case this code was trying to handle, bu
 	--nun_msgf("NuN_GameToolTip_OnShow - focused:%s   tooltipCaption:%s   UnitName:%s", tostring(focus), tostring(locals.currentTooltipTitleString), tostring(GetUnitName("mouseover")));
 
 	if (UnitExists("mouseover") or
-			(RaidFrame:IsVisible() and MouseIsOver(RaidFrame)) or
-			(TargetFrame:IsVisible() and MouseIsOver(TargetFrame)) or
-			(FocusFrame:IsVisible() and MouseIsOver(FocusFrame))) then
+			(RaidFrame:IsVisible() and RaidFrame:IsMouseOver()) or
+			(TargetFrame:IsVisible() and TargetFrame:IsMouseOver()) or
+			(FocusFrame:IsVisible() and FocusFrame:IsMouseOver())) then
 		local typ = "Nil";
 		if (UnitExists("mouseover")) then
 			locals.ttName = GetUnitName("mouseover");
@@ -15874,7 +16098,7 @@ function NuN_InsertText(noteType, noteName, noteText, pos)
 			local tmpT = general.text;
 			local_player.currentNote.general = noteName;
 			general.text = fetchedText;
-			NuNF.NuN_SetCText(nLvl);
+			NuNF.NuN_SetGText(nLvl);
 			general.text = tmpT;
 			local_player.currentNote.general = tmpN;
 			return errorCode;

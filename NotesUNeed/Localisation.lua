@@ -422,6 +422,14 @@ NUN_DUPLICATE = "A NotesUNeed Note Already\nExists with that Name";
 NUN_TEXTLIM1 = "NotesUNeed Text Limit of ";
 NUN_TEXTLIM2 = " Exceeded\nSome text may not be saved.\n";
 
+NUN_DUPTEXT_FOUND = "NotesUNeed : %s\n\nThis note looks like it has duplicated text.\nThe last %d characters appear %d times in a row.\n\nRemove the extra copies?";
+NUN_DUPTEXT_EDITED = "NotesUNeed : %s\n\nThis note looks like it has duplicated text.\nA block of %d characters appears %d times, and the note has been edited since.\n\nSelect the first extra copy so you can review it?";
+NUN_DUPTEXT_REPAIR = "Remove copies";
+NUN_DUPTEXT_SHOW = "Show me";
+NUN_DUPTEXT_KEEP = "Keep as is";
+NUN_DUPTEXT_LATER = "Later";
+NUN_DUPTEXT_REPAIRED = "Removed duplicated text from \"%s\" (%d extra copies).";
+
 
 NUN_TTLENGTH_TEXTBOX_LABEL = "Enter the maximum number of characters to appear in Tooltips : ";
 NUN_DEFAULTLEVEL_CHECKBOX_LABEL = "Save General Notes at Account Level by Default";
